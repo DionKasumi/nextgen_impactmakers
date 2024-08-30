@@ -5,7 +5,7 @@ import time
 # Database connection parameters
 db_params = {
     'user': 'root',
-    'passwd': '1234',    
+    'passwd': '1234',
     'host': 'localhost',
     'port': 3306,
     'db': 'course_data'  # Ensure this database exists
@@ -19,15 +19,15 @@ def save_to_database(courses_list):
 
         for course in courses_list:
             try:
-                # Check if the course already exists in the database based on title and author
-                check_query = "SELECT COUNT(*) FROM courses WHERE title = %s AND trainer = %s"
+                # Check if the course already exists in the database based on title and trainer
+                check_query = "SELECT COUNT(*) FROM probit_courses WHERE title = %s AND trainer = %s"
                 cursor.execute(check_query, (course['Title'], course['Trainer']))
                 exists = cursor.fetchone()[0] > 0
 
                 if not exists:
                     # Insert the course into the database
                     insert_query = """
-                    INSERT INTO courses (title, trainer, description, price_eur, students, rating, image_url)
+                    INSERT INTO probit_courses (title, trainer, description, price_eur, students, rating, image_url)
                     VALUES (%s, %s, %s, %s, %s, %s, %s)
                     """
                     data = (
@@ -106,3 +106,22 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+# The database is: course_data
+# I saved the data into a table: probit_courses
+
+
+# CREATE DATABASE course_data;
+# USE course_data; 
+
+# CREATE TABLE probit_courses (
+#    id INT AUTO_INCREMENT PRIMARY KEY,
+#    title VARCHAR(255) NOT NULL,
+#    trainer VARCHAR(255) NOT NULL,
+#    description TEXT,
+#    price_eur VARCHAR(50),  -- Changed to VARCHAR to store "FREE" as well as numeric values
+#    students VARCHAR(50),
+#    rating VARCHAR(50),
+#    image_url VARCHAR(500)
+# );
