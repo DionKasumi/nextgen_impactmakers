@@ -2,7 +2,6 @@ from playwright.sync_api import sync_playwright
 import MySQLdb
 import time
 
-# Database connection parameters
 db_params = {
     'user': 'root',
     'passwd': '1234',
@@ -13,31 +12,32 @@ db_params = {
 
 def save_to_database(courses_list):
     try:
-        # Connect to the database
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor()
 
         for course in courses_list:
             try:
-                # Check if the course already exists in the database based on title and trainer
-                check_query = "SELECT COUNT(*) FROM probit_courses WHERE title = %s AND trainer = %s"
-                cursor.execute(check_query, (course['Title'], course['Trainer']))
+                # Check if the course already exists
+                check_query = "SELECT COUNT(*) FROM all_courses WHERE title = %s AND source = %s"
+                cursor.execute(check_query, (course['Title'], 'Probit Academy Kosova'))
                 exists = cursor.fetchone()[0] > 0
 
                 if not exists:
-                    # Insert the course into the database
+                    # Insert new course with the trainer information
                     insert_query = """
-                    INSERT INTO probit_courses (title, trainer, description, price_eur, students, rating, image_url)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s)
+                    INSERT INTO all_courses (source, title, trainer, description, price, students, rating, image_url, duration)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                     """
                     data = (
+                        'Probit Academy Kosova',
                         course['Title'],
-                        course['Trainer'],
+                        course['Trainer'],  # Add trainer to the database
                         course['Description'],
                         course['Price (EUR)'],
                         course['Students'],
                         course['Rating'],
-                        course['Image URL']
+                        course['Image URL'],
+                        None   # No duration provided
                     )
                     cursor.execute(insert_query, data)
                     db.commit()
@@ -66,7 +66,6 @@ def scrape_courses():
         page = browser.new_page()
         page.goto(page_url, timeout=60000)
         
-        # Locate the course cards on the page
         courses = page.locator('//div[contains(@class, "course-grid-4")]').all()
         print(f'There are {len(courses)} courses.')
 
@@ -74,7 +73,7 @@ def scrape_courses():
         for course in courses:
             try:
                 title = course.locator('.course-title a').inner_text(timeout=5000)
-                trainer = course.locator('.course-author .value a').first.inner_text(timeout=5000)  # Use .first to select the first matching element
+                trainer = course.locator('.course-author .value a').first.inner_text(timeout=5000)
                 description = course.locator('.course-description p').inner_text(timeout=5000)
                 price = course.locator('.course-price .value').first.inner_text(timeout=5000).strip()
                 students = course.locator('.course-students .value').first.inner_text(timeout=5000).strip()
@@ -83,7 +82,7 @@ def scrape_courses():
 
                 courses_list.append({
                     'Title': title,
-                    'Trainer': trainer,
+                    'Trainer': trainer,  # Add trainer to the course dictionary
                     'Description': description,
                     'Price (EUR)': price,
                     'Students': students,
@@ -101,27 +100,8 @@ def main():
     while True:
         courses_list = scrape_courses()
         save_to_database(courses_list)
-        print("Sleeping for 2 minutes...")
+        print("Sleeping for 30 minutes...")
         time.sleep(30 * 60)  # Sleep for 30 minutes to retrieve recently added trainings 
 
 if __name__ == '__main__':
     main()
-
-
-# The database is: course_data
-# I saved the data into a table: probit_courses
-
-
-# CREATE DATABASE course_data;
-# USE course_data; 
-
-# CREATE TABLE probit_courses (
-#    id INT AUTO_INCREMENT PRIMARY KEY,
-#    title VARCHAR(255) NOT NULL,
-#    trainer VARCHAR(255) NOT NULL,
-#    description TEXT,
-#    price_eur VARCHAR(50),  -- Changed to VARCHAR to store "FREE" as well as numeric values
-#    students VARCHAR(50),
-#    rating VARCHAR(50),
-#    image_url VARCHAR(500)
-# );
