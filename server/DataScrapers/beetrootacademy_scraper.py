@@ -5,7 +5,7 @@ import time
 # Database connection parameters
 db_params = {
     'user': 'root',
-    'passwd': '',
+    'passwd': '1234',
     'host': 'localhost',
     'port': 3306,
     'db': 'course_data'  
@@ -37,7 +37,7 @@ def save_trainings_to_database(trainings_list):
                         training['Description'],
                         None, # No price info provided
                         None, # No students info provided
-                        training['Rating'], # Corrected from 'Raitong'
+                        training['Rating'], 
                         None, # No image_url info provided
                         training['Duration']
                     )
