@@ -1,23 +1,24 @@
 /* eslint-disable react-refresh/only-export-components */
-
+import React, { useState, useEffect } from 'react';
 import SectionWrapper from '../hoc/SectionWrapper';
-import { useState } from 'react';
 import { IoMdArrowDropdown } from 'react-icons/io';
 import Card from '../components/Card';
 import Footer from '../components/Footer';
+import axios from 'axios';
 
-const generateFilter = ({ filterList = [] }) => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const [selectedValues, setSelectedValues] = useState({}); // Use an object to store selected values for each category
+// Function to fetch course data from the API
+const fetchCourses = async () => {
+    try {
+        const response = await axios.get('http://localhost:8080/api/courses');
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching courses:', error);
+        return [];
+    }
+};
 
-    const handleChange = (event) => {
-        const { name, value } = event.target;
-        setSelectedValues((prevValues) => ({
-            ...prevValues,
-            [name]: value,
-        }));
-    };
-
+// Generate filter component
+const generateFilter = ({ filterList = [], selectedValues, handleChange }) => {
     return filterList.map((type, index) =>
         !type.isPrice ? (
             <div key={index} className="first:mb-8 last:mt-8">
@@ -80,6 +81,16 @@ const generateFilter = ({ filterList = [] }) => {
 };
 
 const SideBar = () => {
+    const [selectedValues, setSelectedValues] = useState({});
+
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        setSelectedValues((prevValues) => ({
+            ...prevValues,
+            [name]: value,
+        }));
+    };
+
     return (
         <div className="w-1/3 min-h-96 p-4">
             {generateFilter({
@@ -95,10 +106,10 @@ const SideBar = () => {
                                 value: 'Arts and Culture',
                             },
                             {
-                                display: 'Bussiness',
+                                display: 'Business',
                                 name: 'event_type_radio',
-                                id: 'bussiness',
-                                value: 'Bussiness',
+                                id: 'business',
+                                value: 'Business',
                             },
                             {
                                 display: 'Education',
@@ -190,37 +201,26 @@ const SideBar = () => {
                         ],
                     },
                 ],
+                selectedValues,
+                handleChange,
             })}
         </div>
     );
 };
 
-const generateCards = (amount) => {
-    return (
-        <div className="w-full h-full grid grid-cols-2 gap-8 justify-items-center">
-            {Array(amount)
-                .fill(0)
-                .map((_, index) => {
-                    return (
-                        <Card
-                            card_title={'Card ' + index}
-                            card_price={'€99.99'}
-                            card_description={
-                                'Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt hic.'
-                            }
-                            card_duration={'01 Jan 2021 - 01 Jan 2025'}
-                            key={index}
-                        />
-                    );
-                })}
-        </div>
-    );
-};
-
-const CardsContainer = () => {
+const CardsContainer = ({ courses }) => {
     return (
         <div className="w-2/3 h-min flex justify-center items-center flex-col">
-            {generateCards(8)}
+            <div className="w-full h-full grid grid-cols-2 gap-8 justify-items-center">
+                {courses.map((course, index) => (
+                    <Card
+                        key={index}
+                        card_title={course.title}
+                        card_img={course.image_url || '../assets/no_image.svg'}
+                        card_duration={course.duration}
+                    />
+                ))}
+            </div>
             <button className="mt-12 mb-32 bg-white text-black w-1/3 h-14 rounded-lg font-bold">
                 See More
             </button>
@@ -229,6 +229,16 @@ const CardsContainer = () => {
 };
 
 const HomePage = () => {
+    const [courses, setCourses] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const data = await fetchCourses();
+            setCourses(data);
+        };
+        fetchData();
+    }, []);
+
     return (
         <div className="flex flex-col justify-between items-center">
             <div className="w-full min-h-svh items-center flex flex-col bg-[#4F1ABE] relative top-10 mb-10">
@@ -240,7 +250,7 @@ const HomePage = () => {
                 </div>
                 <div className="flex flex-row justify-center w-5/6 h-auto">
                     <SideBar />
-                    <CardsContainer />
+                    <CardsContainer courses={courses} />
                 </div>
             </div>
             <Footer />
