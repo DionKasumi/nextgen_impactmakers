@@ -204,6 +204,10 @@ const generateCards = (amount) => {
                     return (
                         <Card
                             card_title={'Card ' + index}
+                            card_price={'€99.99'}
+                            card_description={
+                                'Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt hic.'
+                            }
                             card_duration={'01 Jan 2021 - 01 Jan 2025'}
                             key={index}
                         />
