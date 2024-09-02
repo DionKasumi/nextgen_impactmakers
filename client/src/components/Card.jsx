@@ -12,7 +12,7 @@ const Card = ({
 }) => {
     const [heart, setHeart] = useState(false);
     return (
-        <div className="w-80 xl:w-96 h-80 xl:h-96 bg-white rounded-[18px] p-3 hover:scale-[102%] transition-all box-border">
+        <div className="w-80 xl:w-96 h-80 xl:h-96 bg-white rounded-[24px] p-4 hover:scale-[102%] transition-all box-border">
             <div className="w-full h-4/6 bg-gray-400 flex flex-col justify-center items-center rounded-md relative">
                 {/* Upper div - Image */}
                 {card_img != null ? (
