@@ -19,36 +19,40 @@ def save_to_database(courses_list):
 
         for course in courses_list:
             try:
-               
-                check_query = "SELECT COUNT(*) FROM outkos WHERE trajnimi = %s AND traineri = %s"
-                cursor.execute(check_query, (course['Title'], course['Trainer']))
+                # Check if the course already exists in the `all_courses` table
+                check_query = "SELECT COUNT(*) FROM all_courses WHERE title = %s AND source = %s"
+                cursor.execute(check_query, (course['Title'], 'Outkos Academy'))
                 exists = cursor.fetchone()[0] > 0
 
                 if not exists:
-                   
+                    # Insert new course into `all_courses` table
                     insert_query = """
-                    INSERT INTO outkos(trajnimi, traineri, pershkrimi, cmimi, kohezgjatja)
-                    VALUES (%s, %s, %s, %s, %s)
+                    INSERT INTO all_courses (source, title, trainer, description, price, students, rating, image_url, duration)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                     """
                     data = (
+                        'Outkos Academy',
                         course['Title'],
                         course['Trainer'],
                         course['Description'],
-                        course.get('Price', None),  
+                        course.get('Price', None),  # Handle possible None values
+                        None,   # No students info provided
+                        None,   # No rating info provided
+                        None,   # No image_url info provided
                         course['Duration']
                     )
                     cursor.execute(insert_query, data)
                     db.commit()
 
                     # Confirm insertion
-                    cursor.execute(check_query, (course['Title'], course['Trainer']))
+                    cursor.execute(check_query, (course['Title'], 'Outkos Academy'))
                     inserted = cursor.fetchone()[0] > 0
                     if inserted:
-                        print(f"Trajnimi u shtua me sukses: {course['Title']}")
+                        print(f"Course successfully inserted: {course['Title']}")
                     else:
-                        print(f"Deshtoi innsertimi i trajnimit: {course['Title']}")
+                        print(f"Failed to insert course: {course['Title']}")
                 else:
-                    print(f"trajnimi vetem ekziston: {course['Title']}")
+                    print(f"Course already exists: {course['Title']}")
 
             except MySQLdb.Error as e:
                 db.rollback()
@@ -67,11 +71,10 @@ def scrape_courses():
     with sync_playwright() as p:
         page_url = 'https://outkos.academy/AllCourses/page/1'
 
-        browser = p.chromium.launch(headless=True)
+        browser = p.chromium.launch(headless=False)
         page = browser.new_page()
         page.goto(page_url, timeout=60000)
 
-        
         courses = page.locator('.card').all()
         print(f'There are {len(courses)} courses.')
 
@@ -80,7 +83,6 @@ def scrape_courses():
             try:
                 print(f"Processing course {i + 1}...")
 
-                
                 title = course.locator('.inline').inner_text(timeout=5000)  
                 trainer = course.locator('.inline2.inline3 span').inner_text(timeout=5000)
                 description = course.locator('.p').inner_text(timeout=5000)  
@@ -88,7 +90,6 @@ def scrape_courses():
                 duration_elements = course.locator('.small-item.small-item1').all()
                 duration = duration_elements[0].inner_text(timeout=5000).strip() if duration_elements else "Not Available"
 
-               
                 courses_list.append({
                     'Title': title,
                     'Trainer': trainer,
@@ -97,7 +98,6 @@ def scrape_courses():
                     'Duration': duration
                 })
 
-               
                 print(f"Course details: Title - {title}, Trainer - {trainer}, Description - {description}, Price - {price}, Duration - {duration}")
 
             except Exception as e:
@@ -120,5 +120,7 @@ def main():
             print("Retrying after 2 minutes...")
             time.sleep(2 * 60)
 
+
 if __name__ == '__main__':
     main()
+
