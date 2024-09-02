@@ -79,7 +79,7 @@ const Card = ({
                 </div>
                 <div className="flex w-full h-1/4 justify-between items-center flex-row">
                     <button className="bg-[#50BACF] text-xs text-black w-2/6 h-full font-medium border-black border-[1px] rounded-[5px] hover:scale-105 transition-all">
-                        Expore More
+                        Explore More
                     </button>
                     <p className="text-xs italic text-gray-600">
                         {card_duration ? card_duration : 'Card Duration'}
