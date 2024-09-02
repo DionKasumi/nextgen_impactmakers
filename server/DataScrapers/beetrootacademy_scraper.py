@@ -19,21 +19,26 @@ def save_trainings_to_database(trainings_list):
 
         for training in trainings_list:
             try:
-                # Check if the training already exists in the database based on title and level
-                check_query = "SELECT COUNT(*) FROM beetroot_academy WHERE title = %s AND level = %s"
-                cursor.execute(check_query, (training['Title'], training['Level']))
+                # Check if the training already exists in the database based on title and source
+                check_query = "SELECT COUNT(*) FROM all_courses WHERE title = %s AND source = %s"
+                cursor.execute(check_query, (training['Title'], 'Beetroot Academy'))
                 exists = cursor.fetchone()[0] > 0
 
                 if not exists:
                     # Insert the training into the database
                     insert_query = """
-                    INSERT INTO beetroot_academy (title, level, description, duration)
-                    VALUES (%s, %s, %s, %s)
-                    """
+                      INSERT INTO all_courses (source, title, trainer, description, price, students, rating, image_url, duration)
+                      VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                      """
                     data = (
+                         'Beetroot Academy',
                         training['Title'],
-                        training['Level'],
+                        None, # No trainer info provided
                         training['Description'],
+                        None, # No price info provided
+                        None, # No students info provided
+                        training['Rating'], # Corrected from 'Raitong'
+                        None, # No image_url info provided
                         training['Duration']
                     )
                     cursor.execute(insert_query, data)
@@ -64,20 +69,21 @@ def scrape_trainings():
         page.goto(page_url, timeout=60000)
         
         # Locate the training cards on the page
-        trainings = page.locator('//div[@class="col-lg-4 col-md-6 col-sm-6 intro_boxWrap"]').all()
-        print(f'There are {len(trainings)} trainings.')
+        trainings = page.locator('//div[@class="col-lg-4 col-md-6 col-sm-6 intro_boxWrap"]')
+        print(f'There are {trainings.count()} trainings.')
 
         trainings_list = []
-        for training in trainings:
+        for i in range(trainings.count()):
             try:
-                training_name = training.locator('.blueTextWeight').inner_text(timeout=5000)
-                training_level = training.locator('.design_skill').inner_text(timeout=5000)
-                training_description = training.locator('.blackTextSmall').inner_text(timeout=5000)
-                training_duration = training.locator('.intro_monthIcon').inner_text(timeout=5000)
+                training = trainings.nth(i)
+                training_name = training.locator('.blueTextWeight').inner_text(timeout=10000)
+                training_rating = training.locator('.design_skill').inner_text(timeout=10000)
+                training_description = training.locator('.blackTextSmall').inner_text(timeout=10000)
+                training_duration = training.locator('.intro_monthIcon').inner_text(timeout=10000)
                 
                 trainings_list.append({
                     'Title': training_name,
-                    'Level': training_level,
+                    'Rating': training_rating,
                     'Description': training_description,
                     'Duration': training_duration
                 })
@@ -97,11 +103,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-# CREATE TABLE beetroot_academy (
-#     id INT AUTO_INCREMENT PRIMARY KEY,
-#     title VARCHAR(255),
-#     level VARCHAR(255),
-#     description TEXT,
-#     duration VARCHAR(255)
-# );
