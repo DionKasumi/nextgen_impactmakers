@@ -31,7 +31,7 @@ const Card = ({
                 )}
                 <div className="flex w-full h-auto flex-row justify-between items-center absolute bottom-0 p-5 px-6">
                     <p className="text-md text-white">
-                        {card_price ? (
+                        {card_price != null ? (
                             <>
                                 Price:{' '}
                                 <span className="text-green-700 font-bold text-lg">
