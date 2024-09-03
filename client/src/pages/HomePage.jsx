@@ -97,30 +97,6 @@ const SideBar = () => {
                 filterList: [
                     {
                         isPrice: false,
-                        title: 'Event Type',
-                        items: [
-                            {
-                                display: 'Arts and Culture',
-                                name: 'event_type_radio',
-                                id: 'arts_and_culture',
-                                value: 'Arts and Culture',
-                            },
-                            {
-                                display: 'Business',
-                                name: 'event_type_radio',
-                                id: 'business',
-                                value: 'Business',
-                            },
-                            {
-                                display: 'Education',
-                                name: 'event_type_radio',
-                                id: 'education',
-                                value: 'Education',
-                            },
-                        ],
-                    },
-                    {
-                        isPrice: false,
                         title: 'Location',
                         items: [
                             {
@@ -144,29 +120,62 @@ const SideBar = () => {
                         ],
                     },
                     {
-                        isPrice: true,
+                        isPrice: false,
+                        title: 'Fields',
+                        items: [
+                            {
+                                display: 'Python',
+                                name: 'fields_radio',
+                                id: 'python',
+                                value: 'Python',
+                            },
+                            {
+                                display: 'Social Media',
+                                name: 'fields_radio',
+                                id: 'social_media',
+                                value: 'Social Media',
+                            },
+                            {
+                                display: 'Digital Marketing',
+                                name: 'fields_radio',
+                                id: 'digital_marketing',
+                                value: 'Digital Marketing',
+                            },
+                            {
+                                display: 'UI/UX',
+                                name: 'fields_radio',
+                                id: 'ui_ux',
+                                value: 'UI/UX',
+                            },
+                            {
+                                display: 'Cyber Security',
+                                name: 'fields_radio',
+                                id: 'cyber_security',
+                                value: 'Cyber Security',
+                            },
+                        ],
                     },
                     {
                         isPrice: false,
-                        title: 'Special Features',
+                        title: 'Availability',
                         items: [
                             {
-                                display: 'Virtual Events',
-                                name: 'special_features_radio',
-                                id: 'virtual_events',
-                                value: 'Virtual Events',
+                                display: 'Event Classes',
+                                name: 'availability_radio',
+                                id: 'event_classes',
+                                value: 'Event Classes',
                             },
                             {
-                                display: 'Outdoor Events',
-                                name: 'special_features_radio',
-                                id: 'outdoor_events',
-                                value: 'Outdoor Events',
+                                display: 'Weekend Classes',
+                                name: 'availability_radio',
+                                id: 'weekend_classes',
+                                value: 'Weekend Classes',
                             },
                             {
-                                display: 'Indoor Events',
-                                name: 'special_features_radio',
-                                id: 'indoor_events',
-                                value: 'Indoor Events',
+                                display: 'Flexibile',
+                                name: 'availability_radio',
+                                id: 'flexibile',
+                                value: 'Flexibile',
                             },
                         ],
                     },
@@ -175,28 +184,28 @@ const SideBar = () => {
                         title: 'Duration',
                         items: [
                             {
-                                display: 'Short (1-2 hours)',
+                                display: 'Workshops',
                                 name: 'duration_radio',
-                                id: 'short',
-                                value: 'Short',
+                                id: 'workshops',
+                                value: 'Workshops',
                             },
                             {
-                                display: 'Half Day',
+                                display: '3 Months',
                                 name: 'duration_radio',
-                                id: 'half_day',
-                                value: 'Half Day',
+                                id: 'three_months',
+                                value: '3 Months',
                             },
                             {
-                                display: 'Full Day',
+                                display: '6 Months',
                                 name: 'duration_radio',
-                                id: 'full_day',
-                                value: 'Full Day',
+                                id: 'six_months',
+                                value: '6 Months',
                             },
                             {
-                                display: 'Multi Days',
+                                display: '1 Year',
                                 name: 'duration_radio',
-                                id: 'multi_days',
-                                value: 'Multi Days',
+                                id: 'one_year',
+                                value: '1 Year',
                             },
                         ],
                     },
@@ -216,8 +225,11 @@ const CardsContainer = ({ courses }) => {
                     <Card
                         key={index}
                         card_title={course.title}
-                        card_img={course.image_url || '../assets/no_image.svg'}
+                        card_img={course.image_url}
                         card_duration={course.duration}
+                        card_description={course.description}
+                        card_price={course.price}
+                        card_source={course.source}
                     />
                 ))}
             </div>
@@ -243,9 +255,9 @@ const HomePage = () => {
         <div className="flex flex-col justify-between items-center">
             <div className="w-full min-h-svh items-center flex flex-col bg-[#4F1ABE] relative top-10 mb-10">
                 <div className="flex justify-center items-center flex-col mt-24 text-white mb-24 w-5/6 h-auto">
-                    <h1 className="text-5xl font-bold mb-6">Events</h1>
+                    <h1 className="text-5xl font-bold mb-6">Trainings</h1>
                     <p className="text-2xl font-light">
-                        Filter your preferences
+                        Pick up your preferences
                     </p>
                 </div>
                 <div className="flex flex-row justify-center w-5/6 h-auto">
