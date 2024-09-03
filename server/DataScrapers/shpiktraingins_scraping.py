@@ -28,7 +28,7 @@ def save_course_to_db(course):
             """
 
             cursor.execute(insert_query, (
-                course['Source'],
+                'ShpikTraingins',
                 course['Title'],
                 course['Trainer'],
                 course['Description'],
