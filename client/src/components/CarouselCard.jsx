@@ -2,8 +2,9 @@
 import { useState } from 'react';
 import { GoHeart, GoHeartFill } from 'react-icons/go';
 import { useNavigate } from 'react-router-dom';
+import { useSwiperSlide } from 'swiper/react';
 
-const Card = ({
+const CarouselCard = ({
     id,
     card_title,
     card_source,
@@ -12,6 +13,8 @@ const Card = ({
     card_price,
     card_img,
 }) => {
+    const swiperSlide = useSwiperSlide();
+
     const [heart, setHeart] = useState(false);
 
     const navigate = useNavigate();
@@ -27,7 +30,11 @@ const Card = ({
 
     return (
         <div
-            className="w-80 xl:w-96 h-80 xl:h-96 bg-white rounded-[24px] p-4 hover:scale-[102%] transition-all box-border select-none"
+            className={`w-80 xl:w-96 h-80 xl:h-96 bg-white rounded-[24px] p-4 ${
+                !swiperSlide.isActive
+                    ? 'scale-75 hover:scale-[0.77]'
+                    : 'scale-100 hover:scale-[102%]'
+            } transition-all box-border select-none`}
             onClick={handleClick}
         >
             <div className="w-full h-4/6 bg-gray-400 flex flex-col justify-center items-center rounded-[8px] relative">
@@ -48,7 +55,7 @@ const Card = ({
                 )}
                 <div className="flex w-full h-auto flex-row justify-between items-center absolute bottom-0 p-5 px-6">
                     <p className="text-md text-white">
-                        {card_price != null ? (
+                        {card_price ? (
                             <>
                                 Price:{' '}
                                 <span className="text-green-700 font-bold text-lg">
@@ -105,4 +112,4 @@ const Card = ({
     );
 };
 
-export default Card;
+export default CarouselCard;
