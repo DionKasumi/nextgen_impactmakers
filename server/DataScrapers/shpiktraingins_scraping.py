@@ -61,7 +61,7 @@ def fetch_and_update_courses():
 
         while not all_courses_loaded:
             page.evaluate('window.scrollBy(0, document.body.scrollHeight)')
-            page.wait_for_timeout(2000) 
+            page.wait_for_timeout(2000)  # Wait for the page to load new content
 
             courses = page.locator('//div[contains(@class, "item")]')
             current_courses = [course.locator('a.training-post').get_attribute('href') for course in courses.all()]
@@ -82,6 +82,7 @@ def fetch_and_update_courses():
             try:
                 page.goto(course_href, timeout=60000)
                 page.wait_for_load_state('networkidle')  # Ensure the page has fully loaded
+                page.wait_for_timeout(2000)  # Give extra time for dynamic content to load
 
                 # Extracting data
                 title = page.locator('.course-content-box h2').inner_text(timeout=10000) if page.locator('.course-content-box h2').count() > 0 else 'N/A'
@@ -90,7 +91,10 @@ def fetch_and_update_courses():
                 price = page.locator('p:has-text("Çmimi:")').inner_text(timeout=10000).replace('Çmimi:', '').strip() if page.locator('p:has-text("Çmimi:")').count() > 0 else 'N/A'
                 students = int(page.locator('p:has-text("Numri i studentëve:")').inner_text(timeout=10000).replace('Numri i studentëve:', '').strip()) if page.locator('p:has-text("Numri i studentëve:")').count() > 0 else 0
                 rating = page.locator('p:has-text("Vlerësimi:")').inner_text(timeout=10000).replace('Vlerësimi:', '').strip() if page.locator('p:has-text("Vlerësimi:")').count() > 0 else 'N/A'
-                image_url = page.locator('.course-content-box img').get_attribute('src') if page.locator('.course-content-box img').count() > 0 else 'N/A'
+                
+                # Scraping the first image found
+                image_url = page.locator('.featured-image img').first.get_attribute('src') if page.locator('.featured-image img').count() > 0 else 'N/A'
+
                 duration = page.locator('p:has-text("Kohëzgjatja:")').inner_text(timeout=10000).replace('Kohëzgjatja:', '').strip() if page.locator('p:has-text("Kohëzgjatja:")').count() > 0 else 'N/A'
 
                 # Prepare course data
@@ -110,7 +114,7 @@ def fetch_and_update_courses():
                 save_course_to_db(course_data)
 
             except Exception as e:
-                print(f"An error occurred while processing a course: {str(e).encode('utf-8', 'replace').decode('utf-8')}")
+                print(f"An error occurred while processing a course: {str(e).encode('utf-8', 'ignore').decode('utf-8')}")
 
         browser.close()
 
