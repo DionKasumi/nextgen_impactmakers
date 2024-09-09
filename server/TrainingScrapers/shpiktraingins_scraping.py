@@ -5,7 +5,7 @@ import time
 # Database connection parameters
 db_params = {
     'user': 'root',
-    'passwd': '1234',
+    'passwd': 'Festafesta18oo^',
     'host': 'localhost',
     'port': 3306,
     'db': 'course_data'
