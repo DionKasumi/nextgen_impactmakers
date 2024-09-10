@@ -1,9 +1,9 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable react-refresh/only-export-components */
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import SectionWrapper from '../hoc/SectionWrapper';
 import { IoMdArrowDropdown } from 'react-icons/io';
 import Card from '../components/Card';
-import Footer from '../components/Footer';
 import axios from 'axios';
 
 // Function to fetch course data from the API
@@ -21,7 +21,7 @@ const fetchCourses = async () => {
 const generateFilter = ({ filterList = [], selectedValues, handleChange }) => {
     return filterList.map((type, index) =>
         !type.isPrice ? (
-            <div key={index} className="first:mb-8 last:mt-8">
+            <div key={index} className="first:mb-8 mb-8 last:mt-8">
                 <h1 className="ml-8 text-xl text-white font-bold">
                     {type.title}
                 </h1>
@@ -224,6 +224,7 @@ const CardsContainer = ({ courses }) => {
                 {courses.map((course, index) => (
                     <Card
                         key={index}
+                        id={course.id}
                         card_title={course.title}
                         card_img={course.image_url}
                         card_duration={course.duration}
@@ -252,8 +253,8 @@ const HomePage = () => {
     }, []);
 
     return (
-        <div className="flex flex-col justify-between items-center">
-            <div className="w-full min-h-svh items-center flex flex-col bg-[#4F1ABE] relative top-10 mb-10">
+        <div className="w-full h-full flex flex-col justify-between items-center">
+            <div className="w-full min-h-svh items-center flex flex-col bg-[#4F1ABE] relative top-16 mb-10">
                 <div className="flex justify-center items-center flex-col mt-24 text-white mb-24 w-5/6 h-auto">
                     <h1 className="text-5xl font-bold mb-6">Trainings</h1>
                     <p className="text-2xl font-light">
@@ -265,7 +266,6 @@ const HomePage = () => {
                     <CardsContainer courses={courses} />
                 </div>
             </div>
-            <Footer />
         </div>
     );
 };
