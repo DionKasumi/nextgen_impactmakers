@@ -2,17 +2,19 @@ import './index.css';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import Root from './routes/root.jsx';
+import PrimaryLayout from './routes/PrimaryLayout.jsx';
+import SecondaryLayout from './routes/SecondaryLayout.jsx';
 import HomePage from './pages/HomePage.jsx';
 import ErrorPage from './pages/ErrorPage.jsx';
 import LoginPage from './pages/auth/LoginPage.jsx';
 import SignupPage from './pages/auth/SignupPage.jsx';
 import ContactPage from './pages/ContactPage.jsx';
+import EventDetailsPage from './pages/EventDetailsPage.jsx';
 
 const router = createBrowserRouter([
     {
         path: '/',
-        element: <Root />,
+        element: <PrimaryLayout />,
         errorElement: <ErrorPage />,
         children: [
             {
@@ -22,6 +24,17 @@ const router = createBrowserRouter([
             {
                 path: '/contact',
                 element: <ContactPage />,
+            },
+        ],
+    },
+    {
+        path: '/',
+        element: <SecondaryLayout />,
+        errorElement: <ErrorPage />,
+        children: [
+            {
+                path: '/courses/:id',
+                element: <EventDetailsPage />,
             },
         ],
     },

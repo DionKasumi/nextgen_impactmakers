@@ -1,0 +1,64 @@
+/* Ensure the Swiper container takes full width */
+.custom-swiper {
+    /* width: 80%; Full width */
+    padding: 50px 0px; /* Adjust as needed */
+}
+
+/* Style for SwiperSlide */
+.custom-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.3s;
+    position: relative;
+    /* Ensure proper z-index stacking */
+    z-index: 1;
+}
+
+/* Adjust translateX for inactive slides */
+.swiper-slide:not(.swiper-slide-active) {
+    transform: translateX(0%);
+    opacity: 0.9; /* Reduce opacity of inactive slides */
+}
+
+/* Active slide styling */
+.swiper-slide-active {
+    opacity: 1; /* Full opacity for active slide */
+    z-index: 10; /* Ensure active slide is on top */
+}
+
+/* Navigation buttons styling */
+.swiper-button-next,
+.swiper-button-prev {
+    color: white;
+    width: 50px;
+    height: 50px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 20;
+}
+
+/* Position navigation buttons */
+.swiper-button-next {
+    right: 0px;
+}
+
+.swiper-button-prev {
+    left: 0px;
+}
+
+/* Hide navigation arrows on small screens */
+@media (max-width: 768px) {
+    .swiper-button-prev,
+    .swiper-button-next {
+        display: none; /* Hide the navigation buttons */
+    }
+}
+
+/* Show navigation arrows on larger screens */
+@media (min-width: 769px) {
+    .swiper-button-prev,
+    .swiper-button-next {
+        display: block; /* Show the navigation buttons */
+    }
+}
