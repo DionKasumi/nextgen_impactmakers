@@ -61,22 +61,22 @@ const MainForm = () => {
                     <img
                         src="../assets/instagram_logo.svg"
                         alt="instagram"
-                        className="w-8 md:w-9 hover:scale-105 transition-all"
+                        className="w-6 md:w-8 hover:scale-105 transition-all"
                     />
                     <img
                         src="../assets/facebook_logo.svg"
                         alt="facebook"
-                        className="w-8 md:w-9 hover:scale-105 transition-all"
+                        className="w-6 md:w-8 hover:scale-105 transition-all"
                     />
                     <img
                         src="../assets/google_logo.svg"
                         alt="google"
-                        className="w-8 md:w-9 hover:scale-105 transition-all"
+                        className="w-6 md:w-8 hover:scale-105 transition-all"
                     />
                     <img
                         src="../assets/linkedin_logo.svg"
                         alt="linkedin"
-                        className="w-8 md:w-9 hover:scale-105 transition-all"
+                        className="w-6 md:w-8 hover:scale-105 transition-all"
                     />
                 </div>
             </div>

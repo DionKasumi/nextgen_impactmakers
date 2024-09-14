@@ -12,7 +12,7 @@ const LoginPage = () => {
 
     return (
         <div className="w-screen h-screen flex flex-col justify-center items-center bg-[#4F1ABE]">
-            <form className="w-11/12 sm:w-4/5 md:w-3/5  lg:w-2/5 xl:w-1/3 2xl:w-1/4 h-auto flex flex-col bg-white rounded-lg p-6 justify-center items-center">
+            <form className="w-11/12 sm:w-4/5 md:w-3/5  lg:w-2/5 xl:w-1/3 2xl:w-1/4 h-auto max-w-md flex flex-col bg-white rounded-lg p-6 justify-center items-center">
                 <div className="w-11/12 sm:w-4/5 md:w-5/6 xl:w-5/6 h-full">
                     <h2 className="text-xl text-black font-bold mt-12 mb-4">
                         Log In
@@ -47,7 +47,7 @@ const LoginPage = () => {
                                 id="remember_me"
                                 value={rememberMe}
                                 onChange={() => setRememberMe(!rememberMe)}
-                                className="mr-2 w-4 h-4"
+                                className="mr-2 w-4 "
                             />
                             <h1 className="font-medium">Remember Me</h1>
                         </div>
@@ -56,7 +56,7 @@ const LoginPage = () => {
                     </div>
                     <button
                         type="button"
-                        className="py-2 px-6 bg-[#4F1ABE] text-white rounded-md flex justify-center items-center mb-6"
+                        className="py-2 px-10 md:px-16 lg:px-24 bg-[#4F1ABE] text-white flex justify-center items-center rounded-md m-auto mb-4 text-sm md:text-base"
                         onClick={handleFormSubmit}
                     >
                         Log In
@@ -67,22 +67,22 @@ const LoginPage = () => {
                             <img
                                 src="../assets/instagram_logo.svg"
                                 alt="instagram"
-                                className="w-8 h-8 hover:scale-105 transition-transform"
+                                className="w-6 h-8 hover:scale-105 transition-transform"
                             />
                             <img
                                 src="../assets/facebook_logo.svg"
                                 alt="facebook"
-                                className="w-8 h-8 hover:scale-105 transition-transform"
+                                className="w-6 h-8 hover:scale-105 transition-transform"
                             />
                             <img
                                 src="../assets/google_logo.svg"
                                 alt="google"
-                                className="w-8 h-8 hover:scale-105 transition-transform"
+                                className="w-6 h-8 hover:scale-105 transition-transform"
                             />
                             <img
                                 src="../assets/linkedin_logo.svg"
                                 alt="linkedin"
-                                className="w-8 h-8 hover:scale-105 transition-transform"
+                                className="w-6 h-8 hover:scale-105 transition-transform"
                             />
                         </div>
                     </div>
