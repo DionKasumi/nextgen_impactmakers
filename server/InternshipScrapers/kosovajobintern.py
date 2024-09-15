@@ -6,7 +6,7 @@ import time
 # Database connection parameters loaded from environment variables for security
 db_params = {
     'user': os.getenv('DB_USER', 'root'),
-    'passwd': os.getenv('DB_PASSWORD', 'Mathem12$'),
+    'passwd': os.getenv('DB_PASSWORD', '1234'),
     'host': os.getenv('DB_HOST', 'localhost'),
     'port': int(os.getenv('DB_PORT', 3306)),
     'db': os.getenv('DB_NAME', 'course_data')
