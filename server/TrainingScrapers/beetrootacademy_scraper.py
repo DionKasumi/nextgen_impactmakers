@@ -38,7 +38,7 @@ def save_trainings_to_database(trainings_list):
                         None, # No price info provided
                         None, # No students info provided
                         training['Rating'], 
-                        None, # No image_url info provided
+                        'https://xk.beetroot.academy/static/logo-c96c7c4d19444146e8b100d14e93d1ac.svg',  # Image URL
                         training['Duration']
                     )
                     cursor.execute(insert_query, data)
