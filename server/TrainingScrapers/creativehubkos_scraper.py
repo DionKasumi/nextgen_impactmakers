@@ -8,10 +8,12 @@ db_params = {
     'passwd': '1234',
     'host': 'localhost',
     'port': 3306,
-    'db': 'course_data'  
+    'db': 'course_data'
 }
 
 def fetch_and_update_job_listings(trainings_list):
+    db = None
+    cursor = None
     try:
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor()
@@ -20,24 +22,26 @@ def fetch_and_update_job_listings(trainings_list):
             try:
                 # Check if the course already exists in the all_courses table
                 check_query = "SELECT COUNT(*) FROM all_courses WHERE title = %s AND source = %s"
-                cursor.execute(check_query, (training['Title'], training['Source']))
+                cursor.execute(check_query, (training['Title'], 'Creative Hub Kosovo'))
                 exists = cursor.fetchone()[0] > 0
 
                 if not exists:
                     # Insert the new training into the all_courses table
                     insert_query = """
-                    INSERT INTO all_courses (source, title, trainer, description, price, duration)
-                    VALUES (%s, %s, %s, %s, %s, %s)
+                    INSERT INTO all_courses (source, title, trainer, description, price, students, rating, image_url, duration)
+                      VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                     """
                     data = (
-                        training['Source'],  # Now using the Source key
+                        'Creative Hub Kosovo',
                         training['Title'],
                         training['Trainer'],
                         training['Description'],
                         training['Price (EUR)'],
+                        None,  # No students info provided
+                        None,  # No rating info provided
+                        'https://creativehubkos.com/images/logo.svg',  # Image URL
                         None  # Duration is not available in the current data structure
                     )
-                
                     cursor.execute(insert_query, data)
                     db.commit()
                     print(f"Inserted new training: {training['Title']}")
@@ -46,17 +50,15 @@ def fetch_and_update_job_listings(trainings_list):
 
             except MySQLdb.Error as e:
                 db.rollback()
-                print(f"Error inserting data: {e}")
+                print(f"Error inserting data for {training['Title']}: {e}")
 
     except MySQLdb.Error as e:
         print(f"MySQL error: {e}")
     finally:
-        try:
+        if cursor:
             cursor.close()
+        if db:
             db.close()
-        except MySQLdb.Error as e:
-            print(f"Error closing connection: {e}")
-
 
 def scrape_trainings():
     with sync_playwright() as p:
@@ -67,6 +69,24 @@ def scrape_trainings():
         
         # Wait for the necessary elements to load
         page.wait_for_load_state('networkidle', timeout=10000)
+        
+        # Scroll to the bottom of the page to load more content
+        def auto_scroll(page):
+            last_height = page.evaluate("document.body.scrollHeight")
+            while True:
+                # Scroll down to the bottom
+                page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+                time.sleep(2)  # Wait for new content to load
+                
+                # Calculate new scroll height and compare with last height
+                new_height = page.evaluate("document.body.scrollHeight")
+                if new_height == last_height:
+                    break
+                last_height = new_height
+
+        auto_scroll(page)
+
+        # Wait for the trainings to be visible
         page.wait_for_selector('//div[contains(@class, "col-md-3")]', timeout=10000)
 
         trainings = page.locator('//div[contains(@class, "col-md-3")]').all()
@@ -108,7 +128,6 @@ def main():
         fetch_and_update_job_listings(trainings_list)
         print("Sleeping for 30 minutes...")
         time.sleep(30 * 60)
-
 
 if __name__ == '__main__':
     main()
