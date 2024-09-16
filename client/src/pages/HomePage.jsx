@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable react-refresh/only-export-components */
 import { useState, useEffect } from 'react';
 import SectionWrapper from '../hoc/SectionWrapper';
 import { IoMdArrowDropdown } from 'react-icons/io';
@@ -217,33 +215,47 @@ const SideBar = () => {
     );
 };
 
-const CardsContainer = ({ courses }) => {
+const CardsContainer = ({ courses, loadMoreCourses }) => {
     return (
         <div className="w-2/3 h-min flex justify-center items-center flex-col">
             <div className="w-full h-full grid grid-cols-2 gap-8 justify-items-center">
-                {courses.map((course, index) => (
-                    <Card
-                        key={index}
-                        id={course.id}
-                        card_title={course.title}
-                        card_img={course.image_url}
-                        card_duration={course.duration}
-                        card_description={course.description}
-                        card_price={course.price}
-                        card_source={course.source}
-                    />
-                ))}
+                {courses.length > 0 ? (
+                    courses.map((course, index) => (
+                        <Card
+                            key={index}
+                            id={course.id}
+                            card_title={course.title}
+                            card_img={course.image_url}
+                            card_duration={course.duration}
+                            card_description={course.description}
+                            card_price={course.price}
+                            card_source={course.source}
+                        />
+                    ))
+                ) : (
+                    <p className="text-center text-gray-500">
+                        No courses available
+                    </p>
+                )}
             </div>
-            <button className="mt-12 mb-32 bg-white text-black w-1/3 h-14 rounded-lg font-bold">
-                See More
-            </button>
+            {/* Only show the "See More" button if there are courses */}
+            {courses.length > 0 && (
+                <button
+                    onClick={loadMoreCourses}
+                    className="mt-12 mb-32 bg-white text-black w-1/3 h-14 rounded-lg font-bold"
+                >
+                    See More
+                </button>
+            )}
         </div>
     );
 };
 
 const HomePage = () => {
     const [courses, setCourses] = useState([]);
+    const [visibleCourses, setVisibleCourses] = useState(6);
 
+    // Fetch courses when the component mounts
     useEffect(() => {
         const fetchData = async () => {
             const data = await fetchCourses();
@@ -251,6 +263,11 @@ const HomePage = () => {
         };
         fetchData();
     }, []);
+
+    // Function to load more courses
+    const loadMoreCourses = () => {
+        setVisibleCourses((prevVisibleCourses) => prevVisibleCourses + 6); // Load 6 more courses
+    };
 
     return (
         <div className="w-full h-full flex flex-col justify-between items-center">
@@ -263,7 +280,10 @@ const HomePage = () => {
                 </div>
                 <div className="flex flex-row justify-center w-5/6 h-auto">
                     <SideBar />
-                    <CardsContainer courses={courses} />
+                    <CardsContainer
+                        courses={courses.slice(0, visibleCourses)} // Only show visible courses
+                        loadMoreCourses={loadMoreCourses} // Pass function to load more courses
+                    />
                 </div>
             </div>
         </div>
