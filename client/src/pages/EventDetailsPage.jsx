@@ -64,7 +64,7 @@ const EventDetailsPage = () => {
                 <div className="w-full min-h-svh items-center flex flex-col bg-white relative top-16 mb-10">
                     <div className="w-full h-full py-12 flex justify-center items-center flex-col">
                         {/* Main Content Div */}
-                        <div className="w-5/6 min-h-96 bg-gray-400 flex justify-center items-center rounded-md relative mb-16">
+                        <div className="w-5/6 bg-gray-400 flex justify-center items-center rounded-md relative mb-16">
                             {course.image_url == null ? (
                                 <img
                                     src="../assets/no_image.svg"
@@ -72,25 +72,20 @@ const EventDetailsPage = () => {
                                     className="select-none"
                                 />
                             ) : (
-                                <div
-                                    className="w-full h-full bg-center bg-cover rounded-md select-none"
-                                    style={{
-                                        backgroundImage: `url(${course.image_url})`,
-                                    }}
-                                ></div>
+                                <img
+                                    src={course.image_url}
+                                    alt="Course Image"
+                                    className="w-full h-full object-cover rounded-md select-none"
+                                />
                             )}
                         </div>
+
                         <div className="flex flex-col justify-center items-center w-5/6 h-auto mb-12">
                             <h1 className="font-bold text-2xl mb-4">
                                 About The Training
                             </h1>
                             <p className="text-center w-full md:w-1/2">
-                                Lorem ipsum dolor sit amet consectetur,
-                                adipisicing elit. Enim, veritatis cumque. Vero
-                                distinctio asperiores, possimus porro quisquam
-                                reiciendis voluptate ea natus fugiat aliquid
-                                consequatur obcaecati, pariatur numquam eius
-                                tenetur ipsa?
+                                {course.description}
                             </p>
                         </div>
                         <div className="flex flex-col justify-center items-center w-5/6 h-auto mb-12">
@@ -123,7 +118,7 @@ const EventDetailsPage = () => {
                         {/* Secondary Content Div */}
                         <div className="w-5/6 text-white flex flex-col items-center mb-6">
                             <h1 className="text-3xl font-bold">Skill Level</h1>
-                            <p>Example Text</p>
+                            <p>{course.rating}</p>
                         </div>
                         <div className="w-5/6 text-white flex flex-col items-center mb-6">
                             <h1 className="text-3xl font-bold">Age Group</h1>
