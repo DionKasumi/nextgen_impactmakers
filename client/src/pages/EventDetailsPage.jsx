@@ -64,12 +64,12 @@ const EventDetailsPage = () => {
                 <div className="w-full min-h-svh items-center flex flex-col bg-white relative top-16 mb-10">
                     <div className="w-full h-full py-12 flex justify-center items-center flex-col">
                         {/* Main Content Div */}
-                        <div className="w-5/6 bg-gray-400 flex justify-center items-center rounded-md relative mb-16">
+                        <div className="w-5/6 aspect-[16/5] bg-gray-400 flex justify-center items-center rounded-md relative mb-16">
                             {course.image_url == null ? (
                                 <img
                                     src="../assets/no_image.svg"
                                     alt="No Image Available"
-                                    className="select-none"
+                                    className="select-none w-1/4 h-1/4 lg:w-1/5 lg:h-1/5"
                                 />
                             ) : (
                                 <img

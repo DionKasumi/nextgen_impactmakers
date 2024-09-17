@@ -89,7 +89,7 @@ const SideBar = () => {
     };
 
     return (
-        <div className="w-1/3 min-h-96 p-4">
+        <div className="w-1/4 min-h-96 p-4 hidden lg:flex flex-col">
             {generateFilter({
                 filterList: [
                     {
@@ -216,8 +216,8 @@ const SideBar = () => {
 
 const CardsContainer = ({ courses, loadMoreCourses, allCoursesLoaded }) => {
     return (
-        <div className="w-2/3 h-min flex justify-center items-center flex-col">
-            <div className="w-full h-full grid grid-cols-2 gap-8 justify-items-center">
+        <div className="w-4/4 lg:w-3/4 h-min flex justify-center items-center flex-col">
+            <div className="w-full h-full grid grid-cols-1 md:grid-cols-2 gap-8 justify-items-center">
                 {courses.length > 0 ? (
                     courses.map((course, index) => (
                         <Card
@@ -241,7 +241,7 @@ const CardsContainer = ({ courses, loadMoreCourses, allCoursesLoaded }) => {
             {!allCoursesLoaded && courses.length > 0 ? (
                 <button
                     onClick={loadMoreCourses}
-                    className="mt-12 mb-16 bg-white text-black w-1/3 h-14 rounded-lg font-bold"
+                    className="my-12 bg-white text-black w-2/3 lg:w-1/3 h-14 rounded-lg font-bold"
                 >
                     See More
                 </button>

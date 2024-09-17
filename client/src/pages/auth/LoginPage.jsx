@@ -12,7 +12,7 @@ const LoginPage = () => {
 
     return (
         <div className="w-screen h-screen flex flex-col justify-center items-center bg-[#4F1ABE]">
-            <form className="w-11/12 sm:w-4/5 md:w-3/5  lg:w-2/5 xl:w-1/3 2xl:w-1/4 h-auto max-w-md flex flex-col bg-white rounded-lg p-6 justify-center items-center">
+            <form className="w-11/12 sm:w-3/5 md:w-3/5 lg:w-2/4 h-auto max-w-md flex flex-col bg-white rounded-lg p-6 justify-center items-center">
                 <div className="w-11/12 sm:w-4/5 md:w-5/6 xl:w-5/6 h-full">
                     <h2 className="text-xl text-black font-bold mt-12 mb-4">
                         Log In
@@ -26,7 +26,7 @@ const LoginPage = () => {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
-                            className="w-full p-4 border-[#6153CC] border-[1px] rounded-md focus:outline-none focus:ring-[#4F1ABE] mb-2"
+                            className="w-full h-auto p-4 border-[#6153CC] border-[1px] focus:outline-none invalid:border-red-500 my-2"
                         />
                         <input
                             type="password"
@@ -56,7 +56,7 @@ const LoginPage = () => {
                     </div>
                     <button
                         type="button"
-                        className="py-2 px-10 md:px-16 lg:px-24 bg-[#4F1ABE] text-white flex justify-center items-center rounded-md m-auto mb-4 text-sm md:text-base"
+                        className="py-2 px-24 md:px-24 lg:px-24 bg-[#4F1ABE] text-white flex justify-center items-center rounded-md m-auto mb-4 text-sm md:text-base"
                         onClick={handleFormSubmit}
                     >
                         Log In
