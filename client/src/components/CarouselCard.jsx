@@ -14,9 +14,7 @@ const CarouselCard = ({
     card_img,
 }) => {
     const swiperSlide = useSwiperSlide();
-
     const [heart, setHeart] = useState(false);
-
     const navigate = useNavigate();
 
     const handleClick = () => {
@@ -39,7 +37,7 @@ const CarouselCard = ({
         >
             <div className="w-full h-4/6 bg-gray-400 flex flex-col justify-center items-center rounded-[8px] relative">
                 {/* Upper div - Image */}
-                {card_img != null ? (
+                {card_img ? (
                     <div
                         className="w-full h-full bg-center bg-cover rounded-md select-none"
                         style={{
@@ -113,3 +111,4 @@ const CarouselCard = ({
 };
 
 export default CarouselCard;
+
