@@ -1,7 +1,9 @@
 const MainForm = () => {
     return (
         <div className="w-11/12 sm:w-4/5 md:w-5/6 xl:w-5/6 h-[95%] flex justify-center items-center flex-col">
-            <h2 className="text-xl md:text-2xl xl:text-3xl text-black font-bold mt-8">Sign Up</h2>
+            <h2 className="text-xl md:text-2xl xl:text-3xl text-black font-bold mt-4">
+                Sign Up
+            </h2>
             <h2 className="text-sm md:text-base xl:text-lg text-black italic font-normal mb-4">
                 Create An Account
             </h2>
@@ -51,32 +53,34 @@ const MainForm = () => {
             </div>
             <button
                 type="button"
-                className="py-2 px-10 md:px-16 lg:px-24 bg-[#4F1ABE] text-white flex justify-center items-center rounded-md m-auto mb-4 text-sm md:text-base"
+                className="py-2 px-16 lg:px-24 bg-[#4F1ABE] text-white flex justify-center items-center rounded-md m-auto my-4 text-sm md:text-base"
             >
                 Continue
             </button>
             <div className="w-full h-max flex flex-col justify-center items-center mb-4">
-                <p className="mb-4 text-sm md:text-base">or create an account with</p>
+                <p className="mb-4 text-sm md:text-base">
+                    or create an account with
+                </p>
                 <div className="flex flex-row space-x-10 justify-center">
                     <img
                         src="../assets/instagram_logo.svg"
                         alt="instagram"
-                        className="w-6 md:w-8 hover:scale-105 transition-all"
+                        className="w-6 h-8 hover:scale-105 transition-transform"
                     />
                     <img
                         src="../assets/facebook_logo.svg"
                         alt="facebook"
-                        className="w-6 md:w-8 hover:scale-105 transition-all"
+                        className="w-6 h-8 hover:scale-105 transition-transform"
                     />
                     <img
                         src="../assets/google_logo.svg"
                         alt="google"
-                        className="w-6 md:w-8 hover:scale-105 transition-all"
+                        className="w-6 h-8 hover:scale-105 transition-transform"
                     />
                     <img
                         src="../assets/linkedin_logo.svg"
                         alt="linkedin"
-                        className="w-6 md:w-8 hover:scale-105 transition-all"
+                        className="w-6 h-8 hover:scale-105 transition-transform"
                     />
                 </div>
             </div>
@@ -86,8 +90,8 @@ const MainForm = () => {
 
 const SignupPage = () => {
     return (
-        <div className="w-screen h-screen flex flex-col justify-center items-center bg-[#4F1ABE]">
-            <form className="w-11/12 sm:w-4/5 md:w-3/5 lg:w-2/5 xl:w-1/3 2xl:w-1/4 h-auto flex bg-white rounded-lg flex-col justify-center items-center p-4 md:p-8">
+        <div className="w-screen min-h-screen h-auto flex flex-col justify-center items-center bg-[#4F1ABE]">
+            <form className="w-11/12 sm:w-4/5 md:w-3/6 xl:w-2/6 h-auto flex bg-white rounded-lg flex-col justify-center items-center px-4 md:px-8">
                 <MainForm />
             </form>
         </div>
@@ -95,4 +99,3 @@ const SignupPage = () => {
 };
 
 export default SignupPage;
-
