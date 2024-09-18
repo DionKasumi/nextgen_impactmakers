@@ -17,6 +17,7 @@ import CarouselCard from './CarouselCard';
 
 const SwiperCarousel = () => {
     const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true); // Loading state
 
     useEffect(() => {
         // Function to fetch data from the Flask API
@@ -34,11 +35,19 @@ const SwiperCarousel = () => {
                 }
             } catch (error) {
                 console.error('Error fetching data:', error);
+            } finally {
+                setLoading(false); // Set loading to false when data is fetched
             }
         };
 
         fetchData();
     }, []);
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center">Loading...</div>
+        ); // You can replace this with a spinner or skeleton screen
+    }
 
     return (
         <Swiper
@@ -50,7 +59,7 @@ const SwiperCarousel = () => {
                 1024: { slidesPerView: 3 },
             }}
             centeredSlides={true}
-            initialSlide={5}
+            initialSlide={1}
             loop={true}
             navigation
             effect="coverflow"
