@@ -86,10 +86,10 @@ const CarouselCard = ({
                 {/* Lower div - Card info */}
                 <div className="mt-2">
                     <div className="flex flex-row justify-between items-center">
-                        <h4 className="text-sm font-bold text-wrap text-ellipsis overflow-hidden whitespace-nowrap line-clamp-1">
+                        <h4 className="text-sm font-bold text-wrap text-ellipsis overflow-hidden whitespace-nowrap line-clamp-1 text-black">
                             {card_title ? card_title : 'No Title'}
                         </h4>
-                        <p className="text-sm">
+                        <p className="text-sm text-black">
                             {card_source ? card_source : 'No Source'}
                         </p>
                     </div>
@@ -111,4 +111,3 @@ const CarouselCard = ({
 };
 
 export default CarouselCard;
-
