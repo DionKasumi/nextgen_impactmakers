@@ -81,7 +81,9 @@ const SwiperCarousel = () => {
                         card_title={item.title}
                         card_description={item.description}
                         card_price={item.price}
-                        card_img={item.image_url} // Ensure this matches the property from the API
+                        card_img={item.image_url}
+                        card_duration={item.duration}
+                        card_source={item.source}
                     />
                 </SwiperSlide>
             ))}
