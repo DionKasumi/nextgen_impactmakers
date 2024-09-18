@@ -170,7 +170,7 @@ def scrape_creative_hub_kosovo(page):
     return trainings_list
 
 def scrape_outkos_academy(page):
-    page.goto('https://outkos.academy/AllCourses/page/1', timeout=60000)
+    page.goto('https://outkos.academy/AllCourses/page/1', timeout=120000)
     
     courses = page.locator('.card').all()
     print(f'There are {len(courses)} courses from Outkos Academy.')
