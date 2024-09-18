@@ -22,7 +22,9 @@ const SwiperCarousel = () => {
         // Function to fetch data from the Flask API
         const fetchData = async () => {
             try {
-                const response = await fetch('http://localhost:8080/api/courses');
+                const response = await fetch(
+                    'http://localhost:8080/api/courses'
+                );
                 if (response.ok) {
                     const result = await response.json();
                     // Limit to 5 items
@@ -48,7 +50,7 @@ const SwiperCarousel = () => {
                 1024: { slidesPerView: 3 },
             }}
             centeredSlides={true}
-            initialSlide={1}
+            initialSlide={5}
             loop={true}
             navigation
             effect="coverflow"
@@ -63,7 +65,7 @@ const SwiperCarousel = () => {
             pagination={{ clickable: true }}
             className="custom-swiper mb-24 w-full md:w-[80%]"
         >
-            {data.map(item => (
+            {data.map((item) => (
                 <SwiperSlide key={item.id} className="custom-slide">
                     <CarouselCard
                         id={item.id}
