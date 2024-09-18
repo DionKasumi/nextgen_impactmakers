@@ -74,8 +74,8 @@ const SwiperCarousel = () => {
             pagination={{ clickable: true }}
             className="custom-swiper mb-24 w-full md:w-[80%]"
         >
-            {data.map((item, index) => (
-                <SwiperSlide key={index} className="custom-slide">
+            {data.map((item) => (
+                <SwiperSlide key={item.id} className="custom-slide">
                     <CarouselCard
                         id={item.id}
                         card_title={item.title}
