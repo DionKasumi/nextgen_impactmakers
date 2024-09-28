@@ -36,13 +36,13 @@ def save_to_database(courses_list, source):
                     data = (
                         source,
                         course['Title'],
-                        course.get('Trainer', None),
-                        course.get('Description', None),
-                        course.get('Price', None),
-                        course.get('Students', None),
-                        course.get('Rating', None),
-                        course.get('Image_URL', None),
-                        course.get('Duration', None)
+                        course.get('Trainer', 'Unknown'),
+                        course.get('Description', 'N/A'),
+                        course.get('Price', 'N/A'),
+                        course.get('Students', 0),
+                        course.get('Rating', 'N/A'),
+                        course.get('Image_URL', 'N/A'),
+                        course.get('Duration', 'N/A')
                     )
                     cursor.execute(insert_query, data)
                     db.commit()
@@ -62,17 +62,49 @@ def save_to_database(courses_list, source):
         if db:
             db.close()
 
-# Scraper functions
+# Scraper functions for various sources
+def scrape_ick_kosovo(page):
+    page.goto('https://ickosovo.com/training/courses', timeout=60000)
+    
+    courses = page.locator('//div[@data-elementor-type="loop-item"]').all()
+    print(f'There are {len(courses)} courses from ICK Kosovo.')
+
+    courses_list = []
+    for course in courses:
+        try:
+            title = course.locator('.elementor-heading-title a').text_content(timeout=10000)
+            description = course.locator('.elementor-widget-container p').text_content(timeout=10000)
+            image_url = course.locator('img.attachment-full').get_attribute('src', timeout=10000)
+            duration = course.locator('.meta-timeframe .elementor-button-text').text_content(timeout=10000)
+            trainer = 'Unknown'  
+            price = 'N/A'  
+            students = 0 
+            rating = 'N/A'
+
+            courses_list.append({
+                'Title': title.strip(),
+                'Description': description.strip(),
+                'Image_URL': image_url.strip(),
+                'Duration': duration.strip(),
+                'Trainer': trainer,
+                'Price': price,
+                'Students': students,
+                'Rating': rating
+            })
+        except Exception as e:
+            print(f"Error processing a course from ICK Kosovo: {e}")
+    
+    return courses_list
+
 def scrape_beetroot_academy(page):
     page.goto('https://xk.beetroot.academy/courses/online', timeout=60000)
     
-    trainings = page.locator('//div[@class="col-lg-4 col-md-6 col-sm-6 intro_boxWrap"]')
-    print(f'There are {trainings.count()} courses from Beetroot Academy.')
+    trainings = page.locator('//div[@class="col-lg-4 col-md-6 col-sm-6 intro_boxWrap"]').all()
+    print(f'There are {len(trainings)} courses from Beetroot Academy.')
 
     courses_list = []
-    for i in range(trainings.count()):
+    for training in trainings:
         try:
-            training = trainings.nth(i)
             title = training.locator('.blueTextWeight').inner_text(timeout=10000)
             rating = training.locator('.design_skill').inner_text(timeout=10000)
             description = training.locator('.blackTextSmall').inner_text(timeout=10000)
@@ -95,13 +127,12 @@ def scrape_beetroot_academy(page):
 def scrape_probit_academy(page):
     page.goto('https://probitacademy.com/courses/', timeout=60000)
     
-    courses = page.locator('//div[contains(@class, "course-grid-4")]')
-    print(f'There are {courses.count()} courses from Probit Academy.')
+    courses = page.locator('//div[contains(@class, "course-grid-4")]').all()
+    print(f'There are {len(courses)} courses from Probit Academy.')
 
     courses_list = []
-    for i in range(courses.count()):
+    for course in courses:
         try:
-            course = courses.nth(i)
             title = course.locator('.course-title a').inner_text(timeout=5000)
             trainer = course.locator('.course-author .value a').first.inner_text(timeout=5000)
             description = course.locator('.course-description p').inner_text(timeout=5000)
@@ -126,7 +157,6 @@ def scrape_probit_academy(page):
 
 def scrape_creative_hub_kosovo(page):
     page.goto('https://creativehubkos.com/', timeout=60000)
-    
     page.wait_for_load_state('networkidle', timeout=10000)
 
     def auto_scroll(page):
@@ -141,32 +171,27 @@ def scrape_creative_hub_kosovo(page):
 
     auto_scroll(page)
 
-    page.wait_for_selector('//div[contains(@class, "col-md-3")]', timeout=10000)
-
     trainings = page.locator('//div[contains(@class, "col-md-3")]').all()
-    print(f'There are {len(trainings)} trainings.')
+    print(f'There are {len(trainings)} trainings from Creative Hub Kosovo.')
 
     trainings_list = []
-    for i, training in enumerate(trainings):
+    for training in trainings:
         try:
-            print(f"Processing training {i+1}...")
-
             title = training.locator('h3.aos-init.aos-animate').inner_text(timeout=10000)
             description = training.locator('p').inner_text(timeout=10000)
             price = training.locator('.price').first.inner_text(timeout=10000).strip()
 
             trainings_list.append({
-                'Source': 'Creative Hub Kosovo',
                 'Title': title,
-                'Trainer': None,
                 'Description': description,
                 'Price': price,
+                'Trainer': None,
                 'Students': None,
                 'Rating': None
             })
         except Exception as e:
-            print(f"An error occurred while processing training {i+1}: {e}")
-
+            print(f"Error processing training from Creative Hub Kosovo: {e}")
+    
     return trainings_list
 
 def scrape_outkos_academy(page):
@@ -176,18 +201,14 @@ def scrape_outkos_academy(page):
     print(f'There are {len(courses)} courses from Outkos Academy.')
 
     courses_list = []
-    for i, course in enumerate(courses):
+    for course in courses:
         try:
-            print(f"Processing course {i + 1}...")
-
             title = course.locator('.inline').inner_text(timeout=5000)
             trainer = course.locator('.inline2.inline3 span').inner_text(timeout=5000)
             description = course.locator('.p').inner_text(timeout=5000)
             price = course.locator('.span2').inner_text(timeout=5000).strip()
             duration_elements = course.locator('.small-item.small-item1').all()
             duration = duration_elements[0].inner_text(timeout=5000).strip() if duration_elements else "Not Available"
-            
-            # Extract image URL from the style attribute
             img_style = course.locator('a.img').get_attribute('style')
             image_url = re.search(r'url\(["\'](.*?)["\']\)', img_style)
             image_url = image_url.group(1) if image_url else None
@@ -200,11 +221,8 @@ def scrape_outkos_academy(page):
                 'Duration': duration,
                 'Image_URL': image_url
             })
-
-            print(f"Course details: Title - {title}, Trainer - {trainer}, Description - {description}, Price - {price}, Duration - {duration}, Image URL - {image_url}")
-
         except Exception as e:
-            print(f"An error occurred while processing course {i + 1}: {e}")
+            print(f"Error processing course from Outkos Academy: {e}")
 
     return courses_list
 
@@ -215,6 +233,7 @@ def main():
         page = browser.new_page()
 
         sources = [
+            {'scrape_func': scrape_ick_kosovo, 'source_name': 'ICK Kosovo'},
             {'scrape_func': scrape_beetroot_academy, 'source_name': 'Beetroot Academy'},
             {'scrape_func': scrape_probit_academy, 'source_name': 'Probit Academy'},
             {'scrape_func': scrape_creative_hub_kosovo, 'source_name': 'Creative Hub Kosovo'},
