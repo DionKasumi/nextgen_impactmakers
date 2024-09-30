@@ -226,6 +226,69 @@ def scrape_outkos_academy(page):
 
     return courses_list
 
+def scrape_shpik_trainings(page):
+    page.goto('https://trajnimet.info/', timeout=60000)
+    
+    loaded_courses = set()
+    all_courses_loaded = False
+
+    while not all_courses_loaded:
+        page.evaluate('window.scrollBy(0, document.body.scrollHeight)')
+        page.wait_for_timeout(2000)  # Wait for the page to load new content
+
+        courses = page.locator('//div[contains(@class, "item")]')
+        current_courses = [course.locator('a.training-post').get_attribute('href') for course in courses.all()]
+        
+        new_courses = set(current_courses) - loaded_courses
+        loaded_courses.update(new_courses)
+        
+        if not new_courses:
+            all_courses_loaded = True
+
+        print(f'Current loaded courses count: {len(loaded_courses)}')
+        if len(loaded_courses) >= 437:
+            all_courses_loaded = True
+
+    print(f'Total courses found: {len(loaded_courses)}')
+
+    courses_list = []
+    for course_href in loaded_courses:
+        try:
+            page.goto(course_href, timeout=60000)
+            page.wait_for_load_state('networkidle')  # Ensure the page has fully loaded
+            page.wait_for_timeout(2000)  # Give extra time for dynamic content to load
+
+            # Extracting data
+            title = page.locator('.course-content-box h2').inner_text(timeout=10000) if page.locator('.course-content-box h2').count() > 0 else 'N/A'
+            trainer = page.locator('p:has-text("Trajner:")').inner_text(timeout=10000).replace('Trajner:', '').strip() if page.locator('p:has-text("Trajner:")').count() > 0 else 'N/A'
+            description = page.locator('.course-content-box .description').inner_text(timeout=10000) if page.locator('.course-content-box .description').count() > 0 else 'N/A'
+            price = page.locator('p:has-text("Çmimi:")').inner_text(timeout=10000).replace('Çmimi:', '').strip() if page.locator('p:has-text("Çmimi:")').count() > 0 else 'N/A'
+            students = int(page.locator('p:has-text("Numri i studentëve:")').inner_text(timeout=10000).replace('Numri i studentëve:', '').strip()) if page.locator('p:has-text("Numri i studentëve:")').count() > 0 else 0
+            rating = page.locator('p:has-text("Vlerësimi:")').inner_text(timeout=10000).replace('Vlerësimi:', '').strip() if page.locator('p:has-text("Vlerësimi:")').count() > 0 else 'N/A'
+            
+            # Scraping the first image found
+            image_url = page.locator('.featured-image img').first.get_attribute('src') if page.locator('.featured-image img').count() > 0 else 'N/A'
+
+            duration = page.locator('p:has-text("Kohëzgjatja:")').inner_text(timeout=10000).replace('Kohëzgjatja:', '').strip() if page.locator('p:has-text("Kohëzgjatja:")').count() > 0 else 'N/A'
+
+            # Prepare course data
+            courses_list.append({
+                'Title': title,
+                'Trainer': trainer,
+                'Description': description,
+                'Price': price,
+                'Students': students,
+                'Rating': rating,
+                'Image_URL': image_url,
+                'Duration': duration
+            })
+
+        except Exception as e:
+            print(f"Error processing a course from ShpikTrainings: {e}")
+
+    return courses_list
+
+
 # Main scraping logic that loops through the websites
 def main():
     with sync_playwright() as p:
@@ -237,7 +300,8 @@ def main():
             {'scrape_func': scrape_beetroot_academy, 'source_name': 'Beetroot Academy'},
             {'scrape_func': scrape_probit_academy, 'source_name': 'Probit Academy'},
             {'scrape_func': scrape_creative_hub_kosovo, 'source_name': 'Creative Hub Kosovo'},
-            {'scrape_func': scrape_outkos_academy, 'source_name': 'Outkos Academy'}
+            {'scrape_func': scrape_outkos_academy, 'source_name': 'Outkos Academy'},
+            {'scrape_func': scrape_shpik_trainings, 'source_name': 'ShpikTrainings'}
         ]
 
         for source in sources:
