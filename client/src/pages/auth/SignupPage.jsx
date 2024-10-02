@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import axios from 'axios';
 
 const ParticipantForm = ({ participantData, handleChange }) => {
     return (
@@ -25,9 +26,9 @@ const ParticipantForm = ({ participantData, handleChange }) => {
             />
             <input
                 type="text"
-                name="phone_number"
-                id="phone_number"
-                value={participantData.phone_number}
+                name="phone"
+                id="phone"
+                value={participantData.phone}
                 onChange={handleChange}
                 placeholder="Phone number"
                 required
@@ -58,7 +59,7 @@ const OrganizationForm = ({ orgData, handleChange }) => {
                 onChange={handleChange}
                 placeholder="Name Of Organization"
                 required
-                className="w-full h-auto p-2 md:p-3 border-[#6153CC] border-[1px] focus:outline-none invalid:border-red-500 my-2"
+                className="w-full h-auto p-4 md:p-5 border-[#6153CC] border-[1px] focus:outline-none invalid:border-red-500 my-2"
             />
             <input
                 type="email"
@@ -68,7 +69,7 @@ const OrganizationForm = ({ orgData, handleChange }) => {
                 onChange={handleChange}
                 placeholder="email@live.com"
                 required
-                className="w-full h-auto p-2 md:p-3 border-[#6153CC] border-[1px] focus:outline-none invalid:border-red-500 my-2"
+                className="w-full h-auto p-4 md:p-5 border-[#6153CC] border-[1px] focus:outline-none invalid:border-red-500 my-2"
             />
             <input
                 type="text"
@@ -78,7 +79,7 @@ const OrganizationForm = ({ orgData, handleChange }) => {
                 onChange={handleChange}
                 placeholder="Phone number"
                 required
-                className="w-full h-auto p-2 md:p-3 border-[#6153CC] border-[1px] focus:outline-none invalid:border-red-500 my-2"
+                className="w-full h-auto p-4 md:p-5 border-[#6153CC] border-[1px] focus:outline-none invalid:border-red-500 my-2"
             />
             <input
                 type="password"
@@ -88,7 +89,7 @@ const OrganizationForm = ({ orgData, handleChange }) => {
                 onChange={handleChange}
                 placeholder="Password"
                 required
-                className="w-full h-auto p-2 md:p-3 border-[#6153CC] border-[1px] focus:outline-none invalid:border-red-500 my-2"
+                className="w-full h-auto p-4 md:p-5 border-[#6153CC] border-[1px] focus:outline-none invalid:border-red-500 my-2"
             />
             <input
                 type="text"
@@ -96,9 +97,9 @@ const OrganizationForm = ({ orgData, handleChange }) => {
                 id="url_of_org"
                 value={orgData.url_of_org}
                 onChange={handleChange}
-                placeholder="Url"
+                placeholder="URL"
                 required
-                className="w-full h-auto p-2 md:p-3 border-[#6153CC] border-[1px] focus:outline-none invalid:border-red-500 my-2"
+                className="w-full h-auto p-4 md:p-5 border-[#6153CC] border-[1px] focus:outline-none invalid:border-red-500 my-2"
             />
             <textarea
                 name="description_of_org"
@@ -106,7 +107,7 @@ const OrganizationForm = ({ orgData, handleChange }) => {
                 value={orgData.description_of_org}
                 onChange={handleChange}
                 rows={3}
-                className="w-full h-auto p-2 md:p-3 border-[#6153CC] border-[1px] focus:outline-none invalid:border-red-500 my-2 resize-none"
+                className="w-full h-auto p-4 md:p-5 border-[#6153CC] border-[1px] focus:outline-none invalid:border-red-500 my-2 resize-none"
                 required
                 placeholder="A brief description of your organization..."
             ></textarea>
@@ -119,7 +120,7 @@ const MainForm = () => {
     const [participantData, setParticipantData] = useState({
         name: '',
         email: '',
-        phone_number: '',
+        phone: '',
         password: '',
     });
     const [orgData, setOrgData] = useState({
@@ -149,12 +150,22 @@ const MainForm = () => {
         setOrg(!isOrg);
     };
 
-    const onSubmit = (e) => {
+    const onSubmit = async (e) => {
         e.preventDefault();
-        if (isOrg) {
-            console.log('Organization Data:', orgData);
-        } else {
-            console.log('Participant Data:', participantData);
+        try {
+            if (isOrg) {
+                const response = await axios.post('http://localhost:8080/signup', {
+                    ...orgData,
+                    isOrg: true,
+                });
+                alert(response.data.message);
+            } else {
+                const response = await axios.post('http://localhost:8080/signup', participantData);
+                alert(response.data.message);
+            }
+        } catch (error) {
+            console.error('Error submitting form:', error.response?.data || error.message);
+            alert('Error signing up. Please try again.');
         }
     };
 
@@ -187,15 +198,9 @@ const MainForm = () => {
                 </button>
             </div>
             {!isOrg ? (
-                <ParticipantForm
-                    participantData={participantData}
-                    handleChange={handleParticipantChange}
-                />
+                <ParticipantForm participantData={participantData} handleChange={handleParticipantChange} />
             ) : (
-                <OrganizationForm
-                    orgData={orgData}
-                    handleChange={handleOrgChange}
-                />
+                <OrganizationForm orgData={orgData} handleChange={handleOrgChange} />
             )}
             <button
                 type="submit"
