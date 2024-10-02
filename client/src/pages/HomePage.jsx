@@ -1,5 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
-/* eslint-disable react/prop-types */
 import { useState, useEffect } from 'react';
 import SectionWrapper from '../hoc/SectionWrapper';
 import { IoMdArrowDropdown } from 'react-icons/io';
