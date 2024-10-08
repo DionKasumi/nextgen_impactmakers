@@ -1,117 +1,133 @@
+/* eslint-disable react/prop-types */
 import { useState } from 'react';
 import axios from 'axios';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import { IoMdClose } from 'react-icons/io';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 
 const ParticipantForm = ({ participantData, handleChange }) => {
     return (
-        <div className="flex flex-col w-full">
-            <input
-                type="text"
-                name="name"
-                id="name"
-                value={participantData.name}
-                onChange={handleChange}
-                placeholder="Name"
-                required
-                className="w-full h-auto p-4 md:p-5 border-[#6153CC] border-[1px] focus:outline-none invalid:border-red-500 my-2"
-            />
-            <input
-                type="email"
-                name="email"
-                id="email"
-                value={participantData.email}
-                onChange={handleChange}
-                placeholder="email@live.com"
-                required
-                className="w-full h-auto p-4 md:p-5 border-[#6153CC] border-[1px] focus:outline-none invalid:border-red-500 my-2"
-            />
-            <input
-                type="text"
-                name="phone"
-                id="phone"
-                value={participantData.phone}
-                onChange={handleChange}
-                placeholder="Phone number"
-                required
-                className="w-full h-auto p-4 md:p-5 border-[#6153CC] border-[1px] focus:outline-none invalid:border-red-500 my-2"
-            />
-            <input
-                type="password"
-                name="password"
-                id="password"
-                value={participantData.password}
-                onChange={handleChange}
-                placeholder="Password"
-                required
-                className="w-full h-auto p-4 md:p-5 border-[#6153CC] border-[1px] focus:outline-none invalid:border-red-500 my-2"
-            />
-        </div>
+        <>
+            <Box
+                component="form"
+                sx={{
+                    '& > :not(style)': { width: '100%', my: '7px' },
+                }}
+                noValidate
+                autoComplete="off"
+                className="w-full"
+            >
+                <TextField
+                    type="text"
+                    id="name"
+                    label="Name"
+                    variant="outlined"
+                    required
+                    value={participantData.name}
+                    onChange={handleChange}
+                />
+                <TextField
+                    type="email"
+                    id="email"
+                    label="Email"
+                    variant="outlined"
+                    required
+                    value={participantData.email}
+                    onChange={handleChange}
+                />
+                <TextField
+                    type="text"
+                    id="phone"
+                    label="Phone"
+                    variant="outlined"
+                    required
+                    value={participantData.phone}
+                    onChange={handleChange}
+                />
+                <TextField
+                    type="password"
+                    id="password"
+                    label="Password"
+                    variant="outlined"
+                    required
+                    value={participantData.password}
+                    onChange={handleChange}
+                />
+            </Box>
+        </>
     );
 };
 
 const OrganizationForm = ({ orgData, handleChange }) => {
     return (
-        <div className="flex flex-col w-full">
-            <input
-                type="text"
-                name="name_of_org"
-                id="name_of_org"
-                value={orgData.name_of_org}
-                onChange={handleChange}
-                placeholder="Name Of Organization"
-                required
-                className="w-full h-auto p-4 md:p-5 border-[#6153CC] border-[1px] focus:outline-none invalid:border-red-500 my-2"
-            />
-            <input
-                type="email"
-                name="email_of_org"
-                id="email_of_org"
-                value={orgData.email_of_org}
-                onChange={handleChange}
-                placeholder="email@live.com"
-                required
-                className="w-full h-auto p-4 md:p-5 border-[#6153CC] border-[1px] focus:outline-none invalid:border-red-500 my-2"
-            />
-            <input
-                type="text"
-                name="phone_number_of_org"
-                id="phone_number_of_org"
-                value={orgData.phone_number_of_org}
-                onChange={handleChange}
-                placeholder="Phone number"
-                required
-                className="w-full h-auto p-4 md:p-5 border-[#6153CC] border-[1px] focus:outline-none invalid:border-red-500 my-2"
-            />
-            <input
-                type="password"
-                name="password_of_org"
-                id="password_of_org"
-                value={orgData.password_of_org}
-                onChange={handleChange}
-                placeholder="Password"
-                required
-                className="w-full h-auto p-4 md:p-5 border-[#6153CC] border-[1px] focus:outline-none invalid:border-red-500 my-2"
-            />
-            <input
-                type="text"
-                name="url_of_org"
-                id="url_of_org"
-                value={orgData.url_of_org}
-                onChange={handleChange}
-                placeholder="URL"
-                required
-                className="w-full h-auto p-4 md:p-5 border-[#6153CC] border-[1px] focus:outline-none invalid:border-red-500 my-2"
-            />
-            <textarea
-                name="description_of_org"
-                id="description_of_org"
-                value={orgData.description_of_org}
-                onChange={handleChange}
-                rows={3}
-                className="w-full h-auto p-4 md:p-5 border-[#6153CC] border-[1px] focus:outline-none invalid:border-red-500 my-2 resize-none"
-                required
-                placeholder="A brief description of your organization..."
-            ></textarea>
-        </div>
+        <>
+            <Box
+                component="form"
+                sx={{
+                    '& > :not(style)': { width: '100%', my: '7px' },
+                }}
+                noValidate
+                autoComplete="off"
+                className="w-full"
+            >
+                <TextField
+                    type="text"
+                    id="name_of_org"
+                    label="Name Of Organization"
+                    variant="outlined"
+                    required
+                    value={orgData.name_of_org}
+                    onChange={handleChange}
+                />
+                <TextField
+                    type="email"
+                    id="email"
+                    label="Email"
+                    variant="outlined"
+                    required
+                    value={orgData.email_of_org}
+                    onChange={handleChange}
+                />
+                <TextField
+                    type="text"
+                    id="phone_number_of_org"
+                    label="Phone Number"
+                    variant="outlined"
+                    required
+                    value={orgData.phone_number_of_org}
+                    onChange={handleChange}
+                />
+                <TextField
+                    type="password"
+                    id="password_of_org"
+                    label="Password"
+                    variant="outlined"
+                    required
+                    value={orgData.password_of_org}
+                    onChange={handleChange}
+                />
+                <TextField
+                    type="text"
+                    id="url_of_org"
+                    label="URL"
+                    variant="outlined"
+                    required
+                    value={orgData.url_of_org}
+                    onChange={handleChange}
+                />
+                <TextField
+                    type="text"
+                    id="description_of_org"
+                    label="Description"
+                    variant="outlined"
+                    multiline
+                    maxRows={2}
+                    required
+                />
+            </Box>
+        </>
     );
 };
 
@@ -154,17 +170,26 @@ const MainForm = () => {
         e.preventDefault();
         try {
             if (isOrg) {
-                const response = await axios.post('http://localhost:8080/signup', {
-                    ...orgData,
-                    isOrg: true,
-                });
+                const response = await axios.post(
+                    'http://localhost:8080/signup',
+                    {
+                        ...orgData,
+                        isOrg: true,
+                    }
+                );
                 alert(response.data.message);
             } else {
-                const response = await axios.post('http://localhost:8080/signup', participantData);
+                const response = await axios.post(
+                    'http://localhost:8080/signup',
+                    participantData
+                );
                 alert(response.data.message);
             }
         } catch (error) {
-            console.error('Error submitting form:', error.response?.data || error.message);
+            console.error(
+                'Error submitting form:',
+                error.response?.data || error.message
+            );
             alert('Error signing up. Please try again.');
         }
     };
@@ -198,9 +223,15 @@ const MainForm = () => {
                 </button>
             </div>
             {!isOrg ? (
-                <ParticipantForm participantData={participantData} handleChange={handleParticipantChange} />
+                <ParticipantForm
+                    participantData={participantData}
+                    handleChange={handleParticipantChange}
+                />
             ) : (
-                <OrganizationForm orgData={orgData} handleChange={handleOrgChange} />
+                <OrganizationForm
+                    orgData={orgData}
+                    handleChange={handleOrgChange}
+                />
             )}
             <button
                 type="submit"
@@ -219,6 +250,27 @@ const SignupPage = () => {
             <form className="w-11/12 sm:w-4/5 md:w-3/6 xl:w-2/6 h-auto flex bg-white rounded-lg flex-col justify-center items-center px-4 md:px-8">
                 <MainForm />
             </form>
+            <div>
+                {alertOpen ? (
+                    <Alert
+                        severity={alertMessage.type}
+                        className="fixed z-50 right-4 bottom-4"
+                    >
+                        <AlertTitle className="flex justify-between overflow-hidden">
+                            Success{' '}
+                            <button
+                                className="scale-[1.5]"
+                                onClick={handleAlertToggle}
+                            >
+                                <IoMdClose />
+                            </button>
+                        </AlertTitle>
+                        {alertMessage.message}
+                    </Alert>
+                ) : (
+                    ''
+                )}
+            </div>
         </div>
     );
 };
