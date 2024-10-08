@@ -25,6 +25,7 @@ const ParticipantForm = ({ participantData, handleChange }) => {
                     label="Name"
                     variant="outlined"
                     required
+                    name="name"
                     value={participantData.name}
                     onChange={handleChange}
                 />
@@ -34,6 +35,7 @@ const ParticipantForm = ({ participantData, handleChange }) => {
                     label="Email"
                     variant="outlined"
                     required
+                    name="email"
                     value={participantData.email}
                     onChange={handleChange}
                 />
@@ -43,6 +45,7 @@ const ParticipantForm = ({ participantData, handleChange }) => {
                     label="Phone"
                     variant="outlined"
                     required
+                    name="phone"
                     value={participantData.phone}
                     onChange={handleChange}
                 />
@@ -51,7 +54,9 @@ const ParticipantForm = ({ participantData, handleChange }) => {
                     id="password"
                     label="Password"
                     variant="outlined"
+                    color="primary"
                     required
+                    name="password"
                     value={participantData.password}
                     onChange={handleChange}
                 />
@@ -78,15 +83,17 @@ const OrganizationForm = ({ orgData, handleChange }) => {
                     label="Name Of Organization"
                     variant="outlined"
                     required
+                    name="name_of_org"
                     value={orgData.name_of_org}
                     onChange={handleChange}
                 />
                 <TextField
                     type="email"
-                    id="email"
+                    id="email_of_org"
                     label="Email"
                     variant="outlined"
                     required
+                    name="email_of_org"
                     value={orgData.email_of_org}
                     onChange={handleChange}
                 />
@@ -96,6 +103,7 @@ const OrganizationForm = ({ orgData, handleChange }) => {
                     label="Phone Number"
                     variant="outlined"
                     required
+                    name="phone_number_of_org"
                     value={orgData.phone_number_of_org}
                     onChange={handleChange}
                 />
@@ -105,6 +113,7 @@ const OrganizationForm = ({ orgData, handleChange }) => {
                     label="Password"
                     variant="outlined"
                     required
+                    name="password_of_org"
                     value={orgData.password_of_org}
                     onChange={handleChange}
                 />
@@ -114,6 +123,7 @@ const OrganizationForm = ({ orgData, handleChange }) => {
                     label="URL"
                     variant="outlined"
                     required
+                    name="url_of_org"
                     value={orgData.url_of_org}
                     onChange={handleChange}
                 />
@@ -125,6 +135,7 @@ const OrganizationForm = ({ orgData, handleChange }) => {
                     multiline
                     maxRows={2}
                     required
+                    name="description_of_org"
                 />
             </Box>
         </>
@@ -250,27 +261,6 @@ const SignupPage = () => {
             <form className="w-11/12 sm:w-4/5 md:w-3/6 xl:w-2/6 h-auto flex bg-white rounded-lg flex-col justify-center items-center px-4 md:px-8">
                 <MainForm />
             </form>
-            <div>
-                {alertOpen ? (
-                    <Alert
-                        severity={alertMessage.type}
-                        className="fixed z-50 right-4 bottom-4"
-                    >
-                        <AlertTitle className="flex justify-between overflow-hidden">
-                            Success{' '}
-                            <button
-                                className="scale-[1.5]"
-                                onClick={handleAlertToggle}
-                            >
-                                <IoMdClose />
-                            </button>
-                        </AlertTitle>
-                        {alertMessage.message}
-                    </Alert>
-                ) : (
-                    ''
-                )}
-            </div>
         </div>
     );
 };
