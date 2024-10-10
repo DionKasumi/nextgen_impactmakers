@@ -9,7 +9,7 @@ CORS(app)  # Allow CORS for all origins
 # Database connection parameters
 db_params = {
     'user': 'root',
-    'passwd': '',
+    'passwd': '1234',
     'host': 'localhost',
     'port': 3306,
     'db': 'course_data'
@@ -71,13 +71,13 @@ def get_course(course_id):
     return jsonify(course)
 
 # --- Helper Functions ---
-def add_participant(name, email, phone, password):
+def add_participant(username, email, phone, password):
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     try:
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor()
-        query = "INSERT INTO participants (name, email, phone, password) VALUES (%s, %s, %s, %s)"
-        cursor.execute(query, (name, email, phone, hashed_password))
+        query = "INSERT INTO participants (username, email, phone, password) VALUES (%s, %s, %s, %s)"
+        cursor.execute(query, (username, email, phone, hashed_password))
         db.commit()
         cursor.close()
     except MySQLdb.Error as e:
@@ -125,12 +125,12 @@ def signup():
         )
     else:
         # Participant signup
-        required_fields = ['name', 'email', 'phone', 'password']
+        required_fields = ['username', 'email', 'phone', 'password']
         for field in required_fields:
             if field not in data:
                 return jsonify({"error": f"Missing field {field} for participant signup."}), 400
         return add_participant(
-            data['name'], 
+            data['username'], 
             data['email'], 
             data['phone'], 
             data['password']
@@ -183,12 +183,12 @@ def login():
 
     if is_org:
         if check_organization(email, password):
-            return jsonify({"success": True, "message": "Login successful", "redirectUrl": "/org-dashboard"})
+            return jsonify({"success": True, "message": "Login successful"})
         else:
             return jsonify({"success": False, "message": "Invalid organization credentials"}), 401
     else:
         if check_participant(email, password):
-            return jsonify({"success": True, "message": "Login successful", "redirectUrl": "/participant-dashboard"})
+            return jsonify({"success": True, "message": "Login successful"})
         else:
             return jsonify({"success": False, "message": "Invalid participant credentials"}), 401
 

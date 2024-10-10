@@ -21,12 +21,12 @@ const ParticipantForm = ({ participantData, handleChange }) => {
             >
                 <TextField
                     type="text"
-                    id="name"
-                    label="Name"
+                    id="username"
+                    label="Username"
                     variant="outlined"
                     required
-                    name="name"
-                    value={participantData.name}
+                    name="username"
+                    value={participantData.username}
                     onChange={handleChange}
                 />
                 <TextField
@@ -145,7 +145,7 @@ const OrganizationForm = ({ orgData, handleChange }) => {
 const MainForm = () => {
     const [isOrg, setOrg] = useState(false);
     const [participantData, setParticipantData] = useState({
-        name: '',
+        username: '',
         email: '',
         phone: '',
         password: '',
