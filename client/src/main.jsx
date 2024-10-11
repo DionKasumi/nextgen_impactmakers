@@ -10,6 +10,7 @@ import LoginPage from './pages/auth/LoginPage.jsx';
 import SignupPage from './pages/auth/SignupPage.jsx';
 import ContactPage from './pages/ContactPage.jsx';
 import EventDetailsPage from './pages/EventDetailsPage.jsx';
+import TrainingsPage from './pages/TrainingsPage.jsx';
 
 const router = createBrowserRouter([
     {
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
             {
                 path: '/contact',
                 element: <ContactPage />,
+            },
+            {
+                path: '/trainings',
+                element: <TrainingsPage />,
             },
         ],
     },
