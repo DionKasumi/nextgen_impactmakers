@@ -1,17 +1,37 @@
 /* eslint-disable react/prop-types */
 import { useState } from 'react';
 import axios from 'axios';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
+import { useNavigate } from 'react-router-dom';
+import {
+    Box,
+    List,
+    ListItem,
+    AlertTitle,
+    Alert,
+    TextField,
+    ListItemText,
+    ListItemButton,
+    ListItemIcon,
+    Checkbox,
+    FormGroup,
+    FormControlLabel,
+} from '@mui/material';
 import { IoMdClose } from 'react-icons/io';
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+const theme = createTheme({
+    palette: {
+        primary: {
+            main: '#4F1ABE',
+        },
+    },
+});
 
 const ParticipantForm = ({ participantData, handleChange }) => {
     return (
-        <>
+        <ThemeProvider theme={theme}>
             <Box
-                component="form"
+                component="div"
                 sx={{
                     '& > :not(style)': { width: '100%', my: '7px' },
                 }}
@@ -21,12 +41,12 @@ const ParticipantForm = ({ participantData, handleChange }) => {
             >
                 <TextField
                     type="text"
-                    id="name"
-                    label="Name"
+                    id="username"
+                    label="Username"
                     variant="outlined"
                     required
-                    name="name"
-                    value={participantData.name}
+                    name="username"
+                    value={participantData.username}
                     onChange={handleChange}
                 />
                 <TextField
@@ -61,15 +81,72 @@ const ParticipantForm = ({ participantData, handleChange }) => {
                     onChange={handleChange}
                 />
             </Box>
-        </>
+        </ThemeProvider>
+    );
+};
+
+const ParticipantSecondForm = ({ preferencesData, handleChange }) => {
+    const [checked, setChecked] = useState(preferencesData || []);
+
+    const handleToggle = (value) => () => {
+        const currentIndex = checked.indexOf(value);
+        const newChecked = [...checked];
+
+        if (currentIndex === -1) {
+            newChecked.push(value);
+        } else {
+            newChecked.splice(currentIndex, 1);
+        }
+
+        setChecked(newChecked);
+        handleChange(value);
+    };
+
+    return (
+        <ThemeProvider theme={theme}>
+            <List className="w-full bg-[#A3A9FE45] rounded-md h-auto max-h-96 overflow-y-scroll">
+                {[
+                    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                    17, 18, 19,
+                ].map((value) => {
+                    const labelId = `checkbox-list-label-${value}`;
+
+                    return (
+                        <ListItem key={value} disablePadding>
+                            <ListItemButton
+                                role={undefined}
+                                onClick={handleToggle(value)}
+                                dense
+                            >
+                                <ListItemText
+                                    id={labelId}
+                                    primary={`Line item ${value + 1}`}
+                                />
+                                <ListItemIcon>
+                                    <Checkbox
+                                        edge="end"
+                                        checked={checked.includes(value)}
+                                        tabIndex={-1}
+                                        disableRipple
+                                        inputProps={{
+                                            'aria-labelledby': labelId,
+                                        }}
+                                    />
+                                </ListItemIcon>
+                            </ListItemButton>
+                        </ListItem>
+                    );
+                })}
+            </List>
+        </ThemeProvider>
     );
 };
 
 const OrganizationForm = ({ orgData, handleChange }) => {
     return (
-        <>
+        <ThemeProvider theme={theme}>
             <Box
-                component="form"
+                component="div"
                 sx={{
                     '& > :not(style)': { width: '100%', my: '7px' },
                 }}
@@ -136,20 +213,33 @@ const OrganizationForm = ({ orgData, handleChange }) => {
                     maxRows={2}
                     required
                     name="description_of_org"
+                    value={orgData.description_of_org}
+                    onChange={handleChange}
                 />
             </Box>
-        </>
+        </ThemeProvider>
     );
 };
 
 const MainForm = () => {
+    const navigate = useNavigate();
     const [isOrg, setOrg] = useState(false);
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertMessage, setAlertMessage] = useState({
+        type: 'success',
+        heading: 'Success',
+        message: '',
+    });
+
+    const [isParticipantSecondForm, setParticipantSecondForm] = useState(false);
+
     const [participantData, setParticipantData] = useState({
-        name: '',
+        username: '',
         email: '',
         phone: '',
         password: '',
     });
+    const [preferencesData, setPreferencesData] = useState([]);
     const [orgData, setOrgData] = useState({
         name_of_org: '',
         email_of_org: '',
@@ -159,11 +249,19 @@ const MainForm = () => {
         description_of_org: '',
     });
 
+    const handleAlertToggle = () => {
+        setAlertOpen(!alertOpen);
+    };
+
     const handleParticipantChange = (e) => {
         setParticipantData({
             ...participantData,
             [e.target.name]: e.target.value,
         });
+    };
+
+    const handlePreferencesChange = (e) => {
+        setPreferencesData([...preferencesData, e]);
     };
 
     const handleOrgChange = (e) => {
@@ -175,6 +273,38 @@ const MainForm = () => {
 
     const onFormTypeChange = () => {
         setOrg(!isOrg);
+        setAlertOpen(false);
+        setParticipantData({
+            name: '',
+            email: '',
+            phone: '',
+            password: '',
+        });
+        setOrgData({
+            name_of_org: '',
+            email_of_org: '',
+            phone_number_of_org: '',
+            password_of_org: '',
+            url_of_org: '',
+            description_of_org: '',
+        });
+    };
+
+    const resetData = () => {
+        setParticipantData({
+            name: '',
+            email: '',
+            phone: '',
+            password: '',
+        });
+        setOrgData({
+            name_of_org: '',
+            email_of_org: '',
+            phone_number_of_org: '',
+            password_of_org: '',
+            url_of_org: '',
+            description_of_org: '',
+        });
     };
 
     const onSubmit = async (e) => {
@@ -188,70 +318,165 @@ const MainForm = () => {
                         isOrg: true,
                     }
                 );
-                alert(response.data.message);
+                // alert(response.data.message);
+                let count = 3;
+                setAlertMessage({
+                    type: 'success',
+                    heading: 'Success',
+                    message: `Login successful. Redirecting in ${count}`,
+                });
+                setAlertOpen(true);
+
+                let t1 = setInterval(() => {
+                    if (count > 0) {
+                        count--;
+                        setAlertMessage({
+                            type: 'success',
+                            heading: 'Success',
+                            message: `Login successful. Redirecting in ${count}`,
+                        });
+                    } else {
+                        clearTimeout(t1);
+                        // console.log('Done');
+                        navigate('/');
+                    }
+                }, 1000);
+                console.log(orgData);
+
+                resetData();
             } else {
-                const response = await axios.post(
-                    'http://localhost:8080/signup',
-                    participantData
-                );
-                alert(response.data.message);
+                if (isParticipantSecondForm) {
+                    const response = await axios.post(
+                        'http://localhost:8080/signup',
+                        participantData
+                    );
+                    // alert(response.data.message);
+                    let count = 3;
+                    setAlertMessage({
+                        type: 'success',
+                        heading: 'Success',
+                        message: `Login successful. Redirecting in ${count}`,
+                    });
+                    setAlertOpen(true);
+
+                    let t1 = setInterval(() => {
+                        if (count > 0) {
+                            count--;
+                            setAlertMessage({
+                                type: 'success',
+                                heading: 'Success',
+                                message: `Login successful. Redirecting in ${count}`,
+                            });
+                        } else {
+                            clearTimeout(t1);
+                            // console.log('Done');
+                            navigate('/');
+                        }
+                    }, 1000);
+
+                    console.log(participantData);
+                    console.log(preferencesData);
+
+                    resetData();
+                } else {
+                    setParticipantSecondForm(true);
+                }
             }
         } catch (error) {
             console.error(
                 'Error submitting form:',
                 error.response?.data || error.message
             );
-            alert('Error signing up. Please try again.');
+            // alert('Error signing up. Please try again.');
+            setAlertMessage({
+                type: 'error',
+                heading: 'Error',
+                message: 'Error signing up. Please try again.',
+            });
+            setAlertOpen(true);
+            resetData();
         }
     };
 
     return (
-        <div className="w-11/12 sm:w-4/5 md:w-5/6 xl:w-5/6 h-[95%] flex justify-center items-center flex-col">
-            <h2 className="text-xl md:text-2xl xl:text-3xl text-black font-bold mt-4">
-                Sign Up
-            </h2>
-            <h2 className="text-sm md:text-base xl:text-lg text-black italic font-normal mb-1">
-                Create An Account
-            </h2>
-            <h3 className="font-bold mb-4 text-base md:text-lg">Are you a</h3>
-            <div className="flex flex-row justify-center items-center w-full md:w-2/3 lg:w-1/2 mb-4">
+        <>
+            <div className="w-11/12 sm:w-4/5 md:w-5/6 xl:w-5/6 h-[95%] flex justify-center items-center flex-col">
+                <h2 className="text-xl md:text-2xl xl:text-3xl text-black font-bold mt-4">
+                    Sign Up
+                </h2>
+                <h2 className="text-sm md:text-base xl:text-lg text-black italic font-normal mb-1">
+                    Create An Account
+                </h2>
+                <h3 className="font-bold mb-4 text-base md:text-lg">
+                    Are you a
+                </h3>
+                <div className="flex flex-row justify-center items-center w-full md:w-2/3 lg:w-1/2 mb-4">
+                    <button
+                        disabled={!isOrg}
+                        onClick={onFormTypeChange}
+                        type="button"
+                        className="bg-[#C5C5C5] border-none rounded-md focus:outline-none py-2 px-4 md:px-6 text-[#4F1ABE] text-sm disabled:bg-[#4F1ABE] disabled:scale-95 disabled:text-white transition-all"
+                    >
+                        Participant
+                    </button>
+                    <p className="mx-2 text-sm md:text-base">or</p>
+                    <button
+                        disabled={isOrg}
+                        onClick={onFormTypeChange}
+                        type="button"
+                        className="bg-[#C5C5C5] border-none rounded-md focus:outline-none py-2 px-4 md:px-6 text-[#4F1ABE] text-sm disabled:bg-[#4F1ABE] disabled:scale-95 disabled:text-white transition-all"
+                    >
+                        Organization
+                    </button>
+                </div>
+                {!isOrg ? (
+                    !isParticipantSecondForm ? (
+                        <ParticipantForm
+                            participantData={participantData}
+                            handleChange={handleParticipantChange}
+                        />
+                    ) : (
+                        <ParticipantSecondForm
+                            preferencesData={preferencesData}
+                            handleChange={handlePreferencesChange}
+                        />
+                    )
+                ) : (
+                    <OrganizationForm
+                        orgData={orgData}
+                        handleChange={handleOrgChange}
+                    />
+                )}
                 <button
-                    disabled={!isOrg}
-                    onClick={onFormTypeChange}
                     type="button"
-                    className="bg-[#4F1ABE] border-none rounded-md focus:outline-none py-2 px-4 md:px-6 text-white text-sm disabled:bg-[#8d67e0] disabled:scale-95"
+                    onClick={onSubmit}
+                    className="py-2 px-16 lg:px-24 bg-[#4F1ABE] text-white flex justify-center items-center rounded-md m-auto my-4 text-sm md:text-base"
                 >
-                    Participant
-                </button>
-                <p className="mx-2 text-sm md:text-base">or</p>
-                <button
-                    disabled={isOrg}
-                    onClick={onFormTypeChange}
-                    type="button"
-                    className="bg-[#4F1ABE] border-none rounded-md focus:outline-none py-2 px-4 md:px-6 text-white text-sm disabled:bg-[#8d67e0] disabled:scale-95"
-                >
-                    Organization
+                    {isOrg ? 'Finish' : 'Continue'}
                 </button>
             </div>
-            {!isOrg ? (
-                <ParticipantForm
-                    participantData={participantData}
-                    handleChange={handleParticipantChange}
-                />
+            {alertOpen ? (
+                <div>
+                    <Alert
+                        severity={alertMessage.type}
+                        className="fixed z-50 right-4 bottom-4"
+                    >
+                        <AlertTitle className="flex justify-between overflow-hidden">
+                            {alertMessage.heading}
+                            <button
+                                className="scale-[1.5]"
+                                onClick={handleAlertToggle}
+                            >
+                                <IoMdClose />
+                            </button>
+                        </AlertTitle>
+                        {alertMessage.message}
+                    </Alert>
+                </div>
             ) : (
-                <OrganizationForm
-                    orgData={orgData}
-                    handleChange={handleOrgChange}
-                />
+                ''
             )}
-            <button
-                type="submit"
-                onClick={onSubmit}
-                className="py-2 px-16 lg:px-24 bg-[#4F1ABE] text-white flex justify-center items-center rounded-md m-auto my-4 text-sm md:text-base"
-            >
-                {isOrg ? 'Finish' : 'Continue'}
-            </button>
-        </div>
+        </>
     );
 };
 
