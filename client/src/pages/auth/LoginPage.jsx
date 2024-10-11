@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import axios from 'axios';
 import Box from '@mui/material/Box';
@@ -6,16 +6,19 @@ import TextField from '@mui/material/TextField';
 import { IoMdClose } from 'react-icons/io';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
     const [isOrg, setIsOrg] = useState(false); // Toggle between participant and organization
+    const navigate = useNavigate();
 
     const [alertOpen, setAlertOpen] = useState(false);
     const [alertMessage, setAlertMessage] = useState({
         type: 'success',
+        heading: 'Success',
         message: '',
     });
 
@@ -30,19 +33,37 @@ const LoginPage = () => {
 
             if (response.data.success) {
                 // alert('Login successful');
+                let count = 3;
                 setAlertMessage({
                     type: 'success',
-                    message: 'Login Successful!',
+                    heading: 'Success',
+                    message: `Login successful. Redirecting in ${count}`,
                 });
                 setAlertOpen(true);
 
+                let t1 = setInterval(() => {
+                    if (count > 0) {
+                        count--;
+                        setAlertMessage({
+                            type: 'success',
+                            heading: 'Success',
+                            message: `Login successful. Redirecting in ${count}`,
+                        });
+                    } else {
+                        clearTimeout(t1);
+                        // console.log('Done');
+                        navigate('/');
+                    }
+                }, 1000);
+
                 // Redirect to dashboard or homepage
-                window.location.href = response.data.redirectUrl;
+                // window.location.href = response.data.redirectUrl;
             } else {
                 // alert('Invalid credentials');
                 setAlertMessage({
-                    type: 'success',
-                    message: 'Invalid Credentials!',
+                    type: 'error',
+                    heading: 'Error',
+                    message: 'Invalid credentials',
                 });
                 setAlertOpen(true);
             }
@@ -52,10 +73,10 @@ const LoginPage = () => {
                 error.response?.data || error.message
             );
             // alert('Login failed. Please try again.');
-
             setAlertMessage({
-                type: 'success',
-                message: 'Login Failed! Please try again!',
+                type: 'error',
+                heading: 'Error',
+                message: 'Login failed. Please try again.',
             });
             setAlertOpen(true);
         }
@@ -65,8 +86,16 @@ const LoginPage = () => {
         setAlertOpen(!alertOpen);
     };
 
+    const theme = createTheme({
+        palette: {
+            primary: {
+                main: '#4F1ABE',
+            },
+        },
+    });
+
     return (
-        <>
+        <ThemeProvider theme={theme}>
             <div className="w-screen h-screen flex flex-col justify-center items-center bg-[#4F1ABE]">
                 <form className="w-11/12 sm:w-3/5 md:w-3/5 lg:w-2/4 h-auto max-w-md flex flex-col bg-white rounded-lg p-6 justify-center items-center">
                     <div className="w-11/12 sm:w-4/5 md:w-5/6 xl:w-5/6 h-full">
@@ -74,7 +103,7 @@ const LoginPage = () => {
                             Log In
                         </h2>
                         <Box
-                            component="form"
+                            component="div"
                             sx={{
                                 '& > :not(style)': { width: '100%', my: '7px' },
                             }}
@@ -122,7 +151,7 @@ const LoginPage = () => {
                         <div className="w-full flex justify-between mb-4">
                             <button
                                 type="button"
-                                className={`py-2 px-8 rounded-md focus:outline-none transition-all duration-300 ${
+                                className={`py-2 px-3 sm:px-6 md:px-8 rounded-md focus:outline-none transition-all duration-300 ${
                                     !isOrg
                                         ? 'bg-[#4F1ABE] text-white'
                                         : 'bg-[#E0E0E0] text-[#4F1ABE] hover:bg-[#C5C5C5]'
@@ -133,7 +162,7 @@ const LoginPage = () => {
                             </button>
                             <button
                                 type="button"
-                                className={`py-2 px-8 rounded-md focus:outline-none transition-all duration-300 ${
+                                className={`py-2 px-3 sm:px-6 md:px-8 rounded-md focus:outline-none transition-all duration-300 ${
                                     isOrg
                                         ? 'bg-[#4F1ABE] text-white'
                                         : 'bg-[#E0E0E0] text-[#4F1ABE] hover:bg-[#C5C5C5]'
@@ -180,14 +209,14 @@ const LoginPage = () => {
                     </div>
                 </form>
             </div>
-            <div>
-                {alertOpen ? (
+            {alertOpen ? (
+                <div>
                     <Alert
                         severity={alertMessage.type}
                         className="fixed z-50 right-4 bottom-4"
                     >
                         <AlertTitle className="flex justify-between overflow-hidden">
-                            Success{' '}
+                            {alertMessage.heading}
                             <button
                                 className="scale-[1.5]"
                                 onClick={handleAlertToggle}
@@ -197,11 +226,11 @@ const LoginPage = () => {
                         </AlertTitle>
                         {alertMessage.message}
                     </Alert>
-                ) : (
-                    ''
-                )}
-            </div>
-        </>
+                </div>
+            ) : (
+                ''
+            )}
+        </ThemeProvider>
     );
 };
 
