@@ -1,10 +1,12 @@
-from flask import Flask, jsonify, abort, request
+from flask import Flask, jsonify, abort, request, session, render_template
 from flask_cors import CORS
 import MySQLdb
 import bcrypt
 
 app = Flask(__name__)
 CORS(app)  # Allow CORS for all origins
+
+app.secret_key = 'ac6edc7ee2b2a6ed9177ed701979e739' 
 
 # Database connection parameters
 db_params = {
@@ -191,6 +193,84 @@ def login():
             return jsonify({"success": True, "message": "Login successful"})
         else:
             return jsonify({"success": False, "message": "Invalid participant credentials"}), 401
+        
+# Function to insert admin into the database
+def insert_admin(username, password):
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+        query = "INSERT INTO admins (username, password) VALUES (%s, %s)"
+        cursor.execute(query, (username, hashed_password))
+        db.commit()
+        cursor.close()
+    except MySQLdb.Error as e:
+        return {"error": f"MySQL error: {e}"}, 500
+    finally:
+        db.close()
+    return {"message": "Admin created successfully."}, 201
+
+
+# API to create an admin
+@app.route('/api/admins', methods=['POST'])
+def create_admin():
+    data = request.get_json()
+    if 'username' not in data or 'password' not in data:
+        return jsonify({"error": "Username and password are required."}), 400
+    return jsonify(insert_admin(data['username'], data['password']))
+
+
+# Function to check admin credentials
+def check_admin(username, password):
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        query = "SELECT * FROM admins WHERE username = %s"
+        cursor.execute(query, [username])
+        admin = cursor.fetchone()
+        cursor.close()
+        db.close()
+
+        if admin and bcrypt.checkpw(password.encode('utf-8'), admin['password'].encode('utf-8')):
+            return True
+        return False
+    except MySQLdb.Error as e:
+        print(f"MySQL error during admin check: {e}")
+        return False
+
+@app.route('/admin/login', methods=['GET'])
+def show_login_page():
+    return render_template('admin_login.html')
+
+# API to login admin
+@app.route('/api/admin/login', methods=['POST'])
+def admin_login():
+    data = request.get_json()
+    if 'username' not in data or 'password' not in data:
+        return jsonify({"error": "Username and password are required."}), 400
+
+    if check_admin(data['username'], data['password']):
+        session['admin'] = data['username']  # Store admin in session
+        return jsonify({"success": True, "message": "Login successful"}), 200
+    else:
+        return jsonify({"success": False, "message": "Invalid admin credentials"}), 401
+
+# Admin dashboard route
+@app.route('/admin/dashboard', methods=['GET'])
+def admin_dashboard():
+    if 'admin' in session:
+        return render_template('admin_dashboard.html')
+    else:
+        return redirect('/api/admin/login')
+# API to log out the admin
+@app.route('/api/admin/logout', methods=['POST'])
+def admin_logout():
+    # Check if admin is in the session
+    if 'admin' in session:
+        session.pop('admin', None)  # Remove admin from the session
+        return jsonify({"success": True, "message": "Logged out successfully"}), 200
+    else:
+        return jsonify({"error": "No admin logged in"}), 400
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8080)
