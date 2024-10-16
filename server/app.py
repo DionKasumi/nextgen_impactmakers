@@ -6,7 +6,7 @@ import bcrypt
 app = Flask(__name__)
 CORS(app)  # Allow CORS for all origins
 
-app.secret_key = 'ac6edc7ee2b2a6ed9177ed701979e739' 
+app.secret_key = '850b3b565f68f1ce23a200e28f38b5ec' 
 
 # Database connection parameters
 db_params = {
@@ -262,6 +262,7 @@ def admin_dashboard():
         return render_template('admin_dashboard.html')
     else:
         return redirect('/api/admin/login')
+    
 # API to log out the admin
 @app.route('/api/admin/logout', methods=['POST'])
 def admin_logout():
@@ -271,6 +272,57 @@ def admin_logout():
         return jsonify({"success": True, "message": "Logged out successfully"}), 200
     else:
         return jsonify({"error": "No admin logged in"}), 400
+    
+
+# Function to get organizations from the database
+def get_organizations():
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        query = "SELECT * FROM organizations WHERE status = 'pending'"
+        cursor.execute(query)
+        organizations = cursor.fetchall()
+        cursor.close()
+        return organizations
+    except MySQLdb.Error as e:
+        print(f"MySQL error during fetching organizations: {e}")
+        return []
+    finally:
+        db.close()
+
+# API to get organizations
+@app.route('/api/admin/organizations', methods=['GET'])
+def admin_get_organizations():
+    organizations = get_organizations()
+    return jsonify(organizations), 200
+
+# Function to update organization status
+def update_organization_status(org_id, status):
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+        query = "UPDATE organizations SET status = %s WHERE id = %s"
+        cursor.execute(query, (status, org_id))
+        db.commit()
+        cursor.close()
+    except MySQLdb.Error as e:
+        print(f"MySQL error during updating organization status: {e}")
+        return {"error": f"MySQL error: {e}"}, 500
+    finally:
+        db.close()
+    return {"message": "Organization status updated successfully."}, 200
+
+# API to approve organization
+@app.route('/api/admin/organizations/approve/<int:org_id>', methods=['POST'])
+def admin_approve_organization(org_id):
+    return jsonify(update_organization_status(org_id, 'approved'))
+
+# API to reject organization
+@app.route('/api/admin/organizations/reject/<int:org_id>', methods=['POST'])
+def admin_reject_organization(org_id):
+    return jsonify(update_organization_status(org_id, 'rejected'))
+
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8080)
