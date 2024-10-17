@@ -166,12 +166,23 @@ def check_organization(email_of_org, password_of_org):
         cursor.close()
         db.close()
 
-        if user and bcrypt.checkpw(password_of_org.encode('utf-8'), user['password_of_org'].encode('utf-8')):
-            return True
-        return False
+        if not user:
+            return {"success": False, "message": "Organization not found."}, 404
+
+        # Check if the password matches
+        if bcrypt.checkpw(password_of_org.encode('utf-8'), user['password_of_org'].encode('utf-8')):
+            # Check the organization's status
+            if user['status'] == 'pending':
+                return {"success": False, "message": "Organization approval is pending."}, 403
+            elif user['status'] == 'rejected':
+                return {"success": False, "message": "Organization has been rejected by the admin."}, 403
+            elif user['status'] == 'approved':
+                return {"success": True, "message": "Login successful."}, 200
+        return {"success": False, "message": "Invalid credentials."}, 401
     except MySQLdb.Error as e:
         print(f"MySQL error during organization login: {e}")
-        return False
+        return {"success": False, "message": "Database error."}, 500
+
 
 # --- Login Route ---
 @app.route('/login', methods=['POST'])
@@ -184,16 +195,15 @@ def login():
     print(f"Login attempt for {'Organization' if is_org else 'Participant'} with email: {email}")
 
     if is_org:
-        if check_organization(email, password):
-            return jsonify({"success": True, "message": "Login successful"})
-        else:
-            return jsonify({"success": False, "message": "Invalid organization credentials"}), 401
+        # Updated to use the modified check_organization function
+        response, status_code = check_organization(email, password)
+        return jsonify(response), status_code
     else:
         if check_participant(email, password):
-            return jsonify({"success": True, "message": "Login successful"})
+            return jsonify({"success": True, "message": "Login successful"}), 200
         else:
             return jsonify({"success": False, "message": "Invalid participant credentials"}), 401
-        
+
 # Function to insert admin into the database
 def insert_admin(username, password):
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
@@ -320,7 +330,24 @@ def admin_approve_organization(org_id):
 # API to reject organization
 @app.route('/api/admin/organizations/reject/<int:org_id>', methods=['POST'])
 def admin_reject_organization(org_id):
-    return jsonify(update_organization_status(org_id, 'rejected'))
+    return jsonify(delete_organization(org_id))
+
+# Function to delete the rejected orgs from database
+def delete_organization(org_id):
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+        query = "DELETE FROM organizations WHERE id = %s"
+        cursor.execute(query, (org_id,))
+        db.commit()
+        cursor.close()
+    except MySQLdb.Error as e:
+        print(f"MySQL error during deleting organization: {e}")
+        return {"error": f"MySQL error: {e}"}, 500
+    finally:
+        db.close()
+    return {"message": "Organization deleted successfully."}, 200
+
 
 
 
