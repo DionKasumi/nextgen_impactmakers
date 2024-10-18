@@ -9,7 +9,7 @@ CORS(app)  # Allow CORS for all origins
 # Database connection parameters
 db_params = {
     'user': 'root',
-    'passwd': '1234',
+    'passwd': '',
     'host': 'localhost',
     'port': 3306,
     'db': 'course_data'
