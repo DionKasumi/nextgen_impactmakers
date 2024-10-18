@@ -239,6 +239,7 @@ const MainForm = () => {
         phone: '',
         password: '',
     });
+
     const [preferencesData, setPreferencesData] = useState([]);
     const [orgData, setOrgData] = useState({
         name_of_org: '',
@@ -274,25 +275,12 @@ const MainForm = () => {
     const onFormTypeChange = () => {
         setOrg(!isOrg);
         setAlertOpen(false);
-        setParticipantData({
-            name: '',
-            email: '',
-            phone: '',
-            password: '',
-        });
-        setOrgData({
-            name_of_org: '',
-            email_of_org: '',
-            phone_number_of_org: '',
-            password_of_org: '',
-            url_of_org: '',
-            description_of_org: '',
-        });
+        resetData();
     };
 
     const resetData = () => {
         setParticipantData({
-            name: '',
+            username: '',
             email: '',
             phone: '',
             password: '',
@@ -318,30 +306,27 @@ const MainForm = () => {
                         isOrg: true,
                     }
                 );
-                // alert(response.data.message);
+
                 let count = 3;
                 setAlertMessage({
                     type: 'success',
                     heading: 'Success',
-                    message: `Login successful. Redirecting in ${count}`,
+                    message: `Signup successful. Redirecting in ${count}...`,
                 });
                 setAlertOpen(true);
 
                 let t1 = setInterval(() => {
                     if (count > 0) {
                         count--;
-                        setAlertMessage({
-                            type: 'success',
-                            heading: 'Success',
-                            message: `Login successful. Redirecting in ${count}`,
-                        });
+                        setAlertMessage((prevState) => ({
+                            ...prevState,
+                            message: `Signup successful. Redirecting in ${count}...`,
+                        }));
                     } else {
-                        clearTimeout(t1);
-                        // console.log('Done');
+                        clearInterval(t1);
                         navigate('/');
                     }
                 }, 1000);
-                console.log(orgData);
 
                 resetData();
             } else {
@@ -350,32 +335,27 @@ const MainForm = () => {
                         'http://localhost:8080/signup',
                         participantData
                     );
-                    // alert(response.data.message);
+
                     let count = 3;
                     setAlertMessage({
                         type: 'success',
                         heading: 'Success',
-                        message: `Login successful. Redirecting in ${count}`,
+                        message: `Signup successful. Redirecting in ${count}...`,
                     });
                     setAlertOpen(true);
 
                     let t1 = setInterval(() => {
                         if (count > 0) {
                             count--;
-                            setAlertMessage({
-                                type: 'success',
-                                heading: 'Success',
-                                message: `Login successful. Redirecting in ${count}`,
-                            });
+                            setAlertMessage((prevState) => ({
+                                ...prevState,
+                                message: `Signup successful. Redirecting in ${count}...`,
+                            }));
                         } else {
-                            clearTimeout(t1);
-                            // console.log('Done');
+                            clearInterval(t1);
                             navigate('/');
                         }
                     }, 1000);
-
-                    console.log(participantData);
-                    console.log(preferencesData);
 
                     resetData();
                 } else {
@@ -387,7 +367,6 @@ const MainForm = () => {
                 'Error submitting form:',
                 error.response?.data || error.message
             );
-            // alert('Error signing up. Please try again.');
             setAlertMessage({
                 type: 'error',
                 heading: 'Error',
@@ -473,9 +452,7 @@ const MainForm = () => {
                         {alertMessage.message}
                     </Alert>
                 </div>
-            ) : (
-                ''
-            )}
+            ) : null}
         </>
     );
 };

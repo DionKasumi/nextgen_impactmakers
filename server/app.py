@@ -1,10 +1,12 @@
-from flask import Flask, jsonify, abort, request
+from flask import Flask, jsonify, abort, request, session, render_template
 from flask_cors import CORS
 import MySQLdb
 import bcrypt
 
 app = Flask(__name__)
 CORS(app)  # Allow CORS for all origins
+
+app.secret_key = '850b3b565f68f1ce23a200e28f38b5ec' 
 
 # Database connection parameters
 db_params = {
@@ -164,12 +166,23 @@ def check_organization(email_of_org, password_of_org):
         cursor.close()
         db.close()
 
-        if user and bcrypt.checkpw(password_of_org.encode('utf-8'), user['password_of_org'].encode('utf-8')):
-            return True
-        return False
+        if not user:
+            return {"success": False, "message": "Organization not found."}, 404
+
+        # Check if the password matches
+        if bcrypt.checkpw(password_of_org.encode('utf-8'), user['password_of_org'].encode('utf-8')):
+            # Check the organization's status
+            if user['status'] == 'pending':
+                return {"success": False, "message": "Organization approval is pending."}, 403
+            elif user['status'] == 'rejected':
+                return {"success": False, "message": "Organization has been rejected by the admin."}, 403
+            elif user['status'] == 'approved':
+                return {"success": True, "message": "Login successful."}, 200
+        return {"success": False, "message": "Invalid credentials."}, 401
     except MySQLdb.Error as e:
         print(f"MySQL error during organization login: {e}")
-        return False
+        return {"success": False, "message": "Database error."}, 500
+
 
 # --- Login Route ---
 @app.route('/login', methods=['POST'])
@@ -182,15 +195,161 @@ def login():
     print(f"Login attempt for {'Organization' if is_org else 'Participant'} with email: {email}")
 
     if is_org:
-        if check_organization(email, password):
-            return jsonify({"success": True, "message": "Login successful"})
-        else:
-            return jsonify({"success": False, "message": "Invalid organization credentials"}), 401
+        # Updated to use the modified check_organization function
+        response, status_code = check_organization(email, password)
+        return jsonify(response), status_code
     else:
         if check_participant(email, password):
-            return jsonify({"success": True, "message": "Login successful"})
+            return jsonify({"success": True, "message": "Login successful"}), 200
         else:
             return jsonify({"success": False, "message": "Invalid participant credentials"}), 401
+
+# Function to insert admin into the database
+def insert_admin(username, password):
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+        query = "INSERT INTO admins (username, password) VALUES (%s, %s)"
+        cursor.execute(query, (username, hashed_password))
+        db.commit()
+        cursor.close()
+    except MySQLdb.Error as e:
+        return {"error": f"MySQL error: {e}"}, 500
+    finally:
+        db.close()
+    return {"message": "Admin created successfully."}, 201
+
+
+# API to create an admin
+@app.route('/api/admins', methods=['POST'])
+def create_admin():
+    data = request.get_json()
+    if 'username' not in data or 'password' not in data:
+        return jsonify({"error": "Username and password are required."}), 400
+    return jsonify(insert_admin(data['username'], data['password']))
+
+
+# Function to check admin credentials
+def check_admin(username, password):
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        query = "SELECT * FROM admins WHERE username = %s"
+        cursor.execute(query, [username])
+        admin = cursor.fetchone()
+        cursor.close()
+        db.close()
+
+        if admin and bcrypt.checkpw(password.encode('utf-8'), admin['password'].encode('utf-8')):
+            return True
+        return False
+    except MySQLdb.Error as e:
+        print(f"MySQL error during admin check: {e}")
+        return False
+
+@app.route('/admin/login', methods=['GET'])
+def show_login_page():
+    return render_template('admin_login.html')
+
+# API to login admin
+@app.route('/api/admin/login', methods=['POST'])
+def admin_login():
+    data = request.get_json()
+    if 'username' not in data or 'password' not in data:
+        return jsonify({"error": "Username and password are required."}), 400
+
+    if check_admin(data['username'], data['password']):
+        session['admin'] = data['username']  # Store admin in session
+        return jsonify({"success": True, "message": "Login successful"}), 200
+    else:
+        return jsonify({"success": False, "message": "Invalid admin credentials"}), 401
+
+# Admin dashboard route
+@app.route('/admin/dashboard', methods=['GET'])
+def admin_dashboard():
+    if 'admin' in session:
+        return render_template('admin_dashboard.html')
+    else:
+        return redirect('/api/admin/login')
+    
+# API to log out the admin
+@app.route('/api/admin/logout', methods=['POST'])
+def admin_logout():
+    # Check if admin is in the session
+    if 'admin' in session:
+        session.pop('admin', None)  # Remove admin from the session
+        return jsonify({"success": True, "message": "Logged out successfully"}), 200
+    else:
+        return jsonify({"error": "No admin logged in"}), 400
+    
+
+# Function to get organizations from the database
+def get_organizations():
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        query = "SELECT * FROM organizations WHERE status = 'pending'"
+        cursor.execute(query)
+        organizations = cursor.fetchall()
+        cursor.close()
+        return organizations
+    except MySQLdb.Error as e:
+        print(f"MySQL error during fetching organizations: {e}")
+        return []
+    finally:
+        db.close()
+
+# API to get organizations
+@app.route('/api/admin/organizations', methods=['GET'])
+def admin_get_organizations():
+    organizations = get_organizations()
+    return jsonify(organizations), 200
+
+# Function to update organization status
+def update_organization_status(org_id, status):
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+        query = "UPDATE organizations SET status = %s WHERE id = %s"
+        cursor.execute(query, (status, org_id))
+        db.commit()
+        cursor.close()
+    except MySQLdb.Error as e:
+        print(f"MySQL error during updating organization status: {e}")
+        return {"error": f"MySQL error: {e}"}, 500
+    finally:
+        db.close()
+    return {"message": "Organization status updated successfully."}, 200
+
+# API to approve organization
+@app.route('/api/admin/organizations/approve/<int:org_id>', methods=['POST'])
+def admin_approve_organization(org_id):
+    return jsonify(update_organization_status(org_id, 'approved'))
+
+# API to reject organization
+@app.route('/api/admin/organizations/reject/<int:org_id>', methods=['POST'])
+def admin_reject_organization(org_id):
+    return jsonify(delete_organization(org_id))
+
+# Function to delete the rejected orgs from database
+def delete_organization(org_id):
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+        query = "DELETE FROM organizations WHERE id = %s"
+        cursor.execute(query, (org_id,))
+        db.commit()
+        cursor.close()
+    except MySQLdb.Error as e:
+        print(f"MySQL error during deleting organization: {e}")
+        return {"error": f"MySQL error: {e}"}, 500
+    finally:
+        db.close()
+    return {"message": "Organization deleted successfully."}, 200
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8080)
