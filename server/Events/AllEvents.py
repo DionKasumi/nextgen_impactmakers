@@ -6,10 +6,10 @@ from datetime import datetime
 # Database connection parameters
 db_params = {
     'user': 'root',
-    'passwd': '1234',  # Replace with your actual password
+    'passwd': '1234',  
     'host': 'localhost',
     'port': 3306,
-    'db': 'course_data'  # Ensure this database exists
+    'db': 'pye_data'  
 }
 
 # Save the scraped event data to the MySQL database

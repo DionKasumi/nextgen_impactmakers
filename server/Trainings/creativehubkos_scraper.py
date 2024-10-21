@@ -8,7 +8,7 @@ db_params = {
     'passwd': '1234',
     'host': 'localhost',
     'port': 3306,
-    'db': 'course_data'
+    'db': 'pye_data'
 }
 
 def fetch_and_update_job_listings(trainings_list):

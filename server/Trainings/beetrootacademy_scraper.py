@@ -8,7 +8,7 @@ db_params = {
     'passwd': '1234',
     'host': 'localhost',
     'port': 3306,
-    'db': 'course_data'  
+    'db': 'pye_data'  
 }
 
 def save_trainings_to_database(trainings_list):

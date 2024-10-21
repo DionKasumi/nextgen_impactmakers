@@ -7,7 +7,7 @@ db_params = {
     'passwd': '1234',
     'host': 'localhost',
     'port': 3306,
-    'db': 'course_data'  # Ensure this database exists
+    'db': 'pye_data' 
 }
 
 def save_to_database(courses_list):
@@ -19,25 +19,25 @@ def save_to_database(courses_list):
             try:
                 # Check if the course already exists
                 check_query = "SELECT COUNT(*) FROM all_courses WHERE title = %s AND source = %s"
-                cursor.execute(check_query, (course['Title'], 'Probit Academy Kosova'))
+                cursor.execute(check_query, (course['Title'], 'ICK'))
                 exists = cursor.fetchone()[0] > 0
 
                 if not exists:
-                    # Insert new course with the trainer information
+                    # Insert new course with all relevant fields
                     insert_query = """
                     INSERT INTO all_courses (source, title, trainer, description, price, students, rating, image_url, duration)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                     """
                     data = (
-                        'Probit Academy Kosova',
+                        'ICK',  # Source
                         course['Title'],
-                        course['Trainer'],  # Add trainer to the database
+                        course.get('Trainer', 'Unknown'),  
                         course['Description'],
-                        course['Price (EUR)'],
-                        course['Students'],
-                        course['Rating'],
+                        course.get('Price', 'N/A'),  
+                        course.get('Students', 0),
+                        course.get('Rating', 'N/A'),
                         course['Image URL'],
-                        None   # No duration provided
+                        course['Duration']
                     )
                     cursor.execute(insert_query, data)
                     db.commit()
@@ -60,34 +60,48 @@ def save_to_database(courses_list):
 
 def scrape_courses():
     with sync_playwright() as p:
-        page_url = 'https://probitacademy.com/courses/'
+        page_url = 'https://ickosovo.com/training/courses'
 
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=True)
         page = browser.new_page()
         page.goto(page_url, timeout=60000)
         
-        courses = page.locator('//div[contains(@class, "course-grid-4")]').all()
+     
+        page.wait_for_load_state('networkidle')
+
+       
+        page.locator('//div[@data-elementor-type="loop-item"]').first.wait_for(timeout=10000)
+
+        courses = page.locator('//div[@data-elementor-type="loop-item"]').all()
         print(f'There are {len(courses)} courses.')
 
         courses_list = []
         for course in courses:
             try:
-                title = course.locator('.course-title a').inner_text(timeout=5000)
-                trainer = course.locator('.course-author .value a').first.inner_text(timeout=5000)
-                description = course.locator('.course-description p').inner_text(timeout=5000)
-                price = course.locator('.course-price .value').first.inner_text(timeout=5000).strip()
-                students = course.locator('.course-students .value').first.inner_text(timeout=5000).strip()
-                rating = course.locator('.course-review .value').first.inner_text(timeout=5000).strip()
-                image_url = course.locator('.course-thumbnail img').get_attribute('src', timeout=5000)
+              
+                course.locator('.elementor-heading-title a').wait_for(timeout=10000)
+
+                # Fetch the data
+                title = course.locator('.elementor-heading-title a').text_content(timeout=10000)
+                description = course.locator('.elementor-widget-container p').text_content(timeout=10000)
+                image_url = course.locator('img.attachment-full').get_attribute('src', timeout=10000)
+                duration = course.locator('.meta-timeframe .elementor-button-text').text_content(timeout=10000)
+
+             
+                trainer = 'Unknown'  
+                price = 'N/A'  
+                students = 0 
+                rating = 'N/A'  
 
                 courses_list.append({
-                    'Title': title,
-                    'Trainer': trainer,  # Add trainer to the course dictionary
-                    'Description': description,
-                    'Price (EUR)': price,
+                    'Title': title.strip() if title else 'N/A',
+                    'Description': description.strip() if description else 'N/A',
+                    'Image URL': image_url.strip() if image_url else 'N/A',
+                    'Duration': duration.strip() if duration else 'N/A',
+                    'Trainer': trainer,
+                    'Price': price,
                     'Students': students,
-                    'Rating': rating,
-                    'Image URL': image_url
+                    'Rating': rating
                 })
             except Exception as e:
                 print(f"An error occurred while processing a course: {e}")
@@ -101,7 +115,7 @@ def main():
         courses_list = scrape_courses()
         save_to_database(courses_list)
         print("Sleeping for 30 minutes...")
-        time.sleep(30 * 60)  # Sleep for 30 minutes to retrieve recently added trainings 
+        time.sleep(30 * 60)  # Sleep for 30 minutes
 
 if __name__ == '__main__':
     main()
