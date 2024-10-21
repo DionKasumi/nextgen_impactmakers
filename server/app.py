@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, abort, request, session, render_template
+from flask import Flask, jsonify, abort, redirect, request, session, render_template
 from flask_cors import CORS
 import MySQLdb
 import bcrypt
@@ -14,7 +14,7 @@ db_params = {
     'passwd': '1234',
     'host': 'localhost',
     'port': 3306,
-    'db': 'course_data'
+    'db': 'pye_data'
 }
 
 def fetch_courses_from_database():
@@ -347,8 +347,6 @@ def delete_organization(org_id):
     finally:
         db.close()
     return {"message": "Organization deleted successfully."}, 200
-
-
 
 
 if __name__ == '__main__':
