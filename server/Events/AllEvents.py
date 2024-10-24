@@ -24,8 +24,8 @@ def save_event_to_db(event):
 
         if not exists:
             insert_query = """
-            INSERT INTO all_events (source, organizer, title, duration, location, image_url)
-            VALUES (%s, %s, %s, %s, %s, %s)
+            INSERT INTO all_events (source, organizer, title, duration, location, image_url, email, phone_number, office_address, company_logo)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
             cursor.execute(insert_query, (
                 event['Source'],
@@ -33,7 +33,11 @@ def save_event_to_db(event):
                 event['Title'],
                 event['Duration'],
                 event['Location'],
-                event['Image URL']
+                event['Image URL'],
+                event['Email'],
+                event['Phone Number'],
+                event['Office Address'],
+                event['Company Logo']
             ))
             db.commit()
             print(f"Inserted new event: {event['Title']}")
@@ -69,12 +73,16 @@ def scrape_shpik_events():
                 organizer = 'N/A'
 
                 events_list.append({
-                    'Source': 'Shpik Events',
+                    'Source': 'SHPIK Events',
                     'Title': title,
                     'Organizer': organizer,
                     'Duration': duration,
                     'Location': location,
-                    'Image URL': image_url
+                    'Image URL': image_url, 
+                    'Email': 'info@shpik.org',
+                    'Phone Number': '+383 44 507 575',
+                    'Office Address': 'Xheladin Hana p.n. F.P. 315. 10000 \n Prishtinë, Kosovë',
+                    'Company Logo': 'https://trajnimet.info/wp-content/uploads/2022/12/shpik-logo.png'
                 })
                 
                 print(f"Scraped event {i + 1}: {title} | Location: {location}")
@@ -115,7 +123,11 @@ def scrape_ict_kosovo():
                     'Organizer': organizer,
                     'Duration': duration,
                     'Location': location,
-                    'Image URL': image_url
+                    'Image URL': image_url,
+                    'Email': 'info@ictkosovo.eu',  
+                    'Phone Number': '+383 44 916 156',  
+                    'Office Address': 'Rruga Zagrebi, Hyrja 23 Kati 2 \n Prishtinë, Kosovë 10000', 
+                    'Company Logo': 'https://ictkosovo.eu/wp-content/uploads/2023/05/white.svg'
                 })
                 
                 print(f"Scraped event {i + 1}: {title}")

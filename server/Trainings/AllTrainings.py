@@ -13,7 +13,7 @@ db_params = {
 }
 
 # Function to save course data to the database
-def save_to_database(courses_list, source):
+def save_to_database(courses_list, source, email, phone_number, office_address, company_logo):
     db = None
     cursor = None
     try:
@@ -28,10 +28,10 @@ def save_to_database(courses_list, source):
                 exists = cursor.fetchone()[0] > 0
 
                 if not exists:
-                    # Insert new course data
+                    # Insert new course data with additional fields
                     insert_query = """
-                    INSERT INTO all_courses (source, title, trainer, description, price, students, rating, image_url, duration)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    INSERT INTO all_courses (source, title, trainer, description, price, students, rating, image_url, duration, email, phone_number, office_address, company_logo)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                     """
                     data = (
                         source,
@@ -42,7 +42,11 @@ def save_to_database(courses_list, source):
                         course.get('Students', 0),
                         course.get('Rating', 'N/A'),
                         course.get('Image_URL', 'N/A'),
-                        course.get('Duration', 'N/A')
+                        course.get('Duration', 'N/A'),
+                        email,            # New field
+                        phone_number,     # New field
+                        office_address,   # New field
+                        company_logo      # New field
                     )
                     cursor.execute(insert_query, data)
                     db.commit()
@@ -61,6 +65,7 @@ def save_to_database(courses_list, source):
             cursor.close()
         if db:
             db.close()
+
 
 # Scraper functions for various sources
 def scrape_ick_kosovo(page):
@@ -296,12 +301,54 @@ def main():
         page = browser.new_page()
 
         sources = [
-            {'scrape_func': scrape_ick_kosovo, 'source_name': 'ICK Kosovo'},
-            {'scrape_func': scrape_beetroot_academy, 'source_name': 'Beetroot Academy'},
-            {'scrape_func': scrape_probit_academy, 'source_name': 'Probit Academy'},
-            {'scrape_func': scrape_creative_hub_kosovo, 'source_name': 'Creative Hub Kosovo'},
-            {'scrape_func': scrape_outkos_academy, 'source_name': 'Outkos Academy'},
-            {'scrape_func': scrape_shpik_trainings, 'source_name': 'ShpikTrainings'}
+            {
+                'scrape_func': scrape_ick_kosovo,
+                'source_name': 'Innovation Centre Kosovo',
+                'email': 'info@ickosovo.com',
+                'phone_number': '+383 (0)38 77 11 80',
+                'office_address': 'Rexhep Mala 28A, 10000 \n Prishtinë, Kosovë',
+                'company_logo': 'https://ickosovo.com/wp-content/uploads/2023/10/ick-white-mainlogo.svg'
+            },
+            {
+                'scrape_func': scrape_beetroot_academy,
+                'source_name': 'Beetroot Academy Kosovo',
+                'email': 'xk@beetroot.academy',
+                'phone_number': '+383 48 248 788',
+                'office_address': 'Anton Çetta, nr.29 \n Prishtinë, Kosovë',
+                'company_logo': 'https://xk.beetroot.academy/static/logo-c96c7c4d19444146e8b100d14e93d1ac.svg'
+            },
+            {
+                'scrape_func': scrape_probit_academy,
+                'source_name': 'Probit Academy',
+                'email': 'info@probitacademy.com',
+                'phone_number': '+383 45 899 099',
+                'office_address': 'Sejdi Kryeziu \n Prishtinë, Kosovë',
+                'company_logo': 'https://cdn.shortpixel.ai/spai/w_181+q_lossy+ret_img+to_webp/https://probitacademy.com/wp-content/uploads/2019/12/probit_academy-logo-e1576602302615.png'
+            },
+            {
+                'scrape_func': scrape_creative_hub_kosovo,
+                'source_name': 'Creative Hub Kosovo',
+                'email': 'contact@creativehubkos.com',
+                'phone_number': '+383 49 334 437',
+                'office_address': 'Behar Begolli, Building of F&A Engineering \n Prishtinë, Kosovë',
+                'company_logo': 'https://creativehubkos.com/images/logo.svg'
+            },
+            {
+                'scrape_func': scrape_outkos_academy,
+                'source_name': 'Outkos Academy',
+                'email': 'info@outkos.academy',
+                'phone_number': '+383 43 560 863',
+                'office_address': 'Garcia Lorka, Nr.24 Dragodan 10000 \n Prishtinë, Kosovë',
+                'company_logo': 'https://media.licdn.com/dms/image/v2/D4D0BAQGfucha2lH2wg/company-logo_200_200/company-logo_200_200/0/1684841614082?e=1737590400&v=beta&t=1zMA33yRZtolI-p0engjcXSC4NUa3D92cCFUhxYDt5Y'
+            },
+            {
+                'scrape_func': scrape_shpik_trainings,
+                'source_name': 'SHPIK Kosovo Informatics Society',
+                'email': 'info@shpik.org',
+                'phone_number': '+383 44 507 575',
+                'office_address': 'Xheladin Hana p.n. F.P. 315. 10000 \n Prishtinë, Kosovë',
+                'company_logo': 'https://trajnimet.info/wp-content/uploads/2022/12/shpik-logo.png'
+            }
         ]
 
         for source in sources:
@@ -309,11 +356,19 @@ def main():
                 print(f"Scraping courses from {source['source_name']}...")
                 courses_list = source['scrape_func'](page)
                 if courses_list:
-                    save_to_database(courses_list, source['source_name'])
+                    save_to_database(
+                        courses_list,
+                        source['source_name'],
+                        source['email'],
+                        source['phone_number'],
+                        source['office_address'],
+                        source['company_logo']
+                    )
             except Exception as e:
                 print(f"Error scraping {source['source_name']}: {e}")
 
         browser.close()
+
 
 if __name__ == '__main__':
     while True:
