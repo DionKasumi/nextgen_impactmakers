@@ -1,153 +1,428 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Panel</title>
     <link
-      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css"
-      rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css"
+        rel="stylesheet"
     />
     <style>
-      th {
-        background-color: #3b82f6; 
-        color: white;
-      }
-      td, th {
-        text-align: left; 
-        padding: 12px; 
-      }
-      table {
-        border-collapse: collapse; 
-        width: 100%; 
-      }
-      tr:nth-child(even) {
-        background-color: #f3f4f6; 
-      }
-      .active {
-        background-color: #3b82f6;
-      }
-    </style>
-  </head>
-  <body class="bg-gray-100">
-    <div class="flex">
-      <!-- Sidebar -->
-      <div
-        class="w-64 h-screen bg-blue-900 text-white flex flex-col justify-between"
-      >
-        <div>
-          <div class="p-6">
-            <h1 class="text-2xl font-bold">Admin Panel</h1>
-          </div>
-          <nav class="mt-10">
-            <a
-              id="manageUsersLink"
-              href="#"
-              class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-800"
-            >
-              Manage Users
-            </a>
-            <a
-              id="manageCardsLink"
-              href="#"
-              class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-800"
-            >
-              Manage Cards
-            </a>
-            <a
-              id="manageReviewsLink"
-              href="#"
-              class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-800"
-            >
-              Manage Reviews/Feedback
-            </a>
-          </nav>
-        </div>
-
-        <!-- Logout Button at the Bottom -->
-        <div class="p-6">
-          <button
-            id="logoutButton"
-            class="block py-2.5 px-4 rounded bg-red-600 hover:bg-red-800 w-full text-white"
-          >
-            Log out
-          </button>
-        </div>
-      </div>
-
-      <!-- Main Content -->
-      <div class="flex-1 p-6">
-        <h2 id="greeting" class="text-3xl font-semibold mb-6">Welcome, Admin!</h2>
-        <p id="greetingDescription" class="text-gray-700 mb-6">This is your admin dashboard where you can manage Users, Cards, or Reviews.</p>
-        
-        <!-- Organizations Table -->
-        <div class="overflow-x-auto" id="organizationsTableContainer" style="display: none;">
-          <h2 class="text-2xl font-bold mb-4">Manage Users</h2>
-          <h3 class="text-xl font-semibold mb-4">Approve Pending Organizations</h3>
-          <table class="min-w-full bg-white">
-            <thead>
-              <tr>
-                <th class="border-b">Organization Name</th>
-                <th class="border-b">Email</th>
-                <th class="border-b">Phone Number</th>
-                <th class="border-b">Website URL</th>
-                <th class="border-b">Description</th>
-                <th class="border-b">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="organizationsTableBody">
-              <!-- Organizations will be dynamically inserted here -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <script>
-        // Function to highlight the active link
-        function highlightActiveLink(activeLinkId) {
-          const links = document.querySelectorAll('nav a');
-          links.forEach(link => {
-            link.classList.remove('active');
-          });
-          document.getElementById(activeLinkId).classList.add('active');
+        th {
+            background-color: #3b82f6; 
+            color: white;
         }
+        td, th {
+            text-align: left; 
+            padding: 12px; 
+        }
+        table {
+            border-collapse: collapse; 
+            width: 100%; 
+        }
+        tr:nth-child(even) {
+            background-color: #f3f4f6; 
+        }
+        .active {
+            background-color: #3b82f6;
+        }
+        .submenu {
+            display: none;
+            padding-left: 1rem; /* Indent submenu */
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="w-64 h-screen bg-blue-900 text-white flex flex-col justify-between">
+            <div>
+                <div class="p-6">
+                    <h1 class="text-2xl font-bold">Admin Panel</h1>
+                </div>
+                <nav class="mt-10">
+                    <a
+                        id="manageUsersLink"
+                        href="#"
+                        class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-800"
+                    >
+                        Manage Users
+                    </a>
+                    <div>
+                        <a
+                            id="manageCardsLink"
+                            href="#"
+                            class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-800"
+                        >
+                            Manage Cards
+                        </a>
+                        <div id="cardsSubMenu" class="submenu">
+                            <a href="#" id="internshipsLink" class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-800">Internships</a>
+                            <a href="#" id="trainingsLink" class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-800">Trainings</a>
+                            <a href="#" id="volunteeringLink" class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-800">Volunteering</a>
+                            <a href="#" id="eventsLink" class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-800">Events</a>
+                        </div>
+                    </div>
+                    <a
+                        id="manageReviewsLink"
+                        href="#"
+                        class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-800"
+                    >
+                        Manage Reviews/Feedback
+                    </a>
+                </nav>
+            </div>
 
-        // Show the table and fetch organizations when Manage Users is clicked
-        document.getElementById('manageUsersLink').addEventListener('click', function() {
-          highlightActiveLink('manageUsersLink');
-          document.getElementById('greeting').style.display = 'none'; 
-          document.getElementById('greetingDescription').style.display = 'none'; 
-          document.getElementById('organizationsTableContainer').style.display = 'block'; 
-          fetch('/api/admin/organizations')
-            .then(response => response.json())
-            .then(data => {
-              const tableBody = document.getElementById('organizationsTableBody');
-              tableBody.innerHTML = ''; // Clear existing rows
-              data.forEach(org => {
+            <!-- Logout Button at the Bottom -->
+            <div class="p-6">
+                <button
+                    id="logoutButton"
+                    class="block py-2.5 px-4 rounded bg-red-600 hover:bg-red-800 w-full text-white"
+                >
+                    Log out
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 p-6">
+            <h2 id="greeting" class="text-3xl font-semibold mb-6">Welcome, Admin!</h2>
+            <p id="greetingDescription" class="text-gray-700 mb-6">This is your admin dashboard where you can manage Users, Cards, or Reviews.</p>
+
+            <!-- Users Table -->
+            <div class="overflow-x-auto" id="organizationsTableContainer" style="display: none;">
+                <h2 class="text-2xl font-bold mb-4">Manage Users</h2>
+                <h3 class="text-xl font-semibold mb-4">Approve Pending Organizations</h3>
+                <table class="min-w-full bg-white">
+                    <thead>
+                        <tr>
+                            <th class="border-b">Organization Name</th>
+                            <th class="border-b">Email</th>
+                            <th class="border-b">Phone Number</th>
+                            <th class="border-b">Website URL</th>
+                            <th class="border-b">Description</th>
+                            <th class="border-b">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="organizationsTableBody">
+                        <!-- Organizations will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Cards Tables -->
+            <div id="cardsTableContainer" style="display: none;">
+                <h2 class="text-2xl font-bold mb-4" id="cardsHeader">Manage Cards</h2>
+                <table class="min-w-full bg-white" id="cardsTable">
+                    <thead>
+                        <tr id="cardsTableHeader">
+                            <!-- Dynamic Header -->
+                        </tr>
+                    </thead>
+                    <tbody id="cardsTableBody">
+                        <!-- Cards will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+<!-- Edit Modal -->
+<div id="editModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 hidden flex items-center justify-center">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
+        <h2 class="text-xl font-bold mb-4 text-center">Edit Card</h2>
+        <form id="editForm" class="space-y-4">
+            <!-- Input fields will be dynamically added here -->
+        </form>
+        <div class="flex justify-end gap-4 mt-4">
+            <button id="cancelButton" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">
+                Cancel
+            </button>
+            <button id="saveButton" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition">
+                Save
+            </button>
+        </div>
+    </div>
+</div>
+
+
+        <script>
+            // Function to highlight the active link
+            function highlightActiveLink(activeLinkId) {
+                const links = document.querySelectorAll('nav a');
+                links.forEach(link => {
+                    link.classList.remove('active');
+                });
+                document.getElementById(activeLinkId).classList.add('active');
+            }
+
+            // Show the table and fetch organizations when Manage Users is clicked
+            document.getElementById('manageUsersLink').addEventListener('click', function() {
+                highlightActiveLink('manageUsersLink');
+                document.getElementById('greeting').style.display = 'none'; 
+                document.getElementById('greetingDescription').style.display = 'none'; 
+                document.getElementById('organizationsTableContainer').style.display = 'block'; 
+                document.getElementById('cardsTableContainer').style.display = 'none'; // Hide cards table
+                fetch('/api/admin/organizations')
+                    .then(response => response.json())
+                    .then(data => {
+                        const tableBody = document.getElementById('organizationsTableBody');
+                        tableBody.innerHTML = ''; // Clear existing rows
+                        data.forEach(org => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td class="py-2 px-4 border-b">${org.name_of_org}</td>
+                                <td class="py-2 px-4 border-b">${org.email_of_org}</td>
+                                <td class="py-2 px-4 border-b">${org.phone_number_of_org}</td>
+                                <td class="py-2 px-4 border-b">${org.url_of_org || 'N/A'}</td> 
+                                <td class="py-2 px-4 border-b">${org.description_of_org || 'N/A'}</td> 
+                                <td class="py-2 px-4 border-b">
+                                    <button onclick="approveOrganization(${org.id})" class="bg-green-500 text-white px-2 py-1 rounded">Approve</button>
+                                    <button onclick="rejectOrganization(${org.id})" class="bg-red-500 text-white px-2 py-1 rounded">Reject</button>
+                                </td>
+                            `;
+                            tableBody.appendChild(row);
+                        });
+                    });
+            });
+
+       
+
+              // Function to fetch and display cards based on the selected category
+              function fetchCards(apiUrl, title, columns) {
+    fetch(apiUrl)
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            const tableBody = document.getElementById('cardsTableBody');
+            const cardsHeader = document.getElementById('cardsTableHeader');
+
+            // Clear existing rows and header
+            tableBody.innerHTML = '';
+            cardsHeader.innerHTML = '';
+
+            // Set the title
+            document.getElementById('cardsHeader').textContent = title;
+
+            // Create header cells with labels
+            columns.forEach(col => {
+                const th = document.createElement('th');
+                th.innerHTML = `<b>${col}</b>`; // Wrap column name in a label tag
+                th.className = 'border-b';
+                cardsHeader.appendChild(th);
+            });
+
+            // Add Edit button column header
+            const actionHeader = document.createElement('th');
+            actionHeader.textContent = 'Actions';
+            actionHeader.className = 'border-b';
+            cardsHeader.appendChild(actionHeader);
+
+            // Create rows for each item
+            data.forEach(item => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                  <td class="py-2 px-4 border-b">${org.name_of_org}</td>
-                  <td class="py-2 px-4 border-b">${org.email_of_org}</td>
-                  <td class="py-2 px-4 border-b">${org.phone_number_of_org}</td>
-                  <td class="py-2 px-4 border-b">${org.url_of_org || 'N/A'}</td> 
-                  <td class="py-2 px-4 border-b">${org.description_of_org || 'N/A'}</td> 
-                  <td class="py-2 px-4 border-b">
-                    <button onclick="approveOrganization(${org.id})" class="bg-green-500 text-white px-2 py-1 rounded">Approve</button>
-                    <button onclick="rejectOrganization(${org.id})" class="bg-red-500 text-white px-2 py-1 rounded">Reject</button>
-                  </td>
+                    ${columns.map(col => `<td class="py-2 px-4 border-b">${item[col.toLowerCase().replace(/ /g, "_")] || 'N/A'}</td>`).join('')}
+                    <td class="py-2 px-4 border-b">
+                        <button onclick="editRow(${item.id}, this)" class="bg-blue-500 text-white px-2 py-1 rounded">Edit</button>
+                    </td>
                 `;
                 tableBody.appendChild(row);
-              });
             });
-        });
 
-        // Show message for Manage Cards
-        document.getElementById('manageCardsLink').addEventListener('click', function() {
-          highlightActiveLink('manageCardsLink');
-          document.getElementById('greeting').style.display = 'block'; 
-          document.getElementById('greetingDescription').style.display = 'block'; 
-          document.getElementById('organizationsTableContainer').style.display = 'none'; 
+            // Show cards table
+            document.getElementById('cardsTableContainer').style.display = 'block';
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            alert('There was an error fetching data. Please try again later.');
         });
+}
+
+function updateCard(id, formBody) {
+    const updatedData = {};
+
+    // Collect the updated data from the form
+    const inputs = formBody.querySelectorAll('input');
+    inputs.forEach(input => {
+        updatedData[input.name] = input.value; // Assuming input name matches the backend field names
+    });
+
+    // Make an API call to update the card data
+    fetch(`/api/admin/managecards/${id}`, { // Adjust endpoint as needed
+        method: 'PUT', // Change this to POST if required by your API
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedData),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to update card');
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Optionally, refresh the cards table after a successful update
+        fetchCards('/api/admin/managecards/internships', 'Manage Internships', ['Source', 'Title', 'Description', 'Posted Date', 'Salary', 'Duration', 'Location', 'Image URL']);
+        console.log('Update successful:', data);
+    })
+    .catch(error => {
+        console.error('Error updating card:', error);
+        alert('There was an error updating the card. Please try again later.');
+    });
+}
+
+
+function editRow(id, button) {
+    const row = button.closest('tr');
+    const columns = Array.from(row.children).slice(0, -1); // Exclude action column
+    const editForm = document.getElementById('editForm');
+    
+    // Clear any previous form inputs
+    editForm.innerHTML = '';
+
+    // Create input fields dynamically
+    columns.forEach((cell, index) => {
+        const label = document.createElement('label');
+        label.classList.add('block', 'text-sm', 'font-medium', 'text-gray-700');
+        label.textContent = cell.textContent;
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.name = `field${index}`; // Assign generic field name
+        input.value = cell.textContent;
+        input.classList.add('mt-1', 'block', 'w-full', 'border', 'rounded', 'p-2', 'shadow-sm');
+
+        const wrapper = document.createElement('div');
+        wrapper.appendChild(label);
+        wrapper.appendChild(input);
+
+        editForm.appendChild(wrapper);
+    });
+
+    // Show the modal
+    document.getElementById('editModal').classList.remove('hidden');
+
+    // Handle Save and Cancel actions
+    document.getElementById('saveButton').onclick = function () {
+        saveEdit(id, editForm, row);
+        closeModal();
+    };
+
+    document.getElementById('cancelButton').onclick = function () {
+        closeModal();
+    };
+}
+
+function closeModal() {
+    document.getElementById('editModal').classList.add('hidden');
+
+
+    // Add Save and Cancel buttons
+    const saveButton = document.createElement('button');
+    saveButton.type = 'button';
+    saveButton.textContent = 'Save';
+    saveButton.classList.add('bg-green-500', 'text-white', 'px-4', 'py-2', 'rounded');
+    saveButton.addEventListener('click', () => {
+        // Handle form submission and update data here
+    });
+
+    const cancelButton = document.createElement('button');
+    cancelButton.type = 'button';
+    cancelButton.textContent = 'Cancel';
+    cancelButton.classList.add('bg-red-500', 'text-white', 'px-4', 'py-2', 'rounded');
+    cancelButton.addEventListener('click', () => {
+        cancelEdit(row);
+    });
+
+    const buttonWrapper = document.createElement('div');
+    buttonWrapper.classList.add('w-full', 'flex', 'gap-4');
+    buttonWrapper.appendChild(saveButton);
+    buttonWrapper.appendChild(cancelButton);
+
+    form.appendChild(buttonWrapper);
+
+    // Replace row content with the form
+    row.innerHTML = '';
+    const td = document.createElement('td');
+    td.colSpan = columns.length + 1;
+    td.appendChild(form);
+    row.appendChild(td);
+}
+function saveEdit(id, form, row) {
+    const inputs = form.querySelectorAll('input');
+    const updatedData = Array.from(inputs).map(input => input.value);
+
+    // Optional: Send the updated data to the server
+    console.log(`Saving changes for ID ${id}:`, updatedData);
+
+    // Update the row with the new values
+    row.innerHTML = updatedData
+        .map(data => `<td class="py-2 px-4 border-b">${data}</td>`)
+        .join('');
+    const actionTd = document.createElement('td');
+    actionTd.classList.add('py-2', 'px-4', 'border-b');
+    actionTd.innerHTML = `<button onclick="editRow(${id}, this)" class="bg-blue-500 text-white px-2 py-1 rounded">Edit</button>`;
+    row.appendChild(actionTd);
+}
+
+
+function cancelEdit(row) {
+    // Reload the page to restore the original table (or re-fetch data if needed)
+    window.location.reload();
+}
+
+    
+                // Show/hide the dropdown for Manage Cards
+            document.getElementById('manageCardsLink').addEventListener('click', function() {
+                highlightActiveLink('manageCardsLink');
+                const submenu = document.getElementById('cardsSubMenu');
+                submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+                
+                // Hide the greeting and its description
+                document.getElementById('greeting').style.display = 'none'; 
+                document.getElementById('greetingDescription').style.display = 'none'; 
+                document.getElementById('organizationsTableContainer').style.display = 'none'; 
+                document.getElementById('cardsTableContainer').style.display = 'none'; // Hide cards table
+            });
+
+            // Event listeners for submenu items
+            document.getElementById('internshipsLink').addEventListener('click', function(event) {
+                event.stopPropagation(); // Prevent event from bubbling up
+                fetchCards('/api/admin/managecards/internships', 'Manage Internships', ['Source', 'Title', 'Description', 'Posted Date', 'Salary', 'Duration', 'Location', 'Image URL']);
+                highlightActiveLink('internshipsLink');
+                // Hide the greeting and description when submenu is clicked
+                document.getElementById('greeting').style.display = 'none'; 
+                document.getElementById('greetingDescription').style.display = 'none'; 
+            });
+
+            // Similar updates for the other submenu items
+            document.getElementById('trainingsLink').addEventListener('click', function(event) {
+                event.stopPropagation();
+                fetchCards('/api/admin/managecards/training', 'Manage Trainings', ['Source', 'Title', 'Trainer', 'Description', 'Price', 'Students', 'Rating', 'Image URL', 'Duration']);
+                highlightActiveLink('trainingsLink');
+                document.getElementById('greeting').style.display = 'none'; 
+                document.getElementById('greetingDescription').style.display = 'none'; 
+            });
+
+            document.getElementById('volunteeringLink').addEventListener('click', function(event) {
+                event.stopPropagation();
+                fetchCards('/api/admin/managecards/volunteering', 'Manage Volunteering', ['Source', 'Title', 'Duration', 'Cause', 'Age Group', 'Image URL']);
+                highlightActiveLink('volunteeringLink');
+                document.getElementById('greeting').style.display = 'none'; 
+                document.getElementById('greetingDescription').style.display = 'none'; 
+            });
+
+            document.getElementById('eventsLink').addEventListener('click', function(event) {
+                event.stopPropagation();
+                fetchCards('/api/admin/managecards/events', 'Manage Events', ['Source', 'Organizer', 'Title', 'Duration', 'Location', 'Image URL']);
+                highlightActiveLink('eventsLink');
+                document.getElementById('greeting').style.display = 'none'; 
+                document.getElementById('greetingDescription').style.display = 'none'; 
+            });
+
 
         // Show message for Manage Reviews
         document.getElementById('manageReviewsLink').addEventListener('click', function() {
