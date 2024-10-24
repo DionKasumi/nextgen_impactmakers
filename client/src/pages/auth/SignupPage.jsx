@@ -99,44 +99,40 @@ const ParticipantSecondForm = ({ preferencesData, handleChange }) => {
         }
 
         setChecked(newChecked);
-        handleChange(value);
+        handleChange(newChecked);
     };
 
     return (
         <ThemeProvider theme={theme}>
             <List className="w-full bg-[#A3A9FE45] rounded-md h-auto max-h-96 overflow-y-scroll">
-                {[
-                    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-                    17, 18, 19,
-                ].map((value) => {
-                    const labelId = `checkbox-list-label-${value}`;
-
-                    return (
-                        <ListItem key={value} disablePadding>
-                            <ListItemButton
-                                role={undefined}
-                                onClick={handleToggle(value)}
-                                dense
-                            >
-                                <ListItemText
-                                    id={labelId}
-                                    primary={`Line item ${value + 1}`}
-                                />
-                                <ListItemIcon>
-                                    <Checkbox
-                                        edge="end"
-                                        checked={checked.includes(value)}
-                                        tabIndex={-1}
-                                        disableRipple
-                                        inputProps={{
-                                            'aria-labelledby': labelId,
-                                        }}
+                {['Programming', 'Art', 'Design', 'Music', 'Technology'].map(
+                    (value, index) => {
+                        const labelId = `checkbox-list-label-${index}`;
+                        return (
+                            <ListItem key={index} disablePadding>
+                                <ListItemButton
+                                    onClick={handleToggle(value)}
+                                    dense
+                                >
+                                    <ListItemText
+                                        id={labelId}
+                                        primary={value}
                                     />
-                                </ListItemIcon>
-                            </ListItemButton>
-                        </ListItem>
-                    );
-                })}
+                                    <ListItemIcon>
+                                        <Checkbox
+                                            edge="end"
+                                            checked={checked.includes(value)}
+                                            disableRipple
+                                            inputProps={{
+                                                'aria-labelledby': labelId,
+                                            }}
+                                        />
+                                    </ListItemIcon>
+                                </ListItemButton>
+                            </ListItem>
+                        );
+                    }
+                )}
             </List>
         </ThemeProvider>
     );
@@ -261,8 +257,8 @@ const MainForm = () => {
         });
     };
 
-    const handlePreferencesChange = (e) => {
-        setPreferencesData([...preferencesData, e]);
+    const handlePreferencesChange = (newChecked) => {
+        setPreferencesData(newChecked);
     };
 
     const handleOrgChange = (e) => {
@@ -333,7 +329,7 @@ const MainForm = () => {
                 if (isParticipantSecondForm) {
                     const response = await axios.post(
                         'http://localhost:8080/signup',
-                        participantData
+                        { ...participantData, preferences: preferencesData }
                     );
 
                     let count = 3;

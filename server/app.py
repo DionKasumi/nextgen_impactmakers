@@ -74,13 +74,20 @@ def get_course(course_id):
     return jsonify(course)
 
 # --- Helper Functions ---
-def add_participant(username, email, phone, password):
+def add_participant(username, email, phone, password, preferences):
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    
+    
+    if isinstance(preferences, list):
+        preferences_str = ', '.join(preferences)  
+    else:
+        preferences_str = preferences
+
     try:
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor()
-        query = "INSERT INTO participants (username, email, phone, password) VALUES (%s, %s, %s, %s)"
-        cursor.execute(query, (username, email, phone, hashed_password))
+        query = "INSERT INTO participants (username, email, phone, password, preferences) VALUES (%s, %s, %s, %s, %s)"
+        cursor.execute(query, (username, email, phone, hashed_password, preferences_str))
         db.commit()
         cursor.close()
     except MySQLdb.Error as e:
@@ -89,6 +96,7 @@ def add_participant(username, email, phone, password):
     finally:
         db.close()
     return jsonify({"message": "Participant created successfully."}), 201
+
 
 def add_organization(name_of_org, email_of_org, phone_number_of_org, password_of_org, url_of_org, description_of_org):
     hashed_password = bcrypt.hashpw(password_of_org.encode('utf-8'), bcrypt.gensalt())
@@ -136,7 +144,8 @@ def signup():
             data['username'], 
             data['email'], 
             data['phone'], 
-            data['password']
+            data['password'],
+            data.get('preferences', [])
         )
 
 # --- Helper Functions for Login ---

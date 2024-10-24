@@ -86,14 +86,15 @@ def create_database():
         );
         """)
 
-        # Create participants table
+        # Modify participants table creation
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS participants (
             id INT AUTO_INCREMENT PRIMARY KEY,
             username VARCHAR(255) NOT NULL UNIQUE,
             email VARCHAR(255) NOT NULL,
             phone VARCHAR(20) NOT NULL,
-            password VARCHAR(255) NOT NULL
+            password VARCHAR(255) NOT NULL,
+            preferences TEXT  
         );
         """)
 
