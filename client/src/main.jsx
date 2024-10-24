@@ -15,6 +15,8 @@ import EventsPage from './pages/EventsPage.jsx';
 import EventDetailsPage from './pages/EventDetailsPage.jsx';
 import InternshipsPage from './pages/InternshipPage.jsx';
 import InternshipDetailsPage from './pages/InternshipDetailsPage.jsx';
+import VolunteeringPage from './pages/VolunteeringPage.jsx';
+import VolunteeringDetailsPage from './pages/VolunteeringDetailsPage.jsx';
 
 const router = createBrowserRouter([
     {
@@ -42,6 +44,10 @@ const router = createBrowserRouter([
                 path: '/Internships',
                 element: <InternshipsPage />,
             },
+            {
+                path: '/Volunteering',
+                element: <VolunteeringPage />,
+            },
         ],
     },
     {
@@ -51,7 +57,7 @@ const router = createBrowserRouter([
         children: [
             {
                 path: '/courses/:id',
-                element: <TrainingDetailsPage />,
+                element: <TrainingDetailsPage />, 
             },
             {
                 path: '/courses/:id',
@@ -60,6 +66,10 @@ const router = createBrowserRouter([
             {
                 path: '/courses/:id',
                 element: <InternshipDetailsPage />
+            },
+            {
+                path: '/courses/:id',
+                element: <VolunteeringDetailsPage />
             },
         ],
     },

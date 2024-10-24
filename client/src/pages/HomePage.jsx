@@ -114,16 +114,16 @@ const ThirdPart = () => {
                         />
                     </div>
                 </a>
-                <a href="/voolunteering"> 
+                <a href="/volunteering"> 
                 <div className="relative flex flex-col items-center group">
                     <img
                         src="../assets/Group 771.png" // Default image
-                        alt="voolunteering"
+                        alt="volunteering"
                         className="w-[400px] h-[350px] mb-2 object-cover rounded-lg " 
                     />
                     <img
                         src="../assets/image 9.png" // Hover image
-                        alt="voolunteering Hover"
+                        alt="volunteering Hover"
                         className="absolute w-[400px] h-[360px] -mt-1  object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300" // Shown on hover
                     />
                 </div>
