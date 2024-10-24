@@ -11,6 +11,8 @@ import SignupPage from './pages/auth/SignupPage.jsx';
 import ContactPage from './pages/ContactPage.jsx';
 import TrainingsPage from './pages/TrainingsPage.jsx';
 import TrainingDetailsPage from './pages/TrainingDetailsPage.jsx';
+import EventsPage from './pages/EventsPage.jsx';
+import EventDetailsPage from './pages/EventDetailsPage.jsx';
 
 const router = createBrowserRouter([
     {
@@ -30,6 +32,10 @@ const router = createBrowserRouter([
                 path: '/trainings',
                 element: <TrainingsPage />,
             },
+            {
+                path: '/Events',
+                element: <EventsPage />,
+            },
         ],
     },
     {
@@ -39,7 +45,11 @@ const router = createBrowserRouter([
         children: [
             {
                 path: '/courses/:id',
-                element: <TrainingDetailsPage />,
+                element: <TrainingDetailsPage />, 
+            },
+            {
+                path: '/courses/:id',
+                element: <EventDetailsPage />
             },
         ],
     },
