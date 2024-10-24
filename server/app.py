@@ -2,11 +2,12 @@ from flask import Flask, jsonify, abort, redirect, request, session, render_temp
 from flask_cors import CORS
 import MySQLdb
 import bcrypt
+import secrets
 
 app = Flask(__name__)
 CORS(app)  # Allow CORS for all origins
 
-app.secret_key = '850b3b565f68f1ce23a200e28f38b5ec' 
+app.secret_key = secrets.token_hex(16)
 
 # Database connection parameters
 db_params = {
