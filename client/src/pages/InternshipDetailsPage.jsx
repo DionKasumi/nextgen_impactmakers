@@ -44,10 +44,13 @@ const TestimonialCard = () => {
     );
 };
 
-const TrainingDetailsPage = () => {
+const InternshipDetailsPage = () => {
     const { id } = useParams();
 
     const [course, setCourse] = useState([]);
+
+    // State to manage ticket count
+    const [ticketCount, setTicketCount] = useState(0);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -57,11 +60,23 @@ const TrainingDetailsPage = () => {
         fetchData();
     }, [id]);
 
+    // Function to handle increment
+    const handleIncrement = () => {
+        setTicketCount(ticketCount + 1);
+    };
+
+    // Function to handle decrement
+    const handleDecrement = () => {
+        if (ticketCount > 0) {
+            setTicketCount(ticketCount - 1);
+        }
+    };
+
     return (
         <>
             <div className="w-full h-full flex flex-col justify-between items-center">
                 <div className="w-full min-h-svh items-center flex flex-col relative top-16 mb-10">
-                    <div className="w-full h-full py-12 flex justify-center bg-[url('../assets/img5.png')] items-center flex-col">
+                <div className="w-full h-full py-12 flex justify-center bg-[url('../assets/img5.png')] items-center flex-col">
                         {/* Main Content Div */}
                         <div className="w-5/6 aspect-[16/5] bg-gray-400 flex justify-center items-center rounded-md relative mb-16">
                             {course.image_url == null ? (
@@ -81,7 +96,7 @@ const TrainingDetailsPage = () => {
 
                         <div className="flex flex-col justify-center items-center w-5/6 h-auto mb-12">
                             <h1 className="font-bold text-2xl mb-4">
-                                About The Training
+                                About The Internship
                             </h1>
                             <p className="text-center w-full md:w-1/2">
                                 {course.description}
@@ -107,40 +122,44 @@ const TrainingDetailsPage = () => {
                             <ol className="list-disc text-2xl">
                                 <li></li>
                                 <li></li>
-                                <li></li>
-                                <li></li>
-                                <li></li>
                             </ol>
                         </div>
                     </div>
-                    <div className="w-full h-full py-24 flex justify-center items-center flex-col bg-[#4F1ABE] bg-[url('../assets/image6.png')]">        
-                        {/* Secondary Content Div */}
+
+                     {/* Internship Details Section */}
+                    <div className="w-full h-full py-24 flex justify-center items-center flex-col bg-[#4F1ABE] bg-[url('../assets/image12.png')]">
                         <div className="w-5/6 text-white flex flex-col items-center mb-6">
-                            <h1 className="text-3xl font-bold">Skill Level</h1>
-                            <p>{course.rating}</p>
-                        </div>
-                        <div className="w-5/6 text-white flex flex-col items-center mb-6">
-                            <h1 className="text-3xl font-bold">Age Group</h1>
-                            <p>Example Text</p>
+                            <h1 className="text-3xl font-bold">Date & Time</h1>
+                            <p>01/10/2024</p>
                         </div>
                         <div className="w-5/6 text-white flex flex-col items-center mb-6">
                             <h1 className="text-3xl font-bold">Location</h1>
                             <p>Example Text</p>
                         </div>
                         <div className="w-5/6 text-white flex flex-col items-center mb-6">
+                            <h1 className="text-3xl font-bold">Price</h1>
+                            <p>Example Text</p>
+                        </div>
+                        <div className="w-5/6 text-white flex flex-col items-center mb-6">
                             <h1 className="text-3xl font-bold">Duration</h1>
                             <p>{course.duration ? course.duration : 'N/A'}</p>
                         </div>
-                        <div className="w-5/6 text-white flex flex-col items-center mb-12">
-                            <h1 className="text-3xl font-bold">Organization</h1>
-                            <p>{course.source ? course.source : 'No Source'}</p>
+                        <div className="w-5/6 text-white flex flex-col items-center mb-6">
+                            <h1 className="text-3xl font-bold">Part Time</h1>
+                            <p>Example Text</p>
                         </div>
-                        <button className="px-16 py-6 bg-white text-black font-bold text-xl rounded-lg hover:scale-105 transition-all">
+                        <div className="w-5/6 text-white flex flex-col items-center mb-6">
+                            <h1 className="text-3xl font-bold">Last day to Apply</h1>
+                            <p>Example Text</p>
+                        </div>
+                        <button className="px-16 py-6 -mb-6 bg-white text-black font-bold text-xl rounded-lg hover:scale-105 transition-all">
                             Apply Here
                         </button>
                     </div>
+
+                    
                     <div className="w-full h-full py-24 bg-[url('../assets/image8.png')] flex justify-center items-center flex-col">
-                        {/* Organized By Content Div */}
+                        {/* Source of this Opportunity Content Div */}
                         <h1 className="font-bold text-2xl mb-12 -mt-12">
                             Source of this Opportunity
                         </h1>
@@ -179,11 +198,11 @@ const TrainingDetailsPage = () => {
                             <TestimonialCard />
                         </div>
                     </div>
-                    <div className="w-full h-full py-24 flex justify-center  flex-col bg-[#4F1ABE] bg-[url('../assets/image7.png')] bg-no-repeat text-white">
+                    <div className="w-full h-auto py-24 flex justify-center  flex-col bg-[#4F1ABE] bg-[url('../assets/image13.png')] bg-no-repeat text-white">
                         {/* Carousel Div */}
                         <div className="flex flex-col justify-center items-center mb-16">
                             <h1 className="font-bold text-2xl mb-4">
-                                Explore similar Trainings
+                                Explore similar Internships
                             </h1>
                             <p className="font-light text-lg">
                                 Find your next opportunity
@@ -193,8 +212,8 @@ const TrainingDetailsPage = () => {
                             {/* Carousel */}
                             <SwiperCarousel />
                         </div>
-                        <a href="/trainings" className="font-light text-lg pl-96">
-                            ← Go back to all trainings
+                        <a href="/Internships" className="font-light text-lg pl-96">
+                            ← Go back to all Internships
                         </a>
                     </div>
                 </div>
@@ -203,4 +222,4 @@ const TrainingDetailsPage = () => {
     );
 };
 
-export default SectionWrapper(TrainingDetailsPage);
+export default SectionWrapper(InternshipDetailsPage);
