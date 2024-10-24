@@ -77,139 +77,184 @@ const generateFilter = ({ filterList = [], selectedValues, handleChange }) => {
     );
 };
 
+
 const SideBar = () => {
     const [selectedValues, setSelectedValues] = useState({});
 
-    const handleChange = (event) => {
-        const { name, value } = event.target;
+    const handleChange = (Training) => {
+        const { name, value } = Training.target;
         setSelectedValues((prevValues) => ({
             ...prevValues,
             [name]: value,
         }));
     };
 
+    const handleSearch = () => {
+        console.log("Search clicked", selectedValues);
+    };
+
     return (
         <div className="w-1/4 min-h-96 p-4 hidden lg:flex flex-col">
-            {generateFilter({
-                filterList: [
-                    {
-                        isPrice: false,
-                        title: 'Location',
-                        items: [
-                            {
-                                display: 'Prishtina',
-                                name: 'location_radio',
-                                id: 'prishtina',
-                                value: 'Prishtina',
-                            },
-                            {
-                                display: 'Gjilan',
-                                name: 'location_radio',
-                                id: 'gjilan',
-                                value: 'Gjilan',
-                            },
-                            {
-                                display: 'Prizren',
-                                name: 'location_radio',
-                                id: 'prizren',
-                                value: 'Prizren',
-                            },
-                        ],
-                    },
-                    {
-                        isPrice: false,
-                        title: 'Fields',
-                        items: [
-                            {
-                                display: 'Python',
-                                name: 'fields_radio',
-                                id: 'python',
-                                value: 'Python',
-                            },
-                            {
-                                display: 'Social Media',
-                                name: 'fields_radio',
-                                id: 'social_media',
-                                value: 'Social Media',
-                            },
-                            {
-                                display: 'Digital Marketing',
-                                name: 'fields_radio',
-                                id: 'digital_marketing',
-                                value: 'Digital Marketing',
-                            },
-                            {
-                                display: 'UI/UX',
-                                name: 'fields_radio',
-                                id: 'ui_ux',
-                                value: 'UI/UX',
-                            },
-                            {
-                                display: 'Cyber Security',
-                                name: 'fields_radio',
-                                id: 'cyber_security',
-                                value: 'Cyber Security',
-                            },
-                        ],
-                    },
-                    {
-                        isPrice: false,
-                        title: 'Availability',
-                        items: [
-                            {
-                                display: 'Event Classes',
-                                name: 'availability_radio',
-                                id: 'event_classes',
-                                value: 'Event Classes',
-                            },
-                            {
-                                display: 'Weekend Classes',
-                                name: 'availability_radio',
-                                id: 'weekend_classes',
-                                value: 'Weekend Classes',
-                            },
-                            {
-                                display: 'Flexibile',
-                                name: 'availability_radio',
-                                id: 'flexibile',
-                                value: 'Flexibile',
-                            },
-                        ],
-                    },
-                    {
-                        isPrice: false,
-                        title: 'Duration',
-                        items: [
-                            {
-                                display: 'Workshops',
-                                name: 'duration_radio',
-                                id: 'workshops',
-                                value: 'Workshops',
-                            },
-                            {
-                                display: '3 Months',
-                                name: 'duration_radio',
-                                id: 'three_months',
-                                value: '3 Months',
-                            },
-                            {
-                                display: '6 Months',
-                                name: 'duration_radio',
-                                id: 'six_months',
-                                value: '6 Months',
-                            },
-                            {
-                                display: '1 Year',
-                                name: 'duration_radio',
-                                id: 'one_year',
-                                value: '1 Year',
-                            },
-                        ],
-                    },
-                ],
-                selectedValues,
-                handleChange,
-            })}
+            <div className="border-r border-gray-300 pr-4"> {/* Vertical line  */}
+                {generateFilter({
+                    filterList: [
+                        {
+                            isPrice: false,
+                            title: 'Location',
+                            items: [                                
+                                {
+                                    display: 'Prishtina',
+                                    name: 'location_radio',
+                                    id: 'prishtina',
+                                    value: 'Prishtina',
+                                },
+                                {
+                                    display: 'Gjilan',
+                                    name: 'location_radio',
+                                    id: 'gjilan',
+                                    value: 'Gjilan',
+                                },
+                                {
+                                    display: 'Prizren',
+                                    name: 'location_radio',
+                                    id: 'prizren',
+                                    value: 'Prizren',
+                                },
+                            ],
+                        },
+                        {
+                            isPrice: false,
+                            title: 'Fields',
+                            items: [
+                                {
+                                    display: 'Python',
+                                    name: 'fields_radio',
+                                    id: 'python',
+                                    value: 'Python',
+                                },
+                                {
+                                    display: 'Social Media',
+                                    name: 'fields_radio',
+                                    id: 'social_media',
+                                    value: 'Social Media',
+                                },
+                                {
+                                    display: 'Digital Marketing',
+                                    name: 'fields_radio',
+                                    id: 'digital_marketing',
+                                    value: 'Digital Marketing',
+                                },
+                                {
+                                    display: 'Graphic Design',
+                                    name: 'fields_radio',
+                                    id: 'graphic_design',
+                                    value: 'Graphic Design',
+                                },
+                                {
+                                    display: 'UI/UX',
+                                    name: 'fields_radio',
+                                    id: 'ui_ux',
+                                    value: 'UI/UX',
+                                },
+                                {
+                                    display: 'Cyber Security',
+                                    name: 'fields_radio',
+                                    id: 'cyber_security',
+                                    value: 'Cyber Security',
+                                },
+                            ],
+                        },
+                        {
+                            isPrice: false,
+                            title: 'Skill Level',
+                            items: [
+                                {
+                                    display: 'Beginner',
+                                    name: 'skill_radio',
+                                    id: 'Beginner',
+                                    value: 'Beginner',
+                                },
+                                {
+                                    display: 'Intermediete',
+                                    name: 'skill_radio',
+                                    id: 'intermediete',
+                                    value: 'intermediete',
+                                },
+                                {
+                                    display: 'Advanced',
+                                    name: 'skill_radio',
+                                    id: 'Advanced',
+                                    value: 'Advanced',
+                                },
+                            ],
+                        },
+                        {
+                            isPrice: false,
+                            title: 'Availability',
+                            items: [
+                                {
+                                    display: 'Event Classes',
+                                    name: 'availability_radio',
+                                    id: 'event_classes',
+                                    value: 'Event Classes',
+                                },
+                                {
+                                    display: 'Weekend Classes',
+                                    name: 'availability_radio',
+                                    id: 'weekend_classes',
+                                    value: 'Weekend Classes',
+                                },
+                                {
+                                    display: 'Flexibile',
+                                    name: 'availability_radio',
+                                    id: 'flexibile',
+                                    value: 'Flexibile',
+                                },
+                            ],
+                        },
+                        {
+                            isPrice: false,
+                            title: 'Duration',
+                            items: [
+                                {
+                                    display: 'Workshops',
+                                    name: 'duration_radio',
+                                    id: 'workshops',
+                                    value: 'Workshops',
+                                },
+                                {
+                                    display: '3 Months',
+                                    name: 'duration_radio',
+                                    id: 'three_months',
+                                    value: '3 Months',
+                                },
+                                {
+                                    display: '6 Months',
+                                    name: 'duration_radio',
+                                    id: 'six_months',
+                                    value: '6 Months',
+                                },
+                                {
+                                    display: '1 Year',
+                                    name: 'duration_radio',
+                                    id: 'one_year',
+                                    value: '1 Year',
+                                },
+                            ],
+                        },  
+                    ],             
+                    selectedValues,
+                    handleChange,
+                })}
+            </div>
+
+            {/* Search Button outside the vertical line */}
+            <button 
+                className="mt-10 bg-white text-indigo-700 font-semibold py-3 px-4 rounded hover:bg-blue-200"
+                onClick={handleSearch}
+            >
+                Search
+            </button>
         </div>
     );
 };
@@ -272,7 +317,7 @@ const HomePage = () => {
 
     return (
         <div className="w-full h-full flex flex-col justify-between items-center">
-            <div className="w-full min-h-svh items-center flex flex-col bg-[#4F1ABE] relative top-16 mb-10">
+            <div className="w-full min-h-svh items-center flex flex-col bg-[url('../assets/background.png')]  bg-no-repeat relative top-16 mb-10">
                 <div className="flex justify-center items-center flex-col mt-24 text-white mb-24 w-5/6 h-auto">
                     <h1 className="text-5xl font-bold mb-6">Trainings</h1>
                     <p className="text-2xl font-light">

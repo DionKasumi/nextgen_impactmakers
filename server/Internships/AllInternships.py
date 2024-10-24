@@ -25,18 +25,22 @@ def save_job_to_db(job):
 
         if not exists:
             insert_query = """
-            INSERT INTO all_internships (source, title, description, posted_date, salary, duration, location, image_url)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO all_internships (source, title, description, posted_date, salary, duration, location, image_url, email, phone_number, office_address, company_logo)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
             cursor.execute(insert_query, (
                 job['source'],
                 job['title'],
-                job['description'],  
+                job['description'],
                 job['posted_date'],
                 job['salary'],
                 job['duration'],
                 job['location'],
-                job['image_url']
+                job['image_url'],
+                job.get('email'),  # Set default value for email
+                job.get('phone_number'),  # Set default value for phone number
+                job.get('office_address'),  # Set default value for office address
+                job.get('company_logo')  # Set default value for company logo
             ))
             db.commit()
             print(f"Inserted new job: {job['title']} at {job['company_name']}")
@@ -99,7 +103,11 @@ def scrape_kosova_job():
                             'salary': 'N/A',
                             'duration': 'N/A',
                             'location': location,
-                            'image_url': image_url
+                            'image_url': image_url,
+                            'email': 'info@kosovajob.com',  
+                            'phone_number': '+383 45 111 414',  
+                            'office_address': 'Rr. Perandori Justinian Nr. 62 \n Prishtinë, Kosovë 10000', 
+                            'company_logo': 'https://media.licdn.com/dms/image/v2/C510BAQEag0LO89qZXg/company-logo_200_200/company-logo_200_200/0/1631397947063?e=1737590400&v=beta&t=kgGYn5GtFXkacaKXrJRAmNk-dZFbHd3SSjP8IGi0pvo'
                         }
                         save_job_to_db(job_data)
                     except Exception as e:
@@ -148,7 +156,7 @@ def scrape_kosovo_generation():
 
                        
                         job_data = {
-                            'source': "Kosovo Generation",
+                            'source': "Kosovo Generation Unlimited",
                             'title': title,
                             'company_name': 'N/A', 
                             'description': description,  
@@ -156,7 +164,11 @@ def scrape_kosovo_generation():
                             'salary': 'N/A',
                             'duration': duration,
                             'location': location,
-                            'image_url': image_url
+                            'image_url': image_url,
+                            'email': 'info@kosovogenu.com',  
+                            'phone_number': '+383 49 236 543',  
+                            'office_address': 'Tringe Ismajli Nr. 23 \n Prishtinë, Kosovë 10000', 
+                            'company_logo': 'https://kosovogenu.com/images/Frame.png'
                         }
                         save_job_to_db(job_data)
                     except Exception as e:
@@ -223,7 +235,11 @@ def scrape_superpuna_rks():
                             'salary': salary,
                             'duration': 'N/A',
                             'location': location,
-                            'image_url': 'https://superpuna.rks-gov.net/images/MFPT-logo.svg'
+                            'image_url': 'https://superpuna.rks-gov.net/images/MFPT-logo.svg',
+                            'email': 'kontakt.superpuna@rks-gov.net',  
+                            'phone_number': 'N/A',  
+                            'office_address': 'Ndërtesa e Qeverisë, Sheshi Nëna Terezë \n Prishtinë, Republika e Kosovës', 
+                            'company_logo': 'https://media.licdn.com/dms/image/v2/C4D0BAQFtUr7p40eSIQ/company-logo_200_200/company-logo_200_200/0/1675417948635/superpuna_logo?e=1737590400&v=beta&t=KF2U6tR5UDgshxeWXZGEn95ZIIZ95QdvA8GV0cFL8Uo'
                         }
 
                         save_job_to_db(job_data)

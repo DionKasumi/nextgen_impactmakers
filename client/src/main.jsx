@@ -9,8 +9,14 @@ import ErrorPage from './pages/ErrorPage.jsx';
 import LoginPage from './pages/auth/LoginPage.jsx';
 import SignupPage from './pages/auth/SignupPage.jsx';
 import ContactPage from './pages/ContactPage.jsx';
-import EventDetailsPage from './pages/EventDetailsPage.jsx';
 import TrainingsPage from './pages/TrainingsPage.jsx';
+import TrainingDetailsPage from './pages/TrainingDetailsPage.jsx';
+import EventsPage from './pages/EventsPage.jsx';
+import EventDetailsPage from './pages/EventDetailsPage.jsx';
+import InternshipsPage from './pages/InternshipPage.jsx';
+import InternshipDetailsPage from './pages/InternshipDetailsPage.jsx';
+import VolunteeringPage from './pages/VolunteeringPage.jsx';
+import VolunteeringDetailsPage from './pages/VolunteeringDetailsPage.jsx';
 
 const router = createBrowserRouter([
     {
@@ -30,6 +36,18 @@ const router = createBrowserRouter([
                 path: '/trainings',
                 element: <TrainingsPage />,
             },
+            {
+                path: '/Events',
+                element: <EventsPage />,
+            },
+            {
+                path: '/Internships',
+                element: <InternshipsPage />,
+            },
+            {
+                path: '/Volunteering',
+                element: <VolunteeringPage />,
+            },
         ],
     },
     {
@@ -39,7 +57,19 @@ const router = createBrowserRouter([
         children: [
             {
                 path: '/courses/:id',
-                element: <EventDetailsPage />,
+                element: <TrainingDetailsPage />, 
+            },
+            {
+                path: '/courses/:id',
+                element: <EventDetailsPage />
+            },
+            {
+                path: '/courses/:id',
+                element: <InternshipDetailsPage />
+            },
+            {
+                path: '/courses/:id',
+                element: <VolunteeringDetailsPage />
             },
         ],
     },

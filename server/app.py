@@ -2,20 +2,30 @@ from flask import Flask, jsonify, abort, redirect, request, session, render_temp
 from flask_cors import CORS
 import MySQLdb
 import bcrypt
+import secrets
 
 app = Flask(__name__)
-CORS(app)  # Allow CORS for all origins
 
-app.secret_key = 'eff020a408d7d75261c847b56032cbdf' 
+# Configure CORS to allow credentials (cookies) to be sent from cross-origin requests
+CORS(app, supports_credentials=True)
+
+# Set a secret key for session management
+app.secret_key = secrets.token_hex(16)
+
+# Configure session cookie settings for cross-origin requests
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Set to 'None' for strict cross-origin environments
+app.config['SESSION_COOKIE_SECURE'] = False    # Disable secure cookies for development (set to True in production if using HTTPS)
+
 
 # Database connection parameters
 db_params = {
     'user': 'root',
-    'passwd': '12345678',
+    'passwd': '1234',
     'host': 'localhost',
     'port': 3306,
     'db': 'pye_data'
 }
+
 
 def fetch_courses_from_database():
     courses = []
@@ -23,7 +33,7 @@ def fetch_courses_from_database():
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
         query = """
-        SELECT id, source, title, trainer, description, price, students, rating, image_url, duration 
+        SELECT id, source, title, trainer, description, price, students, rating, image_url, duration, email, phone_number, office_address, company_logo
         FROM all_courses
         """
         cursor.execute(query)
@@ -44,7 +54,7 @@ def fetch_course_by_id(course_id):
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
         query = """
-        SELECT id, source, title, trainer, description, price, students, rating, image_url, duration 
+        SELECT id, source, title, trainer, description, price, students, rating, image_url, duration, email, phone_number, office_address, company_logo
         FROM all_courses
         WHERE id = %s
         """
@@ -73,13 +83,20 @@ def get_course(course_id):
     return jsonify(course)
 
 # --- Helper Functions ---
-def add_participant(username, email, phone, password):
+def add_participant(username, email, phone, password, preferences):
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    
+    
+    if isinstance(preferences, list):
+        preferences_str = ', '.join(preferences)  
+    else:
+        preferences_str = preferences
+
     try:
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor()
-        query = "INSERT INTO participants (username, email, phone, password) VALUES (%s, %s, %s, %s)"
-        cursor.execute(query, (username, email, phone, hashed_password))
+        query = "INSERT INTO participants (username, email, phone, password, preferences) VALUES (%s, %s, %s, %s, %s)"
+        cursor.execute(query, (username, email, phone, hashed_password, preferences_str))
         db.commit()
         cursor.close()
     except MySQLdb.Error as e:
@@ -88,6 +105,7 @@ def add_participant(username, email, phone, password):
     finally:
         db.close()
     return jsonify({"message": "Participant created successfully."}), 201
+
 
 def add_organization(name_of_org, email_of_org, phone_number_of_org, password_of_org, url_of_org, description_of_org):
     hashed_password = bcrypt.hashpw(password_of_org.encode('utf-8'), bcrypt.gensalt())
@@ -135,7 +153,8 @@ def signup():
             data['username'], 
             data['email'], 
             data['phone'], 
-            data['password']
+            data['password'],
+            data.get('preferences', [])
         )
 
 # --- Helper Functions for Login ---
@@ -195,16 +214,37 @@ def login():
     print(f"Login attempt for {'Organization' if is_org else 'Participant'} with email: {email}")
 
     if is_org:
-        # Updated to use the modified check_organization function
         response, status_code = check_organization(email, password)
+        if status_code == 200:
+            session['user_type'] = 'organization'
+            session['user_email'] = email
         return jsonify(response), status_code
     else:
         if check_participant(email, password):
+            session['user_type'] = 'participant'
+            session['user_email'] = email
             return jsonify({"success": True, "message": "Login successful"}), 200
         else:
             return jsonify({"success": False, "message": "Invalid participant credentials"}), 401
 
-# Function to insert admin into the database
+# --- Session Check Route (For Debugging) ---
+@app.route('/api/session', methods=['GET'])
+def check_session():
+    if 'user_email' in session:
+        return jsonify({"isLoggedIn": True, "user_email": session['user_email']}), 200
+    else:
+        return jsonify({"isLoggedIn": False}), 200
+
+# --- Logout Route ---
+@app.route('/logout', methods=['POST'])
+def logout():
+    session.pop('user_type', None)
+    session.pop('user_email', None)
+    return jsonify({"success": True, "message": "Logged out successfully"}), 200
+
+
+# --- Admin Functions, Login, and Logout ---
+
 def insert_admin(username, password):
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     try:

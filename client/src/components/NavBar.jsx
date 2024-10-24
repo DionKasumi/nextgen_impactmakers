@@ -1,127 +1,110 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { IoMdClose } from 'react-icons/io';
-import { useState } from 'react';
-import {
-    Box,
-    List,
-    ListItem,
-    ListItemButton,
-    ListItemIcon,
-    ListItemText,
-    Divider,
-    Collapse,
-} from '@mui/material';
-import { MdExpandLess, MdExpandMore } from 'react-icons/md';
-import { FaCircle } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
+import { Box, List, ListItem, Collapse } from '@mui/material';
+import { FaUserCircle } from 'react-icons/fa';
+import axios from 'axios';
+
+axios.defaults.withCredentials = true; // Ensure Axios sends session cookies with requests
 
 const NavBar = ({ theme }) => {
-    const NAV_ITEMS = [
-        { href: '/', label: 'Home' },
-        { href: '/login', label: 'Log In' },
-        { href: '/signup', label: 'Sign Up' },
-        { href: '/contact', label: 'Contact Us' },
-    ];
-
+    const [isMenuOpen, setMenuOpen] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const navigate = useNavigate();
     let location = useLocation();
 
-    const [isMenuOpen, setMenuOpen] = useState(false);
+    // Toggle the mobile menu
     const toggleMenu = (newVal) => () => {
         setMenuOpen(newVal);
     };
 
-    const [categoriesOpen, setCategoriesOpen] = useState(false);
-
-    const handleCategoriesClick = () => {
-        setCategoriesOpen(!categoriesOpen);
+    // Check session state when NavBar loads
+    const checkSession = async () => {
+        try {
+            const response = await axios.get('http://localhost:8080/api/session');
+            if (response.data.isLoggedIn) {
+                setIsLoggedIn(true);
+            } else {
+                setIsLoggedIn(false);
+            }
+        } catch (error) {
+            console.error('Error checking session:', error);
+        }
     };
 
-    const [filtersOpen, setFiltersOpen] = useState(false);
-
-    const handleFiltersClick = () => {
-        setFiltersOpen(!filtersOpen);
+    // Handle logout
+    const handleLogout = async () => {
+        try {
+            await axios.post('http://localhost:8080/logout');
+            setIsLoggedIn(false);
+            navigate('/login'); // Redirect to login page after logout
+        } catch (error) {
+            console.error('Error logging out:', error);
+        }
     };
+
+    useEffect(() => {
+        checkSession();
+    }, []);
+
+    // Navigation items
+    const NAV_ITEMS = [
+        { href: '/', label: 'Home' },
+        { href: '/contact', label: 'Contact Us' },
+    ];
 
     const BurgerMenu = (
         <Box
-            className={`w-[50%] h-screen flex flex-col fixed sm:hidden top-0 left-0 bg-white text-[#4F1ABE] z-50 ${
+            className={`w-[70%] h-screen flex flex-col fixed sm:hidden top-0 left-0 bg-white text-[#4F1ABE] z-50 ${
                 !isMenuOpen ? 'hidden' : ''
             }`}
             role="presentation"
         >
             <List>
-                <ListItem disablePadding>
-                    <Link
-                        to={'/'}
-                        className="w-full h-full px-4 py-4 hover:bg-[#A3A9FE80] transition-all"
-                    >
-                        Home
-                    </Link>
-                </ListItem>
-                <ListItemButton onClick={handleCategoriesClick}>
-                    <ListItemText primary="Categories" />
-                    {categoriesOpen ? (
-                        <MdExpandLess className="scale-150" />
-                    ) : (
-                        <MdExpandMore className="scale-150" />
-                    )}
-                </ListItemButton>
-                <Collapse in={categoriesOpen} timeout="auto" unmountOnExit>
-                    <List component="div" disablePadding>
+                {NAV_ITEMS.map(({ href, label }, index) => (
+                    <ListItem disablePadding key={index}>
+                        <Link
+                            to={href}
+                            className="w-full h-full px-4 py-4 hover:bg-[#A3A9FE80] transition-all"
+                        >
+                            {label}
+                        </Link>
+                    </ListItem>
+                ))}
+
+                {/* Dynamic Links based on login state */}
+                {isLoggedIn ? (
+                    <>
+                        <ListItem disablePadding>
+                            <button
+                                onClick={handleLogout}
+                                className="w-full h-full px-4 py-4 hover:bg-[#A3A9FE80] transition-all"
+                            >
+                                Logout
+                            </button>
+                        </ListItem>
+                    </>
+                ) : (
+                    <>
                         <ListItem disablePadding>
                             <Link
-                                to={'/'}
-                                className="w-full h-full pr-4 pl-8 py-4 hover:bg-[#A3A9FE80] transition-all flex flex-row items-center"
+                                to={'/login'}
+                                className="w-full h-full px-4 py-4 hover:bg-[#A3A9FE80] transition-all"
                             >
-                                <FaCircle className="scale-[0.3] mr-2" />
-                                Events
+                                Log In
                             </Link>
                         </ListItem>
                         <ListItem disablePadding>
                             <Link
-                                to={'/'}
-                                className="w-full h-full pr-4 pl-8 py-4 hover:bg-[#A3A9FE80] transition-all flex flex-row items-center"
+                                to={'/signup'}
+                                className="w-full h-full px-4 py-4 hover:bg-[#A3A9FE80] transition-all"
                             >
-                                <FaCircle className="scale-[0.3] mr-2" />
-                                Trainings
+                                Sign Up
                             </Link>
                         </ListItem>
-                        <ListItem disablePadding>
-                            <Link
-                                to={'/'}
-                                className="w-full h-full pr-4 pl-8 py-4 hover:bg-[#A3A9FE80] transition-all flex flex-row items-center"
-                            >
-                                <FaCircle className="scale-[0.3] mr-2" />
-                                Internships
-                            </Link>
-                        </ListItem>
-                        <ListItem disablePadding>
-                            <Link
-                                to={'/'}
-                                className="w-full h-full pr-4 pl-8 py-4 hover:bg-[#A3A9FE80] transition-all flex flex-row items-center"
-                            >
-                                <FaCircle className="scale-[0.3] mr-2" />
-                                Volunteering
-                            </Link>
-                        </ListItem>
-                    </List>
-                </Collapse>
-                <ListItem disablePadding>
-                    <Link
-                        to={'/login'}
-                        className="w-full h-full px-4 py-4 hover:bg-[#A3A9FE80] transition-all"
-                    >
-                        Log In
-                    </Link>
-                </ListItem>
-                <ListItem disablePadding>
-                    <Link
-                        to={'/signup'}
-                        className="w-full h-full px-4 py-4 hover:bg-[#A3A9FE80] transition-all"
-                    >
-                        Sign Up
-                    </Link>
-                </ListItem>
+                    </>
+                )}
             </List>
         </Box>
     );
@@ -131,8 +114,14 @@ const NavBar = ({ theme }) => {
             <nav
                 className="w-full h-20 flex justify-center items-center fixed top-0 left-0 z-50"
                 style={
-                    theme == 'primary'
-                        ? { backgroundColor: '#4F1ABE', color: 'white' }
+                    theme === 'primary'
+                        ? {
+                              backgroundImage: 'url(/assets/nav.png)', // Replace with your image path
+                              backgroundSize: 'cover',
+                              backgroundPosition: 'center',
+                              backgroundRepeat: 'no-repeat',
+                              color: 'white',
+                          }
                         : { backgroundColor: '#ffffff', color: 'black' }
                 }
             >
@@ -141,7 +130,7 @@ const NavBar = ({ theme }) => {
                         <Link to={'/'}>
                             <img
                                 src={
-                                    theme == 'primary'
+                                    theme === 'primary'
                                         ? '/assets/logo/logo_white.svg'
                                         : '/assets/logo/logo_black.svg'
                                 }
@@ -149,7 +138,9 @@ const NavBar = ({ theme }) => {
                             />
                         </Link>
                     </div>
-                    <ul className="flex-row hidden sm:flex">
+
+                    {/* Menu Links for larger screens */}
+                    <ul className="flex-row hidden sm:flex items-center">
                         {NAV_ITEMS.map(({ href, label }, index) => {
                             const isActive = location.pathname === href;
 
@@ -166,7 +157,50 @@ const NavBar = ({ theme }) => {
                                 </li>
                             );
                         })}
+
+                        {/* If the user is logged in, show the profile icon and logout */}
+                        {isLoggedIn ? (
+                            <>
+                                <li>
+                                    <button
+                                        onClick={handleLogout}
+                                        className="ml-8 focus:outline-none"
+                                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                                    >
+                                        Logout
+                                    </button>
+                                </li>
+                                <li className="ml-8 flex items-center">
+                                    <FaUserCircle
+                                        size={30}
+                                        className="profile-icon"
+                                        style={{ marginLeft: 'auto' }}
+                                    />
+                                </li>
+                            </>
+                        ) : (
+                            <>
+                                <li>
+                                    <Link
+                                        to="/login"
+                                        className="ml-8 focus:outline-none"
+                                    >
+                                        Log In
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        to="/signup"
+                                        className="ml-8 focus:outline-none"
+                                    >
+                                        Sign Up
+                                    </Link>
+                                </li>
+                            </>
+                        )}
                     </ul>
+
+                    {/* Mobile Menu Button */}
                     <button type="button" className="sm:hidden">
                         {!isMenuOpen ? (
                             <GiHamburgerMenu

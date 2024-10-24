@@ -22,8 +22,8 @@ def save_volunteering_opportunity_to_db(opportunity):
 
         if not exists:
             insert_query = """
-            INSERT INTO all_volunteering (source, title, duration, cause, age_group, image_url)
-            VALUES (%s, %s, %s, %s, %s, %s)
+            INSERT INTO all_volunteering (source, title, duration, cause, age_group, image_url, email, phone_number, office_address, company_logo)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
             cursor.execute(insert_query, (
                 opportunity['source'],
@@ -31,7 +31,11 @@ def save_volunteering_opportunity_to_db(opportunity):
                 opportunity['duration'],
                 opportunity['cause'],
                 opportunity['age_group'],
-                opportunity['image_url']
+                opportunity['image_url'],
+                opportunity['email'],
+                opportunity['phone_number'],
+                opportunity['office_address'],
+                opportunity['company_logo']
             ))
             db.commit()
             print(f"Inserted new opportunity: {opportunity['title']}")
@@ -136,7 +140,11 @@ def fetch_and_update_opportunities():
                         'duration': start_date,  
                         'cause': cause,
                         'age_group': 'N/A', 
-                        'image_url': image_url
+                        'image_url': image_url,
+                        'email' : 'kastriot.mehmetaj@rks-gov.net',
+                        'phone_number' : '+383 38200222/59',
+                        'office_address' : 'Str. Sheshi Nëna Terezë \n Prishtina, Kosovo',
+                        'company_logo' : 'https://kosovovolunteers.org/static/media/logo_front.64e7f225.png'
                     }
 
                     # Save to the database
@@ -152,14 +160,3 @@ while True:
     fetch_and_update_opportunities()
     print("Sleeping for 30 minutes...")
     time.sleep(30 * 60)
-
-# CREATE TABLE all_volunteering (
-#     id INT AUTO_INCREMENT PRIMARY KEY,
-#     source VARCHAR(255),
-#     title VARCHAR(255),
-#     duration VARCHAR(255),
-#     cause TEXT, 
-#     age_group VARCHAR(255),
-#     image_url TEXT,
-#     UNIQUE(title, source)
-# );
