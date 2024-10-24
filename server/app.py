@@ -26,6 +26,7 @@ db_params = {
     'db': 'pye_data'
 }
 
+
 def fetch_courses_from_database():
     courses = []
     try:
@@ -386,6 +387,241 @@ def delete_organization(org_id):
     finally:
         db.close()
     return {"message": "Organization deleted successfully."}, 200
+
+def update_card(card_id, updated_data):
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+        
+        # Construct the SQL update query dynamically based on updated_data
+        set_clause = ', '.join([f"{col} = %s" for col in updated_data.keys()])
+        query = f"UPDATE all_internships SET {set_clause} WHERE id = %s"
+        
+        # Execute the query with the values from updated_data
+        cursor.execute(query, (*updated_data.values(), card_id))
+        db.commit()
+        cursor.close()
+    except MySQLdb.Error as e:
+        print(f"MySQL error during updating card: {e}")
+        return {"error": f"MySQL error: {e}"}, 500
+    finally:
+        db.close()
+    
+    return {"message": "Card updated successfully."}, 200
+
+
+@app.route('/api/admin/managecards/internships/update/<int:card_id>', methods=['POST'])
+def admin_update_card(card_id):
+    updated_data = request.get_json()  # Expecting JSON payload with updated fields
+    return jsonify(update_card(card_id, updated_data))
+
+# Function to get events from the database
+def get_events():
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        query = "SELECT * FROM all_events"  # Adjust the query as needed
+        cursor.execute(query)
+        events = cursor.fetchall()
+        cursor.close()
+        return events
+    except MySQLdb.Error as e:
+        print(f"MySQL error during fetching events: {e}")
+        return []
+    finally:
+        db.close()
+
+# API to get events
+@app.route('/api/admin/managecards/events', methods=['GET'])
+def admin_get_events():
+    events = get_events()
+    return jsonify(events), 200
+
+# Function to get internships from the database
+def get_internships():
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        query = "SELECT * FROM all_internships"  # Adjust the query as needed
+        cursor.execute(query)
+        internships = cursor.fetchall()
+        cursor.close()
+        return internships
+    except MySQLdb.Error as e:
+        print(f"MySQL error during fetching internships: {e}")
+        return []
+    finally:
+        db.close()
+
+# API to get internships
+@app.route('/api/admin/managecards/internships', methods=['GET'])
+def admin_get_internships():
+    internships = get_internships()
+    return jsonify(internships), 200
+
+
+# Function to get training events from the database
+def get_trainings():
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        query = "SELECT * FROM all_courses"  # Adjust the query as needed
+        cursor.execute(query)
+        training_events = cursor.fetchall()
+        cursor.close()
+        return training_events
+    except MySQLdb.Error as e:
+        print(f"MySQL error during fetching trainings: {e}")
+        return []
+    finally:
+        db.close()
+
+# API to get training events
+@app.route('/api/admin/managecards/training', methods=['GET'])
+def admin_get_trainings():
+    training_events = get_trainings()
+    return jsonify(training_events), 200
+
+
+# Function to get volunteering opportunities from the database
+def get_volunteering():
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        query = "SELECT * FROM all_volunteering"  # Adjust the query as needed
+        cursor.execute(query)
+        volunteering = cursor.fetchall()
+        cursor.close()
+        return volunteering
+    except MySQLdb.Error as e:
+        print(f"MySQL error during fetching volunteering opportunities: {e}")
+        return []
+    finally:
+        db.close()
+
+# API to get volunteering opportunities
+@app.route('/api/admin/managecards/volunteering', methods=['GET'])
+def admin_get_volunteering():
+    volunteering = get_volunteering()
+    return jsonify(volunteering), 200
+
+
+def update_card(card_id, updated_data):
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+        
+        # Construct the SQL update query dynamically based on updated_data
+        set_clause = ', '.join([f"{col} = %s" for col in updated_data.keys()])
+        query = f"UPDATE all_internships SET {set_clause} WHERE id = %s"
+        
+        # Execute the query with the values from updated_data
+        cursor.execute(query, (*updated_data.values(), card_id))
+        db.commit()
+        cursor.close()
+    except MySQLdb.Error as e:
+        print(f"MySQL error during updating card: {e}")
+        return {"error": f"MySQL error: {e}"}, 500
+    finally:
+        db.close()
+    
+    return {"message": "Card updated successfully."}, 200
+
+
+@app.route('/api/admin/managecards/internships/update/<int:card_id>', methods=['POST'])
+def admin_update_card(card_id):
+    updated_data = request.get_json()  # Expecting JSON payload with updated fields
+    return jsonify(update_card(card_id, updated_data))
+
+# Function to get events from the database
+def get_events():
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        query = "SELECT * FROM all_events"  # Adjust the query as needed
+        cursor.execute(query)
+        events = cursor.fetchall()
+        cursor.close()
+        return events
+    except MySQLdb.Error as e:
+        print(f"MySQL error during fetching events: {e}")
+        return []
+    finally:
+        db.close()
+
+# API to get events
+@app.route('/api/admin/managecards/events', methods=['GET'])
+def admin_get_events():
+    events = get_events()
+    return jsonify(events), 200
+
+# Function to get internships from the database
+def get_internships():
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        query = "SELECT * FROM all_internships"  # Adjust the query as needed
+        cursor.execute(query)
+        internships = cursor.fetchall()
+        cursor.close()
+        return internships
+    except MySQLdb.Error as e:
+        print(f"MySQL error during fetching internships: {e}")
+        return []
+    finally:
+        db.close()
+
+# API to get internships
+@app.route('/api/admin/managecards/internships', methods=['GET'])
+def admin_get_internships():
+    internships = get_internships()
+    return jsonify(internships), 200
+
+
+# Function to get training events from the database
+def get_trainings():
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        query = "SELECT * FROM all_courses"  # Adjust the query as needed
+        cursor.execute(query)
+        training_events = cursor.fetchall()
+        cursor.close()
+        return training_events
+    except MySQLdb.Error as e:
+        print(f"MySQL error during fetching trainings: {e}")
+        return []
+    finally:
+        db.close()
+
+# API to get training events
+@app.route('/api/admin/managecards/training', methods=['GET'])
+def admin_get_trainings():
+    training_events = get_trainings()
+    return jsonify(training_events), 200
+
+
+# Function to get volunteering opportunities from the database
+def get_volunteering():
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        query = "SELECT * FROM all_volunteering"  # Adjust the query as needed
+        cursor.execute(query)
+        volunteering = cursor.fetchall()
+        cursor.close()
+        return volunteering
+    except MySQLdb.Error as e:
+        print(f"MySQL error during fetching volunteering opportunities: {e}")
+        return []
+    finally:
+        db.close()
+
+# API to get volunteering opportunities
+@app.route('/api/admin/managecards/volunteering', methods=['GET'])
+def admin_get_volunteering():
+    volunteering = get_volunteering()
+    return jsonify(volunteering), 200
 
 
 if __name__ == '__main__':
