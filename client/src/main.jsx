@@ -9,8 +9,8 @@ import ErrorPage from './pages/ErrorPage.jsx';
 import LoginPage from './pages/auth/LoginPage.jsx';
 import SignupPage from './pages/auth/SignupPage.jsx';
 import ContactPage from './pages/ContactPage.jsx';
-import EventDetailsPage from './pages/EventDetailsPage.jsx';
 import TrainingsPage from './pages/TrainingsPage.jsx';
+import TrainingDetailsPage from './pages/TrainingDetailsPage.jsx';
 
 const router = createBrowserRouter([
     {
@@ -39,7 +39,7 @@ const router = createBrowserRouter([
         children: [
             {
                 path: '/courses/:id',
-                element: <EventDetailsPage />,
+                element: <TrainingDetailsPage />,
             },
         ],
     },
