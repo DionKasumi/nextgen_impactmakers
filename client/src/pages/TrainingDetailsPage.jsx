@@ -146,7 +146,7 @@ const TrainingDetailsPage = () => {
                         </h1>
                         <div className="flex flex-col bg-[#A3A9FE] w-full  md:w-4/6 h-auto p-3  justify-center items-center gap-10">
                         <img
-                                    src={course.image_url}
+                                    src={course.company_logo}
                                     alt="Course Image"
                                     className="w-auto h-full mt-20 object-cover rounded-md select-none"
                                 />
@@ -158,13 +158,13 @@ const TrainingDetailsPage = () => {
                                 </h3>
                                 <div className="flex flex-col mt-10">
                                     <button className="py-2 px-16 bg-white rounded-md my-4 hover:scale-[1.02] transition-all">
-                                        Contact
+                                        {course.email}
                                     </button>
                                     <button className="py-2 px-16 bg-white rounded-md my-4 hover:scale-[1.02] transition-all">
-                                        Follow
+                                        {course.phone_number}
                                     </button>
                                     <button className="py-2 px-16 bg-white rounded-md my-4 hover:scale-[1.02] transition-all">
-                                        Phone Number
+                                        {course.office_address}
                                     </button>
                                 </div>
                             </div>

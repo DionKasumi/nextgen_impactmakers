@@ -93,8 +93,7 @@ def create_database():
             username VARCHAR(255) NOT NULL UNIQUE,
             email VARCHAR(255) NOT NULL,
             phone VARCHAR(20) NOT NULL,
-            password VARCHAR(255) NOT NULL,
-            preferences TEXT  
+            password VARCHAR(255) NOT NULL 
         );
         """)
 
@@ -113,8 +112,38 @@ def create_database():
         """)
 
         #########################################################
-        # WE WILL BE ADDING THE REST OF THE TABLES WHEN NEEDED...
+        # UPDATES FROM INITIAL SETUP GO HERE...
         #########################################################
+
+        # Function to check if a column exists
+        def column_exists(table, column):
+            cursor.execute(f"""
+            SELECT COUNT(*) 
+            FROM information_schema.COLUMNS 
+            WHERE TABLE_NAME='{table}' AND COLUMN_NAME='{column}';
+            """)
+            return cursor.fetchone()[0] > 0
+
+        # List of tables and new columns to add
+        tables_and_columns = {
+            'all_courses': ['email', 'phone_number', 'office_address', 'company_logo'],
+            'all_events': ['email', 'phone_number', 'office_address', 'company_logo'],
+            'all_internships': ['email', 'phone_number', 'office_address', 'company_logo'],
+            'all_volunteering': ['email', 'phone_number', 'office_address', 'company_logo'],
+            'participants': ['preferences'],  # Adding preferences for participants
+        }
+
+        for table, columns in tables_and_columns.items():
+            for column in columns:
+                if not column_exists(table, column):
+                    # Change column type based on the table if necessary
+                    column_type = "VARCHAR(255)" if column != "preferences" else "TEXT"
+                    cursor.execute(f"ALTER TABLE {table} ADD COLUMN {column} {column_type};")
+                    print(f"Added {column} to {table}.")
+                else:
+                    print(f"{column} already exists in {table}.")
+
+        print("Columns added successfully where needed!")
 
         print("Database setup completed successfully!")
     

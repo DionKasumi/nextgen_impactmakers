@@ -12,7 +12,7 @@ app.secret_key = secrets.token_hex(16)
 # Database connection parameters
 db_params = {
     'user': 'root',
-    'passwd': '',
+    'passwd': '1234',
     'host': 'localhost',
     'port': 3306,
     'db': 'pye_data'
@@ -24,7 +24,7 @@ def fetch_courses_from_database():
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
         query = """
-        SELECT id, source, title, trainer, description, price, students, rating, image_url, duration 
+        SELECT id, source, title, trainer, description, price, students, rating, image_url, duration, email, phone_number, office_address, company_logo
         FROM all_courses
         """
         cursor.execute(query)
@@ -45,7 +45,7 @@ def fetch_course_by_id(course_id):
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
         query = """
-        SELECT id, source, title, trainer, description, price, students, rating, image_url, duration 
+        SELECT id, source, title, trainer, description, price, students, rating, image_url, duration, email, phone_number, office_address, company_logo
         FROM all_courses
         WHERE id = %s
         """
