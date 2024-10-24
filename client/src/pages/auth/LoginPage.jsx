@@ -8,6 +8,9 @@ import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
+// Ensure Axios sends session cookies with requests
+axios.defaults.withCredentials = true;
+
 const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -22,6 +25,7 @@ const LoginPage = () => {
         message: '',
     });
 
+    // Handle form submission (login request)
     const handleFormSubmit = async () => {
         try {
             const response = await axios.post('http://localhost:8080/login', {
@@ -32,7 +36,6 @@ const LoginPage = () => {
             });
 
             if (response.data.success) {
-                // alert('Login successful');
                 let count = 3;
                 setAlertMessage({
                     type: 'success',
@@ -41,6 +44,7 @@ const LoginPage = () => {
                 });
                 setAlertOpen(true);
 
+                // Countdown to redirect
                 let t1 = setInterval(() => {
                     if (count > 0) {
                         count--;
@@ -51,15 +55,10 @@ const LoginPage = () => {
                         });
                     } else {
                         clearTimeout(t1);
-                        // console.log('Done');
-                        navigate('/');
+                        navigate('/'); // Redirect to homepage after countdown
                     }
                 }, 1000);
-
-                // Redirect to dashboard or homepage
-                // window.location.href = response.data.redirectUrl;
             } else {
-                // alert('Invalid credentials');
                 setAlertMessage({
                     type: 'error',
                     heading: 'Error',
@@ -68,11 +67,7 @@ const LoginPage = () => {
                 setAlertOpen(true);
             }
         } catch (error) {
-            console.error(
-                'Error logging in:',
-                error.response?.data || error.message
-            );
-            // alert('Login failed. Please try again.');
+            console.error('Error logging in:', error.response?.data || error.message);
             setAlertMessage({
                 type: 'error',
                 heading: 'Error',
@@ -82,6 +77,7 @@ const LoginPage = () => {
         }
     };
 
+    // Handle closing alert
     const handleAlertToggle = () => {
         setAlertOpen(!alertOpen);
     };
@@ -151,22 +147,14 @@ const LoginPage = () => {
                         <div className="w-full flex justify-between mb-4">
                             <button
                                 type="button"
-                                className={`py-2 px-3 sm:px-6 md:px-8 rounded-md focus:outline-none transition-all duration-300 ${
-                                    !isOrg
-                                        ? 'bg-[#4F1ABE] text-white'
-                                        : 'bg-[#E0E0E0] text-[#4F1ABE] hover:bg-[#C5C5C5]'
-                                }`}
+                                className={`py-2 px-3 sm:px-6 md:px-8 rounded-md focus:outline-none transition-all duration-300 ${!isOrg ? 'bg-[#4F1ABE] text-white' : 'bg-[#E0E0E0] text-[#4F1ABE] hover:bg-[#C5C5C5]'}`}
                                 onClick={() => setIsOrg(false)}
                             >
                                 Participant
                             </button>
                             <button
                                 type="button"
-                                className={`py-2 px-3 sm:px-6 md:px-8 rounded-md focus:outline-none transition-all duration-300 ${
-                                    isOrg
-                                        ? 'bg-[#4F1ABE] text-white'
-                                        : 'bg-[#E0E0E0] text-[#4F1ABE] hover:bg-[#C5C5C5]'
-                                }`}
+                                className={`py-2 px-3 sm:px-6 md:px-8 rounded-md focus:outline-none transition-all duration-300 ${isOrg ? 'bg-[#4F1ABE] text-white' : 'bg-[#E0E0E0] text-[#4F1ABE] hover:bg-[#C5C5C5]'}`}
                                 onClick={() => setIsOrg(true)}
                             >
                                 Organization
@@ -211,16 +199,10 @@ const LoginPage = () => {
             </div>
             {alertOpen ? (
                 <div>
-                    <Alert
-                        severity={alertMessage.type}
-                        className="fixed z-50 right-4 bottom-4"
-                    >
+                    <Alert severity={alertMessage.type} className="fixed z-50 right-4 bottom-4">
                         <AlertTitle className="flex justify-between overflow-hidden">
                             {alertMessage.heading}
-                            <button
-                                className="scale-[1.5]"
-                                onClick={handleAlertToggle}
-                            >
+                            <button className="scale-[1.5]" onClick={handleAlertToggle}>
                                 <IoMdClose />
                             </button>
                         </AlertTitle>

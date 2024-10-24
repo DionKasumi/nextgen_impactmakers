@@ -5,9 +5,17 @@ import bcrypt
 import secrets
 
 app = Flask(__name__)
-CORS(app)  # Allow CORS for all origins
 
+# Configure CORS to allow credentials (cookies) to be sent from cross-origin requests
+CORS(app, supports_credentials=True)
+
+# Set a secret key for session management
 app.secret_key = secrets.token_hex(16)
+
+# Configure session cookie settings for cross-origin requests
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Set to 'None' for strict cross-origin environments
+app.config['SESSION_COOKIE_SECURE'] = False    # Disable secure cookies for development (set to True in production if using HTTPS)
+
 
 # Database connection parameters
 db_params = {
@@ -205,16 +213,37 @@ def login():
     print(f"Login attempt for {'Organization' if is_org else 'Participant'} with email: {email}")
 
     if is_org:
-        # Updated to use the modified check_organization function
         response, status_code = check_organization(email, password)
+        if status_code == 200:
+            session['user_type'] = 'organization'
+            session['user_email'] = email
         return jsonify(response), status_code
     else:
         if check_participant(email, password):
+            session['user_type'] = 'participant'
+            session['user_email'] = email
             return jsonify({"success": True, "message": "Login successful"}), 200
         else:
             return jsonify({"success": False, "message": "Invalid participant credentials"}), 401
 
-# Function to insert admin into the database
+# --- Session Check Route (For Debugging) ---
+@app.route('/api/session', methods=['GET'])
+def check_session():
+    if 'user_email' in session:
+        return jsonify({"isLoggedIn": True, "user_email": session['user_email']}), 200
+    else:
+        return jsonify({"isLoggedIn": False}), 200
+
+# --- Logout Route ---
+@app.route('/logout', methods=['POST'])
+def logout():
+    session.pop('user_type', None)
+    session.pop('user_email', None)
+    return jsonify({"success": True, "message": "Logged out successfully"}), 200
+
+
+# --- Admin Functions, Login, and Logout ---
+
 def insert_admin(username, password):
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     try:
