@@ -5,7 +5,7 @@ import CountUp from 'react-countup';
 
 const FirstPart = () => {
     return (
-        <div className="w-full h-screen flex flex-col justify-center items-center bg-[url('../assets/group.png')] ">
+        <div className="w-full h-screen flex flex-col justify-center items-center bg-[url('../assets/back1.png')] ">
             
             <div className="w-full min-h-svh items-center flex flex-col relative top-[20%] mb-20 ">
                 <div className="flex flex-row ">
