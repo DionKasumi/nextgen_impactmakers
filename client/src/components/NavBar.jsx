@@ -2,8 +2,19 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { IoMdClose } from 'react-icons/io';
 import { useState, useEffect } from 'react';
-import { Box, List, ListItem, Collapse } from '@mui/material';
-import { FaUserCircle } from 'react-icons/fa';
+import {
+    Box,
+    List,
+    ListItem,
+    ListItemButton,
+    ListItemText,
+    Collapse,
+    Button,
+    Menu,
+    MenuItem,
+} from '@mui/material';
+import { MdExpandLess, MdExpandMore } from 'react-icons/md';
+import { FaUserCircle, FaCircle } from 'react-icons/fa';
 import axios from 'axios';
 
 axios.defaults.withCredentials = true; // Ensure Axios sends session cookies with requests
@@ -19,10 +30,17 @@ const NavBar = ({ theme }) => {
         setMenuOpen(newVal);
     };
 
+    const [categoriesOpen, setCategoriesOpen] = useState(false);
+    const handleCategoriesClick = () => {
+        setCategoriesOpen(!categoriesOpen);
+    };
+
     // Check session state when NavBar loads
     const checkSession = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/api/session');
+            const response = await axios.get(
+                'http://localhost:8080/api/session'
+            );
             if (response.data.isLoggedIn) {
                 setIsLoggedIn(true);
             } else {
@@ -63,48 +81,164 @@ const NavBar = ({ theme }) => {
         >
             <List>
                 {NAV_ITEMS.map(({ href, label }, index) => (
-                    <ListItem disablePadding key={index}>
+                    <ListItemButton
+                        key={index}
+                        sx={{
+                            height: '3.5rem',
+                            '&:hover': { bgcolor: '#A3A9FE80' },
+                        }}
+                    >
                         <Link
                             to={href}
-                            className="w-full h-full px-4 py-4 hover:bg-[#A3A9FE80] transition-all"
+                            className="w-full h-full flex flex-row items-center"
                         >
                             {label}
                         </Link>
-                    </ListItem>
+                    </ListItemButton>
                 ))}
 
                 {/* Dynamic Links based on login state */}
                 {isLoggedIn ? (
                     <>
-                        <ListItem disablePadding>
+                        <ListItemButton
+                            sx={{
+                                height: '3.5rem',
+                                '&:hover': { bgcolor: '#A3A9FE80' },
+                            }}
+                        >
                             <button
                                 onClick={handleLogout}
-                                className="w-full h-full px-4 py-4 hover:bg-[#A3A9FE80] transition-all"
+                                className="w-full h-full flex flex-row items-center"
                             >
-                                Logout
+                                Log Out
                             </button>
-                        </ListItem>
+                        </ListItemButton>
                     </>
                 ) : (
                     <>
-                        <ListItem disablePadding>
+                        <ListItemButton
+                            sx={{
+                                height: '3.5rem',
+                                '&:hover': { bgcolor: '#A3A9FE80' },
+                            }}
+                        >
                             <Link
                                 to={'/login'}
-                                className="w-full h-full px-4 py-4 hover:bg-[#A3A9FE80] transition-all"
+                                className="w-full h-full flex flex-row items-center"
                             >
                                 Log In
                             </Link>
-                        </ListItem>
-                        <ListItem disablePadding>
+                        </ListItemButton>
+                        <ListItemButton
+                            sx={{
+                                height: '3.5rem',
+                                '&:hover': { bgcolor: '#A3A9FE80' },
+                            }}
+                        >
                             <Link
                                 to={'/signup'}
-                                className="w-full h-full px-4 py-4 hover:bg-[#A3A9FE80] transition-all"
+                                className="w-full h-full flex flex-row items-center"
                             >
                                 Sign Up
                             </Link>
-                        </ListItem>
+                        </ListItemButton>
                     </>
                 )}
+
+                <ListItemButton
+                    onClick={handleCategoriesClick}
+                    sx={{
+                        height: '3.5rem',
+                        '&:hover': { bgcolor: '#A3A9FE80' },
+                    }}
+                >
+                    <ListItemText primary="Categories" />
+                    {categoriesOpen ? (
+                        <MdExpandLess className="scale-150" />
+                    ) : (
+                        <MdExpandMore className="scale-150" />
+                    )}
+                </ListItemButton>
+                <Collapse in={categoriesOpen} timeout="auto" unmountOnExit>
+                    <List component="div" disablePadding>
+                        <ListItemButton
+                            sx={{
+                                height: '3.5rem',
+                                padding: '0px',
+                                '&:hover': { bgcolor: '#A3A9FE80' },
+                            }}
+                        >
+                            <Link
+                                to={'/events'}
+                                className="w-full h-full flex flex-row items-center"
+                                onClick={() => {
+                                    handleCategoriesClick();
+                                    toggleMenu(false);
+                                }}
+                            >
+                                <FaCircle className="scale-50 ml-8 mr-2" />
+                                Events
+                            </Link>
+                        </ListItemButton>
+                        <ListItemButton
+                            sx={{
+                                height: '3.5rem',
+                                padding: '0px',
+                                '&:hover': { bgcolor: '#A3A9FE80' },
+                            }}
+                        >
+                            <Link
+                                to={'/internships'}
+                                className="w-full h-full flex flex-row items-center"
+                                onClick={() => {
+                                    handleCategoriesClick();
+                                    toggleMenu(false);
+                                }}
+                            >
+                                <FaCircle className="scale-50 ml-8 mr-2" />
+                                Internships
+                            </Link>
+                        </ListItemButton>
+                        <ListItemButton
+                            sx={{
+                                height: '3.5rem',
+                                padding: '0px',
+                                '&:hover': { bgcolor: '#A3A9FE80' },
+                            }}
+                        >
+                            <Link
+                                to={'/volunteering'}
+                                className="w-full h-full flex flex-row items-center"
+                                onClick={() => {
+                                    handleCategoriesClick();
+                                    toggleMenu(false);
+                                }}
+                            >
+                                <FaCircle className="scale-50 ml-8 mr-2" />
+                                Volunteering
+                            </Link>
+                        </ListItemButton>
+                        <ListItemButton
+                            sx={{
+                                height: '3.5rem',
+                                padding: '0px',
+                                '&:hover': { bgcolor: '#A3A9FE80' },
+                            }}
+                        >
+                            <Link
+                                to={'/trainings'}
+                                className="w-full h-full flex flex-row items-center"
+                                onClick={() => {
+                                    handleCategoriesClick();
+                                    toggleMenu(false);
+                                }}
+                            >
+                                <FaCircle className="scale-50 ml-8 mr-2" />
+                                Trainings
+                            </Link>
+                        </ListItemButton>
+                    </List>
+                </Collapse>
             </List>
         </Box>
     );
@@ -158,6 +292,62 @@ const NavBar = ({ theme }) => {
                             );
                         })}
 
+                        <li className="relative dropdown-wrapper">
+                            <div className="flex flex-row justify-center items-center">
+                                <h1
+                                    className="ml-8 focus:outline-none cursor-pointer"
+                                    onClick={handleCategoriesClick}
+                                >
+                                    Categories
+                                </h1>
+                                {categoriesOpen ? (
+                                    <MdExpandLess className="scale-150 ml-2" />
+                                ) : (
+                                    <MdExpandMore className="scale-150 ml-2" />
+                                )}
+                            </div>
+                            <ul
+                                className={`absolute top-full left-0 bg-white text-black shadow-lg rounded-md mt-2 py-2 transition-all duration-300 ease-in-out transform ${
+                                    categoriesOpen
+                                        ? 'opacity-100 translate-y-0'
+                                        : 'opacity-0 -translate-y-3 pointer-events-none'
+                                }`}
+                            >
+                                <li className="px-4 py-2 hover:bg-gray-200">
+                                    <Link
+                                        to={'/events'}
+                                        onClick={handleCategoriesClick}
+                                    >
+                                        Events
+                                    </Link>
+                                </li>
+                                <li className="px-4 py-2 hover:bg-gray-200">
+                                    <Link
+                                        to={'/internships'}
+                                        onClick={handleCategoriesClick}
+                                    >
+                                        Internships
+                                    </Link>
+                                </li>
+                                <li className="px-4 py-2 hover:bg-gray-200">
+                                    <Link
+                                        to={'/volunteering'}
+                                        onClick={handleCategoriesClick}
+                                    >
+                                        Volunteering
+                                    </Link>
+                                </li>
+                                <li className="px-4 py-2 hover:bg-gray-200">
+                                    <Link
+                                        to={'/trainings'}
+                                        onClick={handleCategoriesClick}
+                                    >
+                                        Trainings
+                                    </Link>
+                                </li>
+                            </ul>
+                        </li>
+
                         {/* If the user is logged in, show the profile icon and logout */}
                         {isLoggedIn ? (
                             <>
@@ -165,7 +355,12 @@ const NavBar = ({ theme }) => {
                                     <button
                                         onClick={handleLogout}
                                         className="ml-8 focus:outline-none"
-                                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                                        style={{
+                                            background: 'none',
+                                            border: 'none',
+                                            cursor: 'pointer',
+                                            padding: 0,
+                                        }}
                                     >
                                         Logout
                                     </button>
