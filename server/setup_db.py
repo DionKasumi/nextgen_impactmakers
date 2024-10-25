@@ -93,7 +93,8 @@ def create_database():
             username VARCHAR(255) NOT NULL UNIQUE,
             email VARCHAR(255) NOT NULL,
             phone VARCHAR(20) NOT NULL,
-            password VARCHAR(255) NOT NULL 
+            password VARCHAR(255) NOT NULL,
+            preferences TEXT  
         );
         """)
 
