@@ -20,7 +20,7 @@ app.config['SESSION_COOKIE_SECURE'] = False    # Disable secure cookies for deve
 # Database connection parameters
 db_params = {
     'user': 'root',
-    'passwd': '1234',
+    'passwd': '',
     'host': 'localhost',
     'port': 3306,
     'db': 'pye_data'
@@ -528,10 +528,10 @@ def update_card(card_id, updated_data):
     return {"message": "Card updated successfully."}, 200
 
 
-@app.route('/api/admin/managecards/internships/update/<int:card_id>', methods=['POST'])
-def admin_update_card(card_id):
-    updated_data = request.get_json()  # Expecting JSON payload with updated fields
-    return jsonify(update_card(card_id, updated_data))
+# @app.route('/api/admin/managecards/internships/update/<int:card_id>', methods=['POST'])
+# def admin_update_card(card_id):
+#     updated_data = request.get_json()  # Expecting JSON payload with updated fields
+#     return jsonify(update_card(card_id, updated_data))
 
 # Function to get events from the database
 def get_events():
@@ -550,10 +550,10 @@ def get_events():
         db.close()
 
 # API to get events
-@app.route('/api/admin/managecards/events', methods=['GET'])
-def admin_get_events():
-    events = get_events()
-    return jsonify(events), 200
+# @app.route('/api/admin/managecards/events', methods=['GET'])
+# def admin_get_events():
+#     events = get_events()
+#     return jsonify(events), 200
 
 # Function to get internships from the database
 def get_internships():
@@ -572,10 +572,10 @@ def get_internships():
         db.close()
 
 # API to get internships
-@app.route('/api/admin/managecards/internships', methods=['GET'])
-def admin_get_internships():
-    internships = get_internships()
-    return jsonify(internships), 200
+# @app.route('/api/admin/managecards/internships', methods=['GET'])
+# def admin_get_internships():
+#     internships = get_internships()
+#     return jsonify(internships), 200
 
 
 # Function to get training events from the database
@@ -595,10 +595,10 @@ def get_trainings():
         db.close()
 
 # API to get training events
-@app.route('/api/admin/managecards/training', methods=['GET'])
-def admin_get_trainings():
-    training_events = get_trainings()
-    return jsonify(training_events), 200
+# @app.route('/api/admin/managecards/training', methods=['GET'])
+# def admin_get_trainings():
+#     training_events = get_trainings()
+#     return jsonify(training_events), 200
 
 
 # Function to get volunteering opportunities from the database
@@ -618,10 +618,10 @@ def get_volunteering():
         db.close()
 
 # API to get volunteering opportunities
-@app.route('/api/admin/managecards/volunteering', methods=['GET'])
-def admin_get_volunteering():
-    volunteering = get_volunteering()
-    return jsonify(volunteering), 200
+# @app.route('/api/admin/managecards/volunteering', methods=['GET'])
+# def admin_get_volunteering():
+#     volunteering = get_volunteering()
+#     return jsonify(volunteering), 200
 
 
 if __name__ == '__main__':
