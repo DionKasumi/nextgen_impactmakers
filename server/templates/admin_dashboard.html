@@ -31,6 +31,12 @@
             display: none;
             padding-left: 1rem; /* Indent submenu */
         }
+        /* Add this CSS to your stylesheet */
+#editModal .modal-content {
+    max-height: 60vh; /* Limit modal height to 80% of the viewport height */
+    overflow-y: auto; /* Allow vertical scrolling */
+}
+
     </style>
 </head>
 <body class="bg-gray-100">
@@ -130,9 +136,11 @@
 <div id="editModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 hidden flex items-center justify-center">
     <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
         <h2 class="text-xl font-bold mb-4 text-center">Edit Card</h2>
-        <form id="editForm" class="space-y-4">
-            <!-- Input fields will be dynamically added here -->
-        </form>
+        <div class="modal-content"> <!-- Add this wrapper -->
+            <form id="editForm" class="space-y-4">
+                <!-- Input fields will be dynamically added here -->
+            </form>
+        </div>
         <div class="flex justify-end gap-4 mt-4">
             <button id="cancelButton" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">
                 Cancel
@@ -143,6 +151,7 @@
         </div>
     </div>
 </div>
+
 
 
         <script>
@@ -187,8 +196,11 @@
 
        
 
-              // Function to fetch and display cards based on the selected category
-              function fetchCards(apiUrl, title, columns) {
+            function fetchCards(apiUrl, title, columns) {
+    currentApiUrl = apiUrl; // Update the global variable for API URL
+    currentTitle = title; // Update the global variable for title
+    currentColumns = columns; // Update the global variable for columns
+
     fetch(apiUrl)
         .then(response => {
             if (!response.ok) throw new Error('Network response was not ok');
@@ -208,7 +220,7 @@
             // Create header cells with labels
             columns.forEach(col => {
                 const th = document.createElement('th');
-                th.innerHTML = `<b>${col}</b>`; // Wrap column name in a label tag
+                th.innerHTML = `<b>${col}</b>`;
                 th.className = 'border-b';
                 cardsHeader.appendChild(th);
             });
@@ -240,38 +252,19 @@
         });
 }
 
-function updateCard(id, formBody) {
-    const updatedData = {};
 
-    // Collect the updated data from the form
-    const inputs = formBody.querySelectorAll('input');
-    inputs.forEach(input => {
-        updatedData[input.name] = input.value; // Assuming input name matches the backend field names
-    });
-
-    // Make an API call to update the card data
-    fetch(`/api/admin/managecards/${id}`, { // Adjust endpoint as needed
-        method: 'PUT', // Change this to POST if required by your API
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedData),
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Failed to update card');
-        }
-        return response.json();
-    })
-    .then(data => {
-        // Optionally, refresh the cards table after a successful update
-        fetchCards('/api/admin/managecards/internships', 'Manage Internships', ['Source', 'Title', 'Description', 'Posted Date', 'Salary', 'Duration', 'Location', 'Image URL']);
-        console.log('Update successful:', data);
-    })
-    .catch(error => {
-        console.error('Error updating card:', error);
-        alert('There was an error updating the card. Please try again later.');
-    });
+function getTypeFromContext() {
+    if (document.getElementById('internshipsLink').classList.contains('active')) {
+        return 'internships';
+    } else if (document.getElementById('trainingsLink').classList.contains('active')) {
+        return 'trainings';
+    } else if (document.getElementById('volunteeringLink').classList.contains('active')) {
+        return 'volunteering';
+    } else if (document.getElementById('eventsLink').classList.contains('active')) {
+        return 'events';
+    } else {
+        throw new Error('Invalid record type');
+    }
 }
 
 
@@ -283,17 +276,34 @@ function editRow(id, button) {
     // Clear any previous form inputs
     editForm.innerHTML = '';
 
+    // Retrieve column names from the header
+    const headerRow = document.getElementById('cardsTableHeader');
+    const columnNames = Array.from(headerRow.children).map(header => header.textContent.toLowerCase().replace(/ /g, '_'));
+
     // Create input fields dynamically
-    columns.forEach((cell, index) => {
+    const editedData = {};
+
+    columnNames.forEach((fieldName, index) => {
+        const cell = columns[index];
+
+        // Check if cell exists to avoid errors
+        if (!cell) {
+            console.warn(`No cell found for column: ${fieldName}`);
+            return; // Skip if no cell is found
+        }
+
         const label = document.createElement('label');
         label.classList.add('block', 'text-sm', 'font-medium', 'text-gray-700');
-        label.textContent = cell.textContent;
+        label.textContent = fieldName.charAt(0).toUpperCase() + fieldName.slice(1).replace(/_/g, ' '); // Format the label
 
         const input = document.createElement('input');
         input.type = 'text';
-        input.name = `field${index}`; // Assign generic field name
-        input.value = cell.textContent;
+        input.name = fieldName; // Use meaningful field names
+        input.value = cell.textContent || ''; // Populate the input with current value or empty string if undefined
         input.classList.add('mt-1', 'block', 'w-full', 'border', 'rounded', 'p-2', 'shadow-sm');
+
+        // Capture the data into the editedData object with meaningful keys
+        editedData[fieldName] = cell.textContent || ''; // Use the actual field name, defaulting to an empty string
 
         const wrapper = document.createElement('div');
         wrapper.appendChild(label);
@@ -302,70 +312,107 @@ function editRow(id, button) {
         editForm.appendChild(wrapper);
     });
 
+    // Set the record type for the API call
+    editedData.type = getTypeFromContext(); // Set the type based on active category
+
     // Show the modal
     document.getElementById('editModal').classList.remove('hidden');
 
-    // Handle Save and Cancel actions
+    // Handle Save action
     document.getElementById('saveButton').onclick = function () {
-        saveEdit(id, editForm, row);
-        closeModal();
+        // Update the editedData object with current values from the inputs
+        columnNames.forEach(fieldName => {
+            const inputField = editForm.querySelector(`input[name="${fieldName}"]`);
+            if (inputField) {
+                editedData[fieldName] = inputField.value; // Capture the updated value
+            }
+        });
+
+        // Validate the data before saving
+        if (validateData(editedData)) {
+            editedData.id = id; // Include ID for PUT request
+            console.log('Saving data:', editedData); // Log the data being saved
+            saveEdit(editedData); // Call saveEdit with edited data
+        } else {
+            alert('Please fill in all fields before saving.'); // Alert if validation fails
+        }
     };
 
+    // Handle Cancel action
     document.getElementById('cancelButton').onclick = function () {
         closeModal();
     };
 }
 
+
 function closeModal() {
     document.getElementById('editModal').classList.add('hidden');
-
-
-    // Add Save and Cancel buttons
-    const saveButton = document.createElement('button');
-    saveButton.type = 'button';
-    saveButton.textContent = 'Save';
-    saveButton.classList.add('bg-green-500', 'text-white', 'px-4', 'py-2', 'rounded');
-    saveButton.addEventListener('click', () => {
-        // Handle form submission and update data here
-    });
-
-    const cancelButton = document.createElement('button');
-    cancelButton.type = 'button';
-    cancelButton.textContent = 'Cancel';
-    cancelButton.classList.add('bg-red-500', 'text-white', 'px-4', 'py-2', 'rounded');
-    cancelButton.addEventListener('click', () => {
-        cancelEdit(row);
-    });
-
-    const buttonWrapper = document.createElement('div');
-    buttonWrapper.classList.add('w-full', 'flex', 'gap-4');
-    buttonWrapper.appendChild(saveButton);
-    buttonWrapper.appendChild(cancelButton);
-
-    form.appendChild(buttonWrapper);
-
-    // Replace row content with the form
-    row.innerHTML = '';
-    const td = document.createElement('td');
-    td.colSpan = columns.length + 1;
-    td.appendChild(form);
-    row.appendChild(td);
 }
-function saveEdit(id, form, row) {
-    const inputs = form.querySelectorAll('input');
-    const updatedData = Array.from(inputs).map(input => input.value);
 
-    // Optional: Send the updated data to the server
-    console.log(`Saving changes for ID ${id}:`, updatedData);
 
-    // Update the row with the new values
-    row.innerHTML = updatedData
-        .map(data => `<td class="py-2 px-4 border-b">${data}</td>`)
-        .join('');
-    const actionTd = document.createElement('td');
-    actionTd.classList.add('py-2', 'px-4', 'border-b');
-    actionTd.innerHTML = `<button onclick="editRow(${id}, this)" class="bg-blue-500 text-white px-2 py-1 rounded">Edit</button>`;
-    row.appendChild(actionTd);
+
+const editedData = {};
+function saveEdit(editedData) {
+    console.log('Edited Data:', editedData); // Log the edited data to check all values
+    const apiEndpoint = getApiEndpoint(editedData.type, editedData.id);
+    console.log('API Endpoint:', apiEndpoint); // Log the generated API endpoint
+
+    fetch(apiEndpoint, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(editedData)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Data updated successfully:', data);
+        updateUi(data); // Call your function to update the UI
+
+        // Close the modal after successful update
+        document.getElementById('editModal').style.display = 'none';
+    })
+    .catch(error => {
+        console.error('Error updating data:', error);
+        alert('Failed to update data: ' + error.message);
+    });
+}
+
+
+console.log('Saving data:', editedData); // Log the data being saved
+
+function validateData(data) {
+    for (const key in data) {
+        if (data[key] === '' || data[key] === null) {
+            return false; // Return false if any field is empty
+        }
+    }
+    return true; // All fields are valid
+}
+function updateUi(data) {
+    // Logic to update the UI, such as re-fetching data or updating the specific row
+    fetchCards(currentApiUrl, currentTitle, currentColumns); // Use your variables accordingly
+}
+
+function getApiEndpoint(type, id) {
+    const baseUrl = '/api/admin/managecards/';
+    const endpoints = {
+        internships: `${baseUrl}internships/${id}`,
+        trainings: `${baseUrl}training/${id}`,
+        volunteering: `${baseUrl}volunteering/${id}`,
+        events: `${baseUrl}events/${id}`,
+    };
+
+    if (endpoints[type]) {
+        return endpoints[type];
+    } else {
+        throw new Error('Invalid record type');
+    }
 }
 
 
@@ -391,7 +438,7 @@ function cancelEdit(row) {
             // Event listeners for submenu items
             document.getElementById('internshipsLink').addEventListener('click', function(event) {
                 event.stopPropagation(); // Prevent event from bubbling up
-                fetchCards('/api/admin/managecards/internships', 'Manage Internships', ['Source', 'Title', 'Description', 'Posted Date', 'Salary', 'Duration', 'Location', 'Image URL']);
+                fetchCards('/api/admin/managecards/internships', 'Manage Internships', ['source', 'title', 'description', 'posted_date', 'salary', 'duration', 'location', 'image_url', 'email', 'phone_number', 'office_address', 'company_logo']);
                 highlightActiveLink('internshipsLink');
                 // Hide the greeting and description when submenu is clicked
                 document.getElementById('greeting').style.display = 'none'; 
@@ -401,7 +448,7 @@ function cancelEdit(row) {
             // Similar updates for the other submenu items
             document.getElementById('trainingsLink').addEventListener('click', function(event) {
                 event.stopPropagation();
-                fetchCards('/api/admin/managecards/training', 'Manage Trainings', ['Source', 'Title', 'Trainer', 'Description', 'Price', 'Students', 'Rating', 'Image URL', 'Duration']);
+                fetchCards('/api/admin/managecards/training', 'Manage Trainings', ['source', 'title', 'trainer', 'description', 'price', 'students', 'rating', 'image_url', 'duration', 'email', 'phone_number', 'office_address', 'company_logo']);
                 highlightActiveLink('trainingsLink');
                 document.getElementById('greeting').style.display = 'none'; 
                 document.getElementById('greetingDescription').style.display = 'none'; 
@@ -409,7 +456,7 @@ function cancelEdit(row) {
 
             document.getElementById('volunteeringLink').addEventListener('click', function(event) {
                 event.stopPropagation();
-                fetchCards('/api/admin/managecards/volunteering', 'Manage Volunteering', ['Source', 'Title', 'Duration', 'Cause', 'Age Group', 'Image URL']);
+                fetchCards('/api/admin/managecards/volunteering', 'Manage Volunteering', ['source', 'title', 'duration', 'cause', 'age_group', 'image_url', 'email', 'phone_number', 'office_address', 'company_logo']);
                 highlightActiveLink('volunteeringLink');
                 document.getElementById('greeting').style.display = 'none'; 
                 document.getElementById('greetingDescription').style.display = 'none'; 
@@ -417,7 +464,7 @@ function cancelEdit(row) {
 
             document.getElementById('eventsLink').addEventListener('click', function(event) {
                 event.stopPropagation();
-                fetchCards('/api/admin/managecards/events', 'Manage Events', ['Source', 'Organizer', 'Title', 'Duration', 'Location', 'Image URL']);
+                fetchCards('/api/admin/managecards/events', 'Manage Events', ['source', 'organizer', 'title', 'duration', 'location', 'image_url', 'email', 'phone_number', 'office_address', 'company_logo']);
                 highlightActiveLink('eventsLink');
                 document.getElementById('greeting').style.display = 'none'; 
                 document.getElementById('greetingDescription').style.display = 'none'; 

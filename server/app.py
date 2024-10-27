@@ -2,6 +2,7 @@ from flask import Flask, jsonify, abort, redirect, request, session, render_temp
 from flask_cors import CORS
 import MySQLdb
 import bcrypt
+from datetime import datetime
 import secrets
 
 app = Flask(__name__)
@@ -20,7 +21,7 @@ app.config['SESSION_COOKIE_SECURE'] = False    # Disable secure cookies for deve
 # Database connection parameters
 db_params = {
     'user': 'root',
-    'passwd': '1234',
+    'passwd': '12345678',
     'host': 'localhost',
     'port': 3306,
     'db': 'pye_data'
@@ -386,6 +387,267 @@ def delete_organization(org_id):
     finally:
         db.close()
     return {"message": "Organization deleted successfully."}, 200
+
+
+# Function to get events from the database
+def get_events():
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        query = "SELECT * FROM all_events"  # Adjust the query as needed
+        cursor.execute(query)
+        internships = cursor.fetchall()
+        cursor.close()
+        return internships
+    except MySQLdb.Error as e:
+        print(f"MySQL error during fetching events: {e}")
+        return []
+    finally:
+        db.close()
+
+# API to get events
+@app.route('/api/admin/managecards/events', methods=['GET'])
+def admin_get_events():
+    events = get_events()
+    return jsonify(events), 200
+
+# Function to get internships from the database
+def get_internships():
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        query = "SELECT * FROM all_internships"  # Adjust the query as needed
+        cursor.execute(query)
+        internships = cursor.fetchall()
+        cursor.close()
+        return internships
+    except MySQLdb.Error as e:
+        print(f"MySQL error during fetching internships: {e}")
+        return []
+    finally:
+        db.close()
+
+# API to get internships
+@app.route('/api/admin/managecards/internships', methods=['GET'])
+def admin_get_internships():
+    internships = get_internships()
+    return jsonify(internships), 200
+
+
+# Function to get training events from the database
+def get_trainings():
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        query = "SELECT * FROM all_courses"  # Adjust the query as needed
+        cursor.execute(query)
+        training_events = cursor.fetchall()
+        cursor.close()
+        return training_events
+    except MySQLdb.Error as e:
+        print(f"MySQL error during fetching trainings: {e}")
+        return []
+    finally:
+        db.close()
+
+# API to get training events
+@app.route('/api/admin/managecards/training', methods=['GET'])
+def admin_get_trainings():
+    training_events = get_trainings()
+    return jsonify(training_events), 200
+
+
+# Function to get volunteering opportunities from the database
+def get_volunteering():
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        query = "SELECT * FROM all_volunteering"  # Adjust the query as needed
+        cursor.execute(query)
+        volunteering = cursor.fetchall()
+        cursor.close()
+        return volunteering
+    except MySQLdb.Error as e:
+        print(f"MySQL error during fetching volunteering opportunities: {e}")
+        return []
+    finally:
+        db.close()
+
+# API to get volunteering opportunities
+@app.route('/api/admin/managecards/volunteering', methods=['GET'])
+def admin_get_volunteering():
+    volunteering = get_volunteering()
+    return jsonify(volunteering), 200
+
+# Example function to update an event in the database
+def update_event(event_data):
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+        query = """UPDATE all_events SET source=%s, organizer=%s, title=%s, duration=%s, location=%s, image_url=%s,
+         email=%s, phone_number=%s, office_address=%s, company_logo=%s WHERE id=%s"""
+        cursor.execute(query, (
+            event_data['source'],
+            event_data['organizer'],
+            event_data['title'],
+            event_data['duration'],
+            event_data['location'],
+            event_data['image_url'],
+            event_data['email'],
+            event_data['phone_number'],
+            event_data['office_address'],
+            event_data['company_logo'],
+            event_data['id']
+        ))
+        db.commit()
+        cursor.close()
+        return True
+    except MySQLdb.Error as e:
+        print(f"MySQL error during updating event: {e}")
+        return False
+    finally:
+        db.close()
+
+# API to update an event
+@app.route('/api/admin/managecards/events/<int:event_id>', methods=['PUT'])
+def admin_update_event(event_id):
+    event_data = request.json
+    event_data['id'] = event_id  # Add the event ID to the data
+    if update_event(event_data):
+        return jsonify({'message': 'Event updated successfully'}), 200
+    else:
+        return jsonify({'error': 'Failed to update event'}), 500
+
+
+def update_internship(internship_data):
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+
+        # Convert the posted_date to the correct format if it exists
+        if 'posted_date' in internship_data:
+            try:
+                # Assuming posted_date is a string
+                internship_data['posted_date'] = datetime.strptime(internship_data['posted_date'], "%a, %d %b %Y %H:%M:%S %Z").strftime("%Y-%m-%d")
+            except ValueError as ve:
+                print(f"Date formatting error: {ve}")
+
+        query = """UPDATE all_internships SET source=%s, title=%s, description=%s, posted_date=%s, salary=%s,
+                   duration=%s, location=%s, image_url=%s, email=%s, phone_number=%s, office_address=%s,
+                   company_logo=%s WHERE id=%s"""
+        cursor.execute(query, (
+            internship_data['source'],
+            internship_data['title'],
+            internship_data['description'],
+            internship_data['posted_date'],  # Now correctly formatted
+            internship_data['salary'],
+            internship_data['duration'],
+            internship_data['location'],
+            internship_data['image_url'],
+            internship_data['email'],
+            internship_data['phone_number'],
+            internship_data['office_address'],
+            internship_data['company_logo'],
+            internship_data['id']
+        ))
+        db.commit()
+        cursor.close()
+        return True
+    except MySQLdb.Error as e:
+        print(f"MySQL error during updating internship: {e}")
+        return False
+    finally:
+        db.close()
+
+
+@app.route('/api/admin/managecards/internships/<int:internship_id>', methods=['PUT'])
+def admin_update_internship(internship_id):
+    internship_data = request.json
+    internship_data['id'] = internship_id  # Add the internship ID to the data
+    if update_internship(internship_data):
+        return jsonify({'message': 'Internship updated successfully'}), 200
+    else:
+        return jsonify({'error': 'Failed to update internship'}), 500
+
+def update_volunteering(volunteering_data):
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+        query = """UPDATE volunteering SET source=%s, title=%s, duration=%s, cause=%s, age_group=%s,
+                   image_url=%s, email=%s, phone_number=%s, office_address=%s, company_logo=%s WHERE id=%s"""
+        cursor.execute(query, (
+            volunteering_data['source'],
+            volunteering_data['title'],
+            volunteering_data['duration'],
+            volunteering_data['cause'],
+            volunteering_data['age_group'],
+            volunteering_data['image_url'],
+            volunteering_data['email'],
+            volunteering_data['phone_number'],
+            volunteering_data['office_address'],
+            volunteering_data['company_logo'],
+            volunteering_data['id']
+        ))
+        db.commit()
+        cursor.close()
+        return True
+    except MySQLdb.Error as e:
+        print(f"MySQL error during updating volunteering: {e}")
+        return False
+    finally:
+        db.close()
+
+@app.route('/api/admin/managecards/volunteering/<int:volunteering_id>', methods=['PUT'])
+def admin_update_volunteering(volunteering_id):
+    volunteering_data = request.json
+    volunteering_data['id'] = volunteering_id  # Add the volunteering ID to the data
+    if update_volunteering(volunteering_data):
+        return jsonify({'message': 'Volunteering updated successfully'}), 200
+    else:
+        return jsonify({'error': 'Failed to update volunteering'}), 500
+
+def update_training(training_data):
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+        
+        # Convert 'N/A' to None or 0 for database update
+        students_value = training_data['students']
+        if students_value == 'N/A':
+            students_value = 0  # or use 0 if you prefer
+        
+        query = """UPDATE all_courses SET source=%s, title=%s, trainer=%s, description=%s, price=%s,
+                   students=%s, rating=%s, image_url=%s, duration=%s WHERE id=%s"""
+        cursor.execute(query, (
+            training_data['source'],
+            training_data['title'],
+            training_data['trainer'],
+            training_data['description'],
+            training_data['price'],
+            students_value,  # Use the converted value here
+            training_data['rating'],
+            training_data['image_url'],
+            training_data['duration'],
+            training_data['id']
+        ))
+        db.commit()
+        cursor.close()
+        return True
+    except MySQLdb.Error as e:
+        print(f"MySQL error during updating training: {e}")
+        return False
+    finally:
+        db.close()
+
+
+@app.route('/api/admin/managecards/training/<int:training_id>', methods=['PUT'])
+def admin_update_training(training_id):
+    training_data = request.json
+    training_data['id'] = training_id  # Add the training ID to the data
+    if update_training(training_data):
+        return jsonify({'message': 'Training updated successfully'}), 200
+    else:
+        return jsonify({'error': 'Failed to update training'}), 500
 
 
 if __name__ == '__main__':
