@@ -27,14 +27,13 @@ db_params = {
     'db': 'pye_data'
 }
 
-
 def fetch_courses_from_database():
     courses = []
     try:
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
         query = """
-        SELECT id, source, title, trainer, description, price, students, rating, image_url, duration, email, phone_number, office_address, company_logo
+        SELECT id, source, title, trainer, description, price, students, rating, image_url, duration , email, phone_number, office_address, company_logo 
         FROM all_courses
         """
         cursor.execute(query)
@@ -55,7 +54,7 @@ def fetch_course_by_id(course_id):
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
         query = """
-        SELECT id, source, title, trainer, description, price, students, rating, image_url, duration, email, phone_number, office_address, company_logo
+        SELECT id, source, title, trainer, description, price, students, rating, image_url, duration, email, phone_number, office_address, company_logo 
         FROM all_courses
         WHERE id = %s
         """
@@ -389,7 +388,8 @@ def delete_organization(org_id):
         db.close()
     return {"message": "Organization deleted successfully."}, 200
 
-# Function to get internships from the database
+
+# Function to get events from the database
 def get_events():
     try:
         db = MySQLdb.connect(**db_params)

@@ -1,9 +1,11 @@
 import SectionWrapper from '../hoc/SectionWrapper';
 import SwiperCarousel from '../components/SwiperCarousel';
+import { useState, useEffect, useRef } from 'react'; 
+import CountUp from 'react-countup';
 
 const FirstPart = () => {
     return (
-        <div className="w-full h-screen flex flex-col justify-center items-center bg-[url('../assets/Group.png')] bg-cover bg-left-20">
+        <div className="w-full h-screen flex flex-col justify-center items-center bg-[url('../assets/back1.png')] ">
             
             <div className="w-full min-h-svh items-center flex flex-col relative top-[20%] mb-20 ">
                 <div className="flex flex-row ">
@@ -149,50 +151,79 @@ const ThirdPart = () => {
     );
 };
 
+
 const FourthPart = () => {
+    const [startCounter, setStartCounter] = useState(false);
+    const counterRef = useRef(null); 
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting) {
+                    setStartCounter(true); // Start counter when in view
+                } else {
+                    setStartCounter(false); 
+                }
+            },
+            { threshold: 0.5 } 
+        );
+
+        if (counterRef.current) {
+            observer.observe(counterRef.current);
+        }
+
+        return () => {
+            if (counterRef.current) {
+                observer.unobserve(counterRef.current);
+            }
+        };
+    }, []);
+
     return (
-        <div className="relative w-full h-full">
+        <div ref={counterRef} className="relative w-full h-full">
             <img
                 src="../assets/back2.png"
                 alt="Background Decorative Image"
-                className="absolute inset-0 w-full h-full object-cover opacity-90 py-30" 
+                className="absolute inset-0 w-full h-full object-cover opacity-90 py-30"
             />
 
             <div className="relative flex flex-col items-center justify-center h-full bg-white bg-opacity-0 py-20">
-                {/* Title */}
-                <h1 className="text-5xl text-white text-center mb-10 font-bold  ">
-                        Registered
-                    </h1>
 
-                    <h2 className="text-[32px] text-white  mb-20 font-poppins font-light opacity-100">
-                        Users and Organizations
-                    </h2>
+                <h1 className="text-5xl text-white text-center mb-10 font-bold">
+                    Registered
+                </h1>
+
+                <h2 className="text-[32px] text-white mb-20 font-poppins font-light opacity-100">
+                    Users and Organizations
+                </h2>
+
                 <div className="flex flex-nowrap justify-center mt-10 gap-80 max-w-2xl mx-auto text-center overflow-x-auto">
-                
-                    <div className=" text-white flex flex-col items-center italic ">
+                    
+
+                    <div className=" text-white flex flex-col items-center italic">
                         <img
                             src="../assets/Group 745.png"
                             alt="Individuals"
-                            className="w-[120px] h-[120px] mb-2" 
+                            className="w-[120px] h-[120px] mb-2"
                         />
-                        <h1 className="text-4xl text-white text-center mt-10 mb-10 font-bold  ">
-                        50,000
-                    </h1>
-                        <p className="text-sm">Individuals</p>
+                        <h1 className="text-4xl text-[#6bf1c6] text-center mt-10 mb-10 font-bold">
+                            {startCounter ? <CountUp end={50000} duration={2} /> : '0'} {/* Counter for Individuals */}
+                        </h1>
+                        <p className="text-xl">Individuals</p>
                     </div>
 
-                    <div className=" text-white flex flex-col items-center italic ">
+
+                    <div className="text-white flex flex-col items-center italic">
                         <img
                             src="../assets/Group 718.png"
                             alt="Organizations"
-                            className="w-[120px] h-[120px] mb-2" // Uniform size for all images
+                            className="w-[120px] h-[120px] mb-2"
                         />
-                        <h1 className="text-4xl text-white text-center mt-10 mb-10 font-bold  ">
-                        50,000
-                    </h1>
-                        <p className="text-sm">Organizations</p>
-                    </div>
-                    
+                        <h1 className="text-4xl text-[#6bf1c6] text-center mt-10 mb-10 font-bold">
+                            {startCounter ? <CountUp end={50001} duration={2} /> : '0'} {/* Counter for Organizations */}
+                        </h1>
+                        <p className="text-xl">Organizations</p>
+                    </div>                  
                 </div>
             </div>
         </div>
@@ -201,9 +232,9 @@ const FourthPart = () => {
 
 const FivethPart = () => {
     return (
-        <div className="w-full h-screen flex flex-col justify-center items-center bg-[url('../assets/background4.png')]">
+        <div className="w-full h-screen flex flex-col justify-center items-center bg-[url('../assets/group1.png')]">
                 <div className=" ">
-                    <h1 className="text-4xl text-white text-center -mt-60 mb-10 font-bold  ">
+                    <h1 className="text-4xl text-white text-center -mt-50 mb-10 font-bold  ">
                         Upcoming Opportunities
                     </h1>
 
@@ -237,43 +268,59 @@ const SixthPart = () => {
 };
 
 
+
 const SeventhPart = () => {
-    return (
-            <div className="w-full h-full flex flex-col bg-[url('../assets/background3.png')] justify-center items-center py-20">
+  // State to manage the order of the cards
+    const [selectedCard, setSelectedCard] = useState('yellow');
 
-                <div className="text-white text-5xl font-bold mb-48">Reviews</div>
+return (
+    <div className="w-full h-full flex flex-col bg-[url('../assets/background3.png')] justify-center items-center py-20">
+        <div className="text-white text-5xl font-bold mb-48">Reviews</div>
 
-                <div className="relative w-full flex justify-center items-center -space-x-80">
-                    <div class="relative flex justify-center items-center rounded-xl bg-[#4FEAC6] w-[44rem] h-56 p-6 shadow-lg z-10">
-                        <div class="absolute -top-10 left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full bg-white border-2 border-[#F6F49D]"></div>
-                        <div class="text-sm md:text-base text-black">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing
-                            elit, sed do eiusmod tempor incididunt ut labore et
-                            dolore magna aliqua.
-                        </div>
-                    </div>
+            <div className="relative w-full flex justify-center items-center -space-x-80">
 
-                    <div class="relative flex justify-center items-center rounded-xl bg-[#F6F49D] w-[44rem] h-56 p-6 shadow-lg z-50 mb-44">
-                        <div class="absolute -top-10 left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full bg-white border-2 border-[#F6F49D]"></div>
-                        <div class="text-sm md:text-base text-black">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing
-                            elit, sed do eiusmod tempor incididunt ut labore et
-                            dolore magna aliqua. Ut enim ad minim veniam, quis
-                            nostrud exercitation ullamco laboris nisi.
-                        </div>
-                    </div>
-
-                    <div class="relative flex justify-center items-center rounded-xl bg-[#B3B5FF] w-[44rem] h-56 p-6 shadow-lg z-10">
-                        <div class="absolute -top-10 left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full bg-white border-2 border-[#F6F49D]"></div>
-                        <div class="text-sm md:text-base text-black">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing
-                            elit, sed do eiusmod tempor incididunt ut labore et
-                            dolore magna aliqua.
-                        </div>
-                    </div>
-                </div>
+        <div
+        onClick={() => setSelectedCard('teal')}
+        className={`relative flex flex-col justify-center items-center rounded-xl bg-[#4FEAC6] w-[44rem] h-56 p-6 shadow-lg transition-transform duration-500 ease-in-out 
+            ${selectedCard === 'teal' ? 'z-50 mb-44 scale-110 relative left-96 scale-110' : 'z-10  scale-100'}
+        `}
+        >
+            <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full bg-white border-2 border-[#F6F49D]"></div>
+            <h1 className="text-lg mb-8 self-start">Username</h1>
+            <div className="text-sm md:text-base text-black">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi             </div>
         </div>
-    );
+
+
+        <div
+            onClick={() => setSelectedCard('yellow')}
+            className={`relative flex flex-col justify-center items-center rounded-xl bg-[#F6F49D] w-[44rem] h-56 p-6 shadow-lg transition-transform duration-500 ease-in-out 
+            ${selectedCard === 'yellow' ? 'z-50 mb-44 scale-110' : 'relative right-96  z-20 scale-100'}
+            `}
+        >
+            <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full bg-white border-2 border-[#F6F49D]"></div>
+            <h1 className="text-lg mb-8 self-start">Username</h1>
+            <div className="text-sm md:text-base text-black">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi 
+                    </div>
+        </div>
+
+
+        <div
+        onClick={() => setSelectedCard('lavender')}
+        className={`relative flex flex-col justify-center items-center rounded-xl bg-[#B3B5FF] w-[44rem] h-56 p-6 shadow-lg transition-transform duration-500 ease-in-out 
+            ${selectedCard === 'lavender' ? 'z-50 mb-44 relative right-80 scale-110' : 'z-30 scale-100'}
+        `}
+        >
+            <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full bg-white border-2 border-[#F6F49D]"></div>
+            <h1 className="text-lg mb-8 self-start">Username</h1>
+            <div className="text-sm md:text-base text-black">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi            
+            </div>
+        </div>
+        </div>
+    </div>
+);
 };
 
 const HomePage = () => {
