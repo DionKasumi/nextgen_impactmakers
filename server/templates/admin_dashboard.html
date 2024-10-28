@@ -49,6 +49,11 @@
                     >
                         Manage Users
                     </a>
+                    <div id="usersSubMenu" class="submenu">
+                        <a href="#" id=" approveOrganizationsLink" class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-800"> Approve Organizations</a>
+                        <a href="#" id="checkAndChangeAccountInfoLink" class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-800">Check and Change Account Info</a>
+                        <a href="#" id="banDeleteUsersLink" class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-800">Ban/Delete users</a>
+                    </div>
                     <div>
                         <a
                             id="manageCardsLink"
@@ -70,7 +75,7 @@
                         class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-800"
                     >
                         Manage Reviews/Feedback
-                    </a>
+                </a>
                 </nav>
             </div>
 
@@ -91,8 +96,22 @@
             <p id="greetingDescription" class="text-gray-700 mb-6">This is your admin dashboard where you can manage Users, Cards, or Reviews.</p>
 
             <!-- Users Table -->
-            <div class="overflow-x-auto" id="organizationsTableContainer" style="display: none;">
-                <h2 class="text-2xl font-bold mb-4">Manage Users</h2>
+            <div id="usersTableContainer" style="display: none;">
+                <h2 class="text-2xl font-bold mb-4" id="usersHeader">Manage Users</h2>
+                <table class="min-w-full bg-white" id="usersTable">
+                    <thead>
+                        <tr id="usersTableHeader">
+                            <!-- Dynamic Header -->
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <!-- Users will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="hidden-section" id="approveOrganizationsTableContainer" style="display: none;">
+                <h2 class="text-2xl font-bold mb-4">Approve Organizations</h2>
                 <h3 class="text-xl font-semibold mb-4">Approve Pending Organizations</h3>
                 <table class="min-w-full bg-white">
                     <thead>
@@ -105,11 +124,18 @@
                             <th class="border-b">Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="organizationsTableBody">
+                    <tbody id="approveOrganizationsTableBody">
                         <!-- Organizations will be dynamically inserted here -->
                     </tbody>
                 </table>
             </div>
+
+            <script>
+                function showApproveOrganizations() {
+                    const container = document.getElementById("approveOrganizationsTableContainer");
+                    container.style.display = (container.style.display === "none" || container.style.display === "") ? "block" : "none";
+                }
+            </script>
 
             <!-- Cards Tables -->
             <div id="cardsTableContainer" style="display: none;">
@@ -374,7 +400,21 @@ function cancelEdit(row) {
     window.location.reload();
 }
 
-    
+
+    // Show/hide the dropdown for Manage Users
+    document.getElementById('manageUsersLink').addEventListener('click', function() {
+                highlightActiveLink('manageUsersLink');
+                const submenu = document.getElementById('usersSubMenu');
+                submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+                
+                // Hide the greeting and its description
+                document.getElementById('greeting').style.display = 'none'; 
+                document.getElementById('greetingDescription').style.display = 'none'; 
+                document.getElementById('organizationsTableContainer').style.display = 'none'; 
+                document.getElementById('usersTableContainer').style.display = 'none'; // Hide users table
+            });
+
+
                 // Show/hide the dropdown for Manage Cards
             document.getElementById('manageCardsLink').addEventListener('click', function() {
                 highlightActiveLink('manageCardsLink');
