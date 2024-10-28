@@ -82,6 +82,171 @@ def get_course(course_id):
         abort(404, description="Course not found")
     return jsonify(course)
 
+def fetch_internships_from_database():
+    internships = []
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        query = """
+        SELECT id, source, title, description, posted_date, salary, duration, location, image_url 
+        FROM all_internships
+        """
+        cursor.execute(query)
+        internships = cursor.fetchall()
+    except MySQLdb.Error as e:
+        print(f"MySQL error: {e}")
+    finally:
+        try:
+            cursor.close()
+            db.close()
+        except MySQLdb.Error as e:
+            print(f"Error closing connection: {e}")
+    return internships
+
+def fetch_internship_by_id(internship_id):
+    internship = None
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        query = """
+        SELECT id, source, title, description, posted_date, salary, duration, location, image_url 
+        FROM all_internships
+        WHERE id = %s
+        """
+        cursor.execute(query, (internship_id,))
+        internship = cursor.fetchone()
+    except MySQLdb.Error as e:
+        print(f"MySQL error: {e}")
+    finally:
+        try:
+            cursor.close()
+            db.close()
+        except MySQLdb.Error as e:
+            print(f"Error closing connection: {e}")
+    return internship
+
+@app.route('/api/internships', methods=['GET'])
+def get_internships():
+    internships = fetch_internships_from_database()
+    return jsonify(internships)
+
+@app.route('/api/internships/<int:internship_id>', methods=['GET'])
+def get_internship(internship_id):
+    internship = fetch_internship_by_id(internship_id)
+    if internship is None:
+        abort(404, description="Internship not found")
+    return jsonify(internship)
+
+def fetch_events_from_database():
+    events = []
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        query = """
+        SELECT id, source, organizer, title, duration, location, image_url
+        FROM all_events
+        """
+        cursor.execute(query)
+        events = cursor.fetchall()
+    except MySQLdb.Error as e:
+        print(f"MySQL error: {e}")
+    finally:
+        try:
+            cursor.close()
+            db.close()
+        except MySQLdb.Error as e:
+            print(f"Error closing connection: {e}")
+    return events
+
+def fetch_event_by_id(event_id):
+    event = None
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        query = """
+        SELECT id, source, organizer, title, duration, location, image_url
+        FROM all_events
+        WHERE id = %s
+        """
+        cursor.execute(query, (event_id,))
+        event = cursor.fetchone()
+    except MySQLdb.Error as e:
+        print(f"MySQL error: {e}")
+    finally:
+        try:
+            cursor.close()
+            db.close()
+        except MySQLdb.Error as e:
+            print(f"Error closing connection: {e}")
+    return event
+@app.route('/api/events', methods=['GET'])
+def get_events():
+    events = fetch_events_from_database()
+    return jsonify(events)
+
+@app.route('/api/events/<int:event_id>', methods=['GET'])
+def get_event(event_id):
+    event = fetch_event_by_id(event_id)
+    if event is None:
+        abort(404, description="Event not found")
+    return jsonify(event)
+
+def fetch_volunteering_from_database():
+    volunteering_opportunities = []
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        query = """
+        SELECT id, source, title, duration, cause, age_group, image_url
+        FROM all_volunteering
+        """
+        cursor.execute(query)
+        volunteering_opportunities = cursor.fetchall()
+    except MySQLdb.Error as e:
+        print(f"MySQL error: {e}")
+    finally:
+        try:
+            cursor.close()
+            db.close()
+        except MySQLdb.Error as e:
+            print(f"Error closing connection: {e}")
+    return volunteering_opportunities
+
+def fetch_volunteering_by_id(volunteering_id):
+    volunteering = None
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        query = """
+        SELECT id, source, title, duration, cause, age_group, image_url
+        FROM all_volunteering
+        WHERE id = %s
+        """
+        cursor.execute(query, (volunteering_id,))
+        volunteering = cursor.fetchone()
+    except MySQLdb.Error as e:
+        print(f"MySQL error: {e}")
+    finally:
+        try:
+            cursor.close()
+            db.close()
+        except MySQLdb.Error as e:
+            print(f"Error closing connection: {e}")
+    return volunteering
+
+@app.route('/api/volunteering', methods=['GET'])
+def get_volunteering():
+    volunteering_opportunities = fetch_volunteering_from_database()
+    return jsonify(volunteering_opportunities)
+
+@app.route('/api/volunteering/<int:volunteering_id>', methods=['GET'])
+def get_volunteering_by_id(volunteering_id):
+    volunteering = fetch_volunteering_by_id(volunteering_id)
+    if volunteering is None:
+        abort(404, description="Volunteering opportunity not found")
+    return jsonify(volunteering)
+
+
 # --- Helper Functions ---
 def add_participant(username, email, phone, password, preferences):
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
