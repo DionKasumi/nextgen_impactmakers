@@ -5,8 +5,8 @@ import CountUp from 'react-countup';
 
 const FirstPart = () => {
     return (
-        <div className="w-full h-screen flex flex-col justify-center items-center bg-[url('../assets/back1.png')] ">
-            <div className="w-full min-h-svh items-center flex flex-col relative top-[20%] mb-20 ">
+        <div className="w-full h-full pt-40 flex flex-col justify-center items-center bg-[url('../assets/back1.png')] bg-no-repeat bg-cover">
+            <div className="w-full min-h-svh items-center flex flex-col relative top-[20%]  ">
                 <div className="flex flex-row ">
                     <img
                         src="../assets/Group 703.png"
@@ -14,7 +14,7 @@ const FirstPart = () => {
                         className="w-25 h-20 mb-10 object-cover opacity-100"
                     />
                     <h1 className="text-4xl text-white mb-8 ml-24 mr-40 font-bold  ">
-                        Opportunities In One!
+                        Opportunities in One!
                     </h1>
                 </div>
                 <div className="mb-20">
@@ -26,15 +26,14 @@ const FirstPart = () => {
                         <option value="" disabled selected>
                             Select category
                         </option>
-                        <option value="1">val 1</option>
-                        <option value="2">val 2</option>
-                        <option value="3">val 3</option>
-                        <option value="4">val 4</option>
-                        <option value="5">val 5</option>
+                        <option value="1">Events</option>
+                        <option value="2">Internships</option>
+                        <option value="3">Volunteering</option>
+                        <option value="4">Trainings</option>
                     </select>
                     <button
                         type="submit"
-                        class="py-2 px-20 bg-[#44FFD1] text-black font-semibold  rounded-10px"
+                        className="py-2 px-20 bg-[#44FFD1] text-black font-semibold rounded-10px"
                     >
                         Search
                     </button>
@@ -54,13 +53,14 @@ const FirstPart = () => {
 
 const SecondPart = () => {
     return (
-        <div className="bg-[#4F1ABE] text-white py-32 min-h-[500px] w-full relative overflow-hidden">
-            <div className="container mx-auto text-center">
-                <h2 className="text-[48px] font-bold mb-16">About PYE</h2>
-
-                <p className="text-[18px] max-w-lg mx-auto">
-                    A platform aimedlimed at providing a trustful source of all
-                    Events, trainings, interships, and Volunteering
+        <div className="bg-[#4F1ABE] text-white py-16 md:py-32 min-h-[500px] w-full">
+            <div className="container mx-auto text-center px-4 md:px-0">
+                <h2 className="text-3xl md:text-[48px] font-bold mb-6 md:mb-16">
+                    About PYE
+                </h2>
+                <p className="text-base md:text-lg max-w-lg mx-auto ">
+                    A platform aimed at providing a trustworthy source of all
+                    Events, trainings, internships, and volunteering
                     opportunities in Kosova
                 </p>
             </div>
@@ -70,30 +70,30 @@ const SecondPart = () => {
 
 const ThirdPart = () => {
     return (
-        <div className="relative w-full h-screen ">
+        <div className="relative w-full h-auto  py-10">
             <img
                 src="../assets/image 4.png"
                 alt="Background Decorative Image"
                 className="absolute inset-0 w-full h-full object-cover opacity-50"
             />
 
-            <div className="relative flex flex-col items-center justify-center h-full bg-white bg-opacity-0 py-16">
-                <h2 className="text-center text-4xl font-bold mb-16">
+            <div className="relative flex flex-col items-center justify-center h-full bg-white bg-opacity-0 py-16 px-4 sm:px-8">
+                <h2 className="text-center text-3xl sm:text-4xl font-bold mb-10 sm:mb-16">
                     Our Services
                 </h2>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 sm:gap-12 max-w-4xl mx-auto">
                     <a href="/internships">
                         <div className="relative flex flex-col items-center group">
                             <img
-                                src="../assets/Group 769.png" // Default image
+                                src="../assets/Group 769.png"
                                 alt="internships"
-                                className="w-[400px] h-[350px] -mt-0 object-cover rounded-lg"
+                                className="w-full h-48 sm:h-[300px] lg:h-[350px] object-cover rounded-lg transition-transform duration-300 ease-in-out"
                             />
                             <img
-                                src="../assets/image 9.png" // Hover image
+                                src="../assets/image 9.png"
                                 alt="internships Hover"
-                                className="absolute top-0 left-0 w-[400px] h-[360px] -mt-1  rounded-xl object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300" // Shown on hover
+                                className="absolute top-0 left-0 w-full h-48 sm:h-[300px] lg:h-[350px] rounded-lg object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                             />
                         </div>
                     </a>
@@ -101,28 +101,29 @@ const ThirdPart = () => {
                     <a href="/trainings">
                         <div className="relative flex flex-col items-center group">
                             <img
-                                src="../assets/Group 770.png" // Default image
+                                src="../assets/Group 770.png"
                                 alt="trainings"
-                                className="w-[400px] h-[350px] mb-2 object-cover rounded-lg "
+                                className="w-full h-48 sm:h-[300px] lg:h-[350px] object-cover rounded-lg transition-transform duration-300 ease-in-out"
                             />
                             <img
-                                src="../assets/image 9.png" // Hover image
+                                src="../assets/image 9.png"
                                 alt="trainings Hover"
-                                className="absolute top-0 left-0 w-[400px] h-[360px] -mt-1 object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300" // Shown on hover
+                                className="absolute top-0 left-0 w-full h-48 sm:h-[300px] lg:h-[350px] rounded-lg object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                             />
                         </div>
                     </a>
+
                     <a href="/volunteering">
                         <div className="relative flex flex-col items-center group">
                             <img
-                                src="../assets/Group 771.png" // Default image
+                                src="../assets/Group 771.png"
                                 alt="volunteering"
-                                className="w-[400px] h-[350px] mb-2 object-cover rounded-lg "
+                                className="w-full h-48 sm:h-[300px] lg:h-[350px] object-cover rounded-lg transition-transform duration-300 ease-in-out"
                             />
                             <img
-                                src="../assets/image 9.png" // Hover image
+                                src="../assets/image 9.png"
                                 alt="volunteering Hover"
-                                className="absolute w-[400px] h-[360px] -mt-1  object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300" // Shown on hover
+                                className="absolute top-0 left-0 w-full h-48 sm:h-[300px] lg:h-[350px] rounded-lg object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                             />
                         </div>
                     </a>
@@ -130,14 +131,14 @@ const ThirdPart = () => {
                     <a href="/events">
                         <div className="relative flex flex-col items-center group">
                             <img
-                                src="../assets/Group 772.png" // Default image
+                                src="../assets/Group 772.png"
                                 alt="events"
-                                className="w-[400px] h-[350px] mb-2 object-cover rounded-lg"
+                                className="w-full h-48 sm:h-[300px] lg:h-[350px] object-cover rounded-lg transition-transform duration-300 ease-in-out"
                             />
                             <img
-                                src="../assets/image 9.png" // Hover image
+                                src="../assets/image 9.png"
                                 alt="events Hover"
-                                className="absolute top-0 left-0 w-[400px] h-[360px] -mt-1 object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300" // Shown on hover
+                                className="absolute top-0 left-0 w-full h-48 sm:h-[300px] lg:h-[350px] rounded-lg object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                             />
                         </div>
                     </a>
@@ -183,7 +184,7 @@ const FourthPart = () => {
             />
 
             <div className="relative flex flex-col items-center justify-center h-full bg-white bg-opacity-0 py-20">
-                <h1 className="text-5xl text-white text-center mb-10 font-bold">
+                <h1 className="text-4xl text-white text-center mb-10 font-bold">
                     Registered
                 </h1>
 
@@ -233,17 +234,15 @@ const FourthPart = () => {
 
 const FivethPart = () => {
     return (
-        <div className="w-full h-screen flex flex-col justify-center items-center bg-[url('../assets/group1.png')]">
-            <div className=" ">
-                <h1 className="text-4xl text-white text-center -mt-50 mb-10 font-bold  ">
+        <div className="w-full h-screen flex flex-col justify-center items-center bg-[url('../assets/group1.png')] px-4 lg:px-0 bg-no-repeat bg-cover">
+            <div>
+                <h1 className="text-2xl md:text-4xl text-white text-center p-10 md:mb-10 font-bold">
                     Upcoming Opportunities
                 </h1>
-
-                <h2 className="text-[24px] text-white text-center mb-10 font-poppins font-light opacity-100">
-                    Find your next opportunity{' '}
+                <h2 className="text-lg md:text-2xl text-white text-center mb-10 font-light">
+                    Find your next opportunity
                 </h2>
             </div>
-            <div className=""></div>
             <SwiperCarousel />
         </div>
     );
@@ -251,16 +250,14 @@ const FivethPart = () => {
 
 const SixthPart = () => {
     return (
-        <div className="text-black py-32 min-h-[500px] w-full relative overflow-hidden">
-            <div className="container mx-auto text-center">
-                <div className="pt-[0rem] pb-[7rem] "></div>
-                <img
-                    src="../assets/Group 749.png"
-                    alt="Background Decorative Image"
-                    className="absolute inset-0 w-full h-full object-cover opacity-50"
-                />
-
-                <div class="text-center text-3xl font-popins font-light z-10">
+        <div className="relative w-full min-h-[500px] overflow-hidden px-4">
+            <img
+                src="../assets/Group 749.png"
+                alt="Background Decorative Image"
+                className="absolute inset-0 w-full h-full object-cover opacity-50"
+            />
+            <div className="flex items-center justify-center min-h-[500px]">
+                <div className="text-center text-2xl md:text-3xl font-light z-10">
                     Never stop growing with PYE!
                 </div>
             </div>
@@ -269,18 +266,81 @@ const SixthPart = () => {
 };
 
 const SeventhPart = () => {
+    // State to manage the order of the cards
+    const [selectedCard, setSelectedCard] = useState('yellow');
+
     return (
-        <div className="w-full h-auto flex flex-col bg-[url('../assets/background3.png')] justify-center items-center py-20">
+        <div className="w-full h-full flex flex-col bg-[url('../assets/background3.png')] justify-center items-center py-20">
             <div className="text-white text-5xl font-bold mb-48">Reviews</div>
 
-            <div className="flex flex-col justify-center items-center gap-y-20"></div>
+            <div className="relative w-full flex justify-center items-center -space-x-80">
+                <div
+                    onClick={() => setSelectedCard('teal')}
+                    className={`relative flex flex-col justify-center items-center rounded-xl bg-[#4FEAC6] w-[44rem] h-56 p-6 shadow-lg transition-transform duration-500 ease-in-out 
+            ${
+                selectedCard === 'teal'
+                    ? 'z-50 mb-44 scale-110 relative left-96'
+                    : 'z-10  scale-100'
+            }
+        `}
+                >
+                    <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full bg-white border-2 border-[#F6F49D]"></div>
+                    <h1 className="text-lg mb-8 self-start">Username</h1>
+                    <div className="text-sm md:text-base text-black">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                        sed do eiusmod tempor incididunt ut labore et dolore
+                        magna aliqua. Ut enim ad minim veniam, quis nostrud
+                        exercitation ullamco laboris nisi{' '}
+                    </div>
+                </div>
+
+                <div
+                    onClick={() => setSelectedCard('yellow')}
+                    className={`relative flex flex-col justify-center items-center rounded-xl bg-[#F6F49D] w-[44rem] h-56 p-6 shadow-lg transition-transform duration-500 ease-in-out 
+            ${
+                selectedCard === 'yellow'
+                    ? 'z-50 mb-44 scale-110'
+                    : 'relative right-96  z-20 scale-100'
+            }
+            `}
+                >
+                    <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full bg-white border-2 border-[#F6F49D]"></div>
+                    <h1 className="text-lg mb-8 self-start">Username</h1>
+                    <div className="text-sm md:text-base text-black">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                        sed do eiusmod tempor incididunt ut labore et dolore
+                        magna aliqua. Ut enim ad minim veniam, quis nostrud
+                        exercitation ullamco laboris nisi
+                    </div>
+                </div>
+
+                <div
+                    onClick={() => setSelectedCard('lavender')}
+                    className={`relative flex flex-col justify-center items-center rounded-xl bg-[#B3B5FF] w-[44rem] h-56 p-6 shadow-lg transition-transform duration-500 ease-in-out 
+            ${
+                selectedCard === 'lavender'
+                    ? 'z-50 mb-44 relative right-80 scale-110'
+                    : 'z-30 scale-100'
+            }
+        `}
+                >
+                    <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full bg-white border-2 border-[#F6F49D]"></div>
+                    <h1 className="text-lg mb-8 self-start">Username</h1>
+                    <div className="text-sm md:text-base text-black">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                        sed do eiusmod tempor incididunt ut labore et dolore
+                        magna aliqua. Ut enim ad minim veniam, quis nostrud
+                        exercitation ullamco laboris nisi
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };
 
 const HomePage = () => {
     return (
-        <div className="w-full h-full flex flex-col justify-between items-center">
+        <div className="w-full h-full flex flex-col">
             <FirstPart />
             <SecondPart />
             <ThirdPart />
