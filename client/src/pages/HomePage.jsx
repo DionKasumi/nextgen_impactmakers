@@ -33,7 +33,7 @@ const FirstPart = () => {
                     </select>
                     <button
                         type="submit"
-                        class="py-2 px-20 bg-[#44FFD1] text-black font-semibold  rounded-10px"
+                        className="py-2 px-20 bg-[#44FFD1] text-black font-semibold rounded-10px"
                     >
                         Search
                     </button>

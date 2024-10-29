@@ -57,19 +57,19 @@ const router = createBrowserRouter([
         children: [
             {
                 path: '/courses/:id',
-                element: <TrainingDetailsPage />, 
+                element: <TrainingDetailsPage />,
             },
             {
                 path: '/courses/:id',
-                element: <EventDetailsPage />
+                element: <EventDetailsPage />,
             },
             {
                 path: '/courses/:id',
-                element: <InternshipDetailsPage />
+                element: <InternshipDetailsPage />,
             },
             {
                 path: '/courses/:id',
-                element: <VolunteeringDetailsPage />
+                element: <VolunteeringDetailsPage />,
             },
         ],
     },
