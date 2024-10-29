@@ -21,7 +21,7 @@ app.config['SESSION_COOKIE_SECURE'] = False    # Disable secure cookies for deve
 # Database connection parameters
 db_params = {
     'user': 'root',
-    'passwd': '12345678',
+    'passwd': '1234',
     'host': 'localhost',
     'port': 3306,
     'db': 'pye_data'
@@ -527,10 +527,7 @@ def update_organization_status(org_id, status):
         db.close()
     return {"message": "Organization status updated successfully."}, 200
 
-# API to approve organization
-@app.route('/api/admin/organizations/approve/<int:org_id>', methods=['POST'])
-def admin_approve_organization(org_id):
-    return jsonify(update_organization_status(org_id, 'approved'))
+
 
 # API to reject organization
 @app.route('/api/admin/organizations/reject/<int:org_id>', methods=['POST'])
@@ -813,6 +810,147 @@ def admin_update_training(training_id):
         return jsonify({'message': 'Training updated successfully'}), 200
     else:
         return jsonify({'error': 'Failed to update training'}), 500
+    
+
+
+  # Ensure the connection is closed
+
+# API to get organizations
+
+
+
+# Function to update organization status
+def update_organization_status(org_id, status):
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+        query = "UPDATE organizations SET status = %s WHERE id = %s"
+        cursor.execute(query, (status, org_id))
+        db.commit()
+    except MySQLdb.Error as e:
+        print(f"MySQL error during updating organization status: {e}")
+        return {"error": f"MySQL error: {e}"}, 500
+    finally:
+        if cursor:
+            cursor.close()  # Ensure the cursor is closed
+        if db:
+            db.close()  # Ensure the connection is closed
+    return {"message": "Organization status updated successfully."}, 200
+
+# API to approve organization
+@app.route('/api/admin/organizations/approve/<int:org_id>', methods=['POST'])
+def admin_approve_organization(org_id):
+    return jsonify(update_organization_status(org_id, 'approved'))
+
+
+
+# Function to delete the rejected orgs from database
+def delete_organization(org_id):
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+        query = "DELETE FROM organizations WHERE id = %s"
+        cursor.execute(query, (org_id,))
+        db.commit()
+    except MySQLdb.Error as e:
+        print(f"MySQL error during deleting organization: {e}")
+        return {"error": f"MySQL error: {e}"}, 500
+    finally:
+        if cursor:
+            cursor.close()  # Ensure the cursor is closed
+        if db:
+            db.close()  # Ensure the connection is closed
+    return {"message": "Organization deleted successfully."}, 200
+
+@app.route('/api/admin/participants', methods=['GET'])
+def fetch_participants():
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+        cursor.execute("SELECT id, username, email, phone FROM participants;")
+        participants = cursor.fetchall()
+        result = [{'id': id, 'username': username, 'email': email, 'phone': phone} for (id, username, email, phone) in participants]
+        return jsonify(result)
+    except MySQLdb.Error as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        if cursor:
+            cursor.close()  # Ensure the cursor is closed
+        if db:
+            db.close()  # Ensure the connection is closed
+
+
+
+ # Function to get approved organizations
+def get_approved_organizations():
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        query = "SELECT * FROM organizations WHERE status = 'approved'"
+        cursor.execute(query)
+        organizations = cursor.fetchall()
+        cursor.close()
+        return organizations
+    except MySQLdb.Error as e:
+        print(f"MySQL error during fetching approved organizations: {e}")
+        return []
+    finally:
+        db.close()
+
+# API to get approved organizations
+@app.route('/api/admin/organizations/approved', methods=['GET'])
+def admin_get_approved_organizations():
+    organizations = get_approved_organizations()
+    return jsonify(organizations), 200
+    
+@app.route('/api/admin/participants/<int:participant_id>', methods=['GET'])
+def get_participant(participant_id):
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute("SELECT id, username, email, phone FROM participants WHERE id = %s", (participant_id,))
+        participant = cursor.fetchone()
+        if participant:
+            return jsonify(participant), 200
+        else:
+            return jsonify({"error": "Participant not found"}), 404
+    except MySQLdb.Error as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if db:
+            db.close()
+
+@app.route('/api/admin/participants/<int:participant_id>', methods=['PUT'])
+def update_participant(participant_id):
+    try:
+        data = request.get_json()  # Get the JSON data from the request
+        username = data.get('username')
+        email = data.get('email')
+        phone = data.get('phone')
+
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+        cursor.execute(
+            "UPDATE participants SET username = %s, email = %s, phone = %s WHERE id = %s;",
+            (username, email, phone, participant_id)
+        )
+        db.commit()  # Commit the changes
+
+        if cursor.rowcount == 0:
+            return jsonify({'error': 'Participant not found'}), 404
+        
+        return jsonify({'message': 'Participant updated successfully'}), 200
+    except MySQLdb.Error as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        if cursor:
+            cursor.close()  # Ensure the cursor is closed
+        if db:
+            db.close()  # Ensure the connection is closed
+
+           
 
 
 if __name__ == '__main__':

@@ -37,6 +37,89 @@
     overflow-y: auto; /* Allow vertical scrolling */
 }
 
+
+
+.modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0, 0, 0, 0.5); /* Black with opacity */
+        }
+
+        /* Modal content */
+        .modal-content {
+            background-color: #fefefe; /* White background */
+            margin: 10% auto; /* 10% from the top and centered */
+            padding: 15px; /* Reduced padding */
+            border: 1px solid #888; /* Grey border */
+            width: 60%; /* Adjusted width */
+            max-width: 400px; /* Maximum width */
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+        }
+
+        /* Close button */
+        .close {
+            color: #aaa; /* Gray color */
+            float: right; /* Float right */
+            font-size: 28px; /* Large text */
+            font-weight: bold; /* Bold text */
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black; /* Change color on hover */
+            text-decoration: none; /* No underline */
+            cursor: pointer; /* Pointer cursor */
+        }
+
+        /* Form elements styling */
+        form {
+            display: flex;
+            flex-direction: column; /* Stack elements vertically */
+        }
+
+        label {
+            margin-bottom: 5px; /* Space below labels */
+            font-weight: bold; /* Bold labels */
+        }
+
+        input[type="text"],
+        input[type="email"] {
+            padding: 8px; /* Reduced padding */
+            border: 1px solid #ccc; /* Light gray border */
+            border-radius: 4px; /* Rounded corners */
+            margin-bottom: 15px; /* Space below inputs */
+            transition: border-color 0.3s; /* Smooth transition */
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus {
+            border-color: #007bff; /* Blue border on focus */
+            outline: none; /* Remove outline */
+        }
+
+        /* Button styling */
+        button {
+            background-color: #007bff; /* Blue background */
+            color: white; /* White text */
+            padding: 5px 10px; /* Reduced padding */
+            border: none; /* Remove border */
+            border-radius: 4px; /* Rounded corners */
+            cursor: pointer; /* Pointer cursor */
+            margin-right: 10px; /* Space between buttons */
+            font-size: 14px; /* Smaller font size */
+        }
+
+        button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+
     </style>
 </head>
 <body class="bg-gray-100">
@@ -56,8 +139,9 @@
                         Manage Users
                     </a>
                     <div id="usersSubMenu" class="submenu">
-                        <a href="#" id=" approveOrganizationsLink" class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-800"> Approve Organizations</a>
-                        <a href="#" id="checkAndChangeAccountInfoLink" class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-800">Check and Change Account Info</a>
+                        <a href="#" id="approveOrganizationsLink" class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-800"> Approve Organizations</a>
+                        <a href="#" id="editUsersLink" class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-800">Edit User</a>
+                        <a href="#" id="editOrganizationsLink" class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-800">Edit Organization</a>
                         <a href="#" id="banDeleteUsersLink" class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-800">Ban/Delete users</a>
                     </div>
                     <div>
@@ -100,8 +184,28 @@
         <div class="flex-1 p-6">
             <h2 id="greeting" class="text-3xl font-semibold mb-6">Welcome, Admin!</h2>
             <p id="greetingDescription" class="text-gray-700 mb-6">This is your admin dashboard where you can manage Users, Cards, or Reviews.</p>
+            
+            <!-- Organizations Table -->
+            <div class="overflow-x-auto" id="organizationsTableContainer" style="display: none;">
+                <h2 class="text-2xl font-bold mb-4">Manage Users</h2>
+                <h3 class="text-xl font-semibold mb-4">Approve Pending Organizations</h3>
+                <table class="min-w-full bg-white">
+                    <thead>
+                        <tr>
+                            <th class="border-b">Organization Name</th>
+                            <th class="border-b">Email</th>
+                            <th class="border-b">Phone Number</th>
+                            <th class="border-b">Website URL</th>
+                            <th class="border-b">Description</th>
+                            <th class="border-b">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="organizationsTableBody">
+                        <!-- Organizations will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            </div>
 
-            <!-- Users Table -->
             <div id="usersTableContainer" style="display: none;">
                 <h2 class="text-2xl font-bold mb-4" id="usersHeader">Manage Users</h2>
                 <table class="min-w-full bg-white" id="usersTable">
@@ -116,7 +220,7 @@
                 </table>
             </div>
 
-            <div class="hidden-section" id="approveOrganizationsTableContainer" style="display: none;">
+            <div class="hidden-section" id="organizationsTableContainer" style="display: none;">
                 <h2 class="text-2xl font-bold mb-4">Approve Organizations</h2>
                 <h3 class="text-xl font-semibold mb-4">Approve Pending Organizations</h3>
                 <table class="min-w-full bg-white">
@@ -136,12 +240,7 @@
                 </table>
             </div>
 
-            <script>
-                function showApproveOrganizations() {
-                    const container = document.getElementById("approveOrganizationsTableContainer");
-                    container.style.display = (container.style.display === "none" || container.style.display === "") ? "block" : "none";
-                }
-            </script>
+           
 
             <!-- Cards Tables -->
             <div id="cardsTableContainer" style="display: none;">
@@ -180,7 +279,349 @@
 
 
 
+<div class="overflow-x-auto" id="usersTableContainer" style="display: none;">
+    <h2 class="text-2xl font-bold mb-4">Edit Users</h2>
+    <table class="min-w-full bg-white">
+        <thead>
+            <tr>
+                <th class="border-b">Username</th>
+                <th class="border-b">Email</th>
+                <th class="border-b">Phone</th>
+                <th class="border-b">Actions</th>
+            </tr>
+        </thead>
+        <tbody id="usersTableBody">
+            <!-- Users will be dynamically inserted here -->
+        </tbody>
+    </table>
+</div>
+
+<!----MODAL OF THE EDIT-->
+<!-- Edit Organization Modal -->
+<div id="editOrganizationModal" class="modal" style="display: none;">
+<div class="modal-content">
+<span class="close" id="closeModal">&times;</span>
+<h2>Edit Organization</h2>
+<form id="editOrganizationForm">
+<input type="hidden" id="orgId" />
+<div>
+    <label for="orgName">Organization Name:</label>
+    <input type="text" id="orgName" required />
+</div>
+<div>
+    <label for="orgEmail">Email:</label>
+    <input type="email" id="orgEmail" required />
+</div>
+<div>
+    <label for="orgPhone">Phone Number:</label>
+    <input type="text" id="orgPhone" required />
+</div>
+<div>
+    <label for="orgUrl">URL:</label>
+    <input type="text" id="orgUrl" />
+</div>
+<div>
+    <label for="orgDescription">Description:</label>
+    <textarea id="orgDescription"></textarea>
+</div>
+<button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Save Changes</button>
+</form>
+</div>
+</div>
+
+
+<!-- Edit Organizations Table -->
+<div class="overflow-x-auto" id="TableContainerofOrganizations" style="display: none;">
+    <h2 class="text-2xl font-bold mb-4">Edit Organizations</h2>
+    <table class="min-w-full bg-white">
+        <thead>
+            <tr>
+                <th class="border-b">ID</th>
+                <th class="border-b">Organization Name</th>
+                <th class="border-b">Email</th>
+                <th class="border-b">Phone Number</th>
+                <th class="border-b">URL</th>
+                <th class="border-b">Description</th>
+                <th class="border-b">Actions</th>
+            </tr>
+        </thead>
+        <tbody id="TableContainerofOrganizations1">
+            <!-- Organizations will be dynamically inserted here -->
+        </tbody>
+    </table>
+</div>
+</div>
+</div>
+
+
+<div id="editUserModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Edit User</h2>
+        <form id="editUserForm">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required><br><br>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required><br><br>
+            <label for="phone">Phone:</label>
+            <input type="text" id="phone" name="phone"><br><br>
+            <button type="button" onclick="saveUserChanges()">Save</button>
+            <button type="button" onclick="closeModal()">Cancel</button>
+        </form>
+    </div>
+</div>
+
+
+
+
         <script>
+
+function highlightActiveLink(activeLinkId) {
+            const links = document.querySelectorAll('nav a');
+            links.forEach(link => {
+                link.classList.remove('active');
+            });
+            document.getElementById(activeLinkId).classList.add('active');
+        }
+
+        // Function to highlight the active link
+function highlightActiveLink(activeLinkId) {
+    const links = document.querySelectorAll('nav a');
+    links.forEach(link => {
+        link.classList.remove('active');
+    });
+    document.getElementById(activeLinkId).classList.add('active');
+}
+
+// Show organizations table and fetch organizations when Manage Users is clicked
+document.getElementById('manageUsersLink').addEventListener('click', function() {
+    highlightActiveLink('manageUsersLink');
+    document.getElementById('greeting').style.display = 'none'; 
+    document.getElementById('greetingDescription').style.display = 'none'; 
+    document.getElementById('organizationsTableContainer').style.display = 'block'; // Show organizations table
+    document.getElementById('usersTableContainer').style.display = 'none'; // Hide users table
+    document.getElementById('TableContainerofOrganizations').style.display = 'none'; // Hide edit organizations table
+
+    // Clear the organizations table before fetching new data
+    const tableBody = document.getElementById('organizationsTableBody');
+    tableBody.innerHTML = ''; // Clear existing rows
+
+    fetch('/api/admin/organizations')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (!Array.isArray(data)) {
+                console.error('Error fetching organizations: Data is not an array');
+                return;
+            }
+            data.forEach(org => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="py-2 px-4 border-b">${org.name_of_org}</td>
+                    <td class="py-2 px-4 border-b">${org.email_of_org}</td>
+                    <td class="py-2 px-4 border-b">${org.phone_number_of_org}</td>
+                    <td class="py-2 px-4 border-b">${org.url_of_org || 'N/A'}</td> 
+                    <td class="py-2 px-4 border-b">${org.description_of_org || 'N/A'}</td> 
+                    <td class="py-2 px-4 border-b">
+                        <button onclick="approveOrganization(${org.id})" class="bg-green-500 text-white px-2 py-1 rounded">Approve</button>
+                        <button onclick="rejectOrganization(${org.id})" class="bg-red-500 text-white px-2 py-1 rounded">Reject</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching organizations:', error);
+        });
+});
+
+
+
+
+            document.getElementById('editUsersLink').addEventListener('click', function() {
+            highlightActiveLink('editUsersLink');
+            document.getElementById('greeting').style.display = 'none'; 
+            document.getElementById('greetingDescription').style.display = 'none'; 
+            document.getElementById('usersTableContainer').style.display = 'block'; // Show users table
+            document.getElementById('organizationsTableContainer').style.display = 'none'; // Hide organizations table
+            document.getElementById('TableContainerofOrganizations').style.display = 'none'; // Hide edit organizations table
+
+            fetch('/api/admin/participants')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('usersTableBody');
+                    tableBody.innerHTML = ''; // Clear existing rows
+                    data.forEach(user => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td class="py-2 px-4 border-b">${user.username}</td>
+                            <td class="py-2 px-4 border-b">${user.email}</td>
+                            <td class="py-2 px-4 border-b">${user.phone || 'N/A'}</td> 
+                            <td class="py-2 px-4 border-b">
+                                <button onclick="editUser(${user.id})" class="bg-blue-500 text-white px-2 py-1 rounded ">Edit</button>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                });
+        });
+
+        function editUser(userId) {
+    fetch(`/api/admin/participants/${userId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Participant not found');
+            }
+            return response.json();
+        })
+        .then(participant => {
+            document.getElementById('editUserModal').style.display = 'block'; // Show the modal
+            document.getElementById('editUserForm').dataset.userId = participant.id; // Set the userId
+            document.getElementById('username').value = participant.username; // Populate username
+            document.getElementById('email').value = participant.email; // Populate email
+            document.getElementById('phone').value = participant.phone || ''; // Populate phone
+        })
+        .catch(error => {
+            console.error('Error fetching participant data:', error);
+            alert('Could not fetch participant data. Please try again.');
+        });
+}
+        // Function to save user changes (currently just a placeholder)
+        function editUser(userId) {
+        fetch(`/api/admin/participants/${userId}`)
+            .then(response => {
+                if (!response.ok) throw new Error('Participant not found');
+                return response.json();
+            })
+            .then(participant => {
+                document.getElementById('editUserModal').style.display = 'block'; // Show modal
+                document.getElementById('editUserForm').dataset.userId = participant.id;
+                document.getElementById('username').value = participant.username;
+                document.getElementById('email').value = participant.email;
+                document.getElementById('phone').value = participant.phone || '';
+            })
+            .catch(error => {
+                console.error('Error fetching participant data:', error);
+                alert('Could not fetch participant data. Please try again.');
+            });
+    }
+
+
+    function closeModal() {
+            document.getElementById('editUserModal').style.display = 'none'; // Hide the modal
+        }
+
+        // Close the modal when the user clicks outside of the modal content
+        window.onclick = function(event) {
+            const modal = document.getElementById('editUserModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
+
+
+   // Save changes and close the modal
+    function saveUserChanges() {
+        const userId = document.getElementById('editUserForm').dataset.userId;
+        const userData = {
+            username: document.getElementById('username').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value
+        };
+
+        fetch(`/api/admin/participants/${userId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(userData)
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to update participant');
+            return response.json();
+        })
+        .then(data => {
+            alert(data.message);
+            closeModal(); // Close the modal
+            fetchParticipants(); // Refresh the table
+        })
+        .catch(error => {
+            console.error('Error saving participant changes:', error);
+            alert('An error occurred while saving changes. Please try again.');
+        });
+    }
+    function fetchParticipants() {
+    fetch('/api/admin/participants')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch participants');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const tableBody = document.getElementById('usersTableBody');
+            tableBody.innerHTML = ''; // Clear existing rows
+
+            data.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="py-2 px-4 border-b">${user.username}</td>
+                    <td class="py-2 px-4 border-b">${user.email}</td>
+                    <td class="py-2 px-4 border-b">${user.phone || 'N/A'}</td>
+                    <td class="py-2 px-4 border-b">
+                        <button onclick="editUser(${user.id})" class="bg-blue-500 text-white px-2 py-1 rounded">Edit</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching participants:', error);
+            alert('An error occurred while fetching participants. Please try again.');
+        });
+}
+
+
+
+
+
+        // Show organizations table when Edit Organizations is clicked
+        document.getElementById('editOrganizationsLink').addEventListener('click', function() {
+            highlightActiveLink('editOrganizationsLink');
+            document.getElementById('greeting').style.display = 'none'; 
+            document.getElementById('greetingDescription').style.display = 'none'; 
+            document.getElementById('TableContainerofOrganizations').style.display = 'block'; // Show organizations table
+            document.getElementById('usersTableContainer').style.display = 'none'; // Hide users table
+            document.getElementById('organizationsTableContainer').style.display = 'none'; // Hide manage organizations table
+
+            fetch('/api/admin/organizations/approved')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('TableContainerofOrganizations1');
+                    tableBody.innerHTML = ''; // Clear existing rows
+                    data.forEach(org => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td class="py-2 px-4 border-b">${org.id}</td>
+                            <td class="py-2 px-4 border-b">${org.name_of_org}</td>
+                            <td class="py-2 px-4 border-b">${org.email_of_org}</td>
+                            <td class="py-2 px-4 border-b">${org.phone_number_of_org}</td>
+                            <td class="py-2 px-4 border-b">${org.url_of_org || 'N/A'}</td>
+                            <td class="py-2 px-4 border-b">${org.description_of_org || 'N/A'}</td>
+                            <td class="py-2 px-4 border-b">
+                                <button onclick="editOrganization(${org.id})" class="bg-blue-500 text-white px-2 py-1 rounded ">Edit</button>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                });
+        });
+
+
+        
+
             // Function to highlight the active link
             function highlightActiveLink(activeLinkId) {
                 const links = document.querySelectorAll('nav a');
@@ -371,9 +812,7 @@ function editRow(id, button) {
 }
 
 
-function closeModal() {
-    document.getElementById('editModal').classList.add('hidden');
-}
+
 
 
 
@@ -568,5 +1007,63 @@ function cancelEdit(row) {
               });
           });
       </script>
+
+
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('approveOrganizationsLink').addEventListener('click', function() {
+        highlightActiveLink('approveOrganizationsLink');
+        document.getElementById('greeting').style.display = 'none'; 
+        document.getElementById('greetingDescription').style.display = 'none'; 
+        document.getElementById('organizationsTableContainer').style.display = 'block'; // Show organizations table
+        document.getElementById('usersTableContainer').style.display = 'none'; // Hide users table
+        document.getElementById('TableContainerofOrganizations').style.display = 'none'; // Hide edit organizations table
+
+        // Clear the organizations table before fetching new data
+      
+        
+        // Fetch the organizations
+        fetch('/api/admin/organizations')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                loadingIndicator.style.display = 'none'; // Hide loading indicator
+                
+                if (!Array.isArray(data)) {
+                    console.error('Error fetching organizations: Data is not an array');
+                    return;
+                }
+                
+                data.forEach(org => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="py-2 px-4 border-b">${org.name_of_org}</td>
+                        <td class="py-2 px-4 border-b">${org.email_of_org}</td>
+                        <td class="py-2 px-4 border-b">${org.phone_number_of_org}</td>
+                        <td class="py-2 px-4 border-b">${org.url_of_org || 'N/A'}</td> 
+                        <td class="py-2 px-4 border-b">${org.description_of_org || 'N/A'}</td> 
+                        <td class="py-2 px-4 border-b">
+                            <button onclick="approveOrganization(${org.id})" class="bg-green-500 text-white px-2 py-1 rounded">Approve</button>
+                            <button onclick="rejectOrganization(${org.id})" class="bg-red-500 text-white px-2 py-1 rounded">Reject</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => {
+               
+                
+            });
+    });
+    });
+</script>
+
+
+
   </body>
 </html>
