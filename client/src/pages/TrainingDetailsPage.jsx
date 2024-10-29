@@ -24,7 +24,7 @@ const TestimonialCard = () => {
         <div className="bg-[#44FFD1] w-full sm:w-3/4 md:w-2/4 h-auto p-6 flex flex-row justify-center items-center gap-10">
             {/* Testimonial Card */}
             <div className="font-bold">
-                <h2>Surname</h2>
+                <h2>Username</h2>
             </div>
             <div>
                 <p className="text-sm mb-2 text-wrap text-ellipsis overflow-hidden whitespace-nowrap line-clamp-4">
@@ -92,12 +92,7 @@ const TrainingDetailsPage = () => {
                                 Key Responsibilities
                             </h1>
                             <p className="text-center w-full md:w-1/2">
-                                Lorem ipsum dolor sit amet consectetur
-                                adipisicing elit. Sint amet qui mollitia
-                                temporibus, perspiciatis ex eos doloribus,
-                                distinctio recusandae repellat iste error
-                                quisquam! Reprehenderit illum ipsa iusto, minima
-                                mollitia similique.
+                                Visit Source for more information.
                             </p>
                         </div>
                         <div className="flex flex-col justify-center items-center w-5/6 h-auto mb-12">
@@ -135,7 +130,7 @@ const TrainingDetailsPage = () => {
                             <h1 className="text-3xl font-bold">Organization</h1>
                             <p>{course.source ? course.source : 'No Source'}</p>
                         </div>
-                        <button className="px-16 py-6 bg-white text-black font-bold text-xl rounded-lg hover:scale-105 transition-all">
+                        <button className="px-16 py-6 bg-white text-black font-bold text-xl rounded-lg hover:scale-105 transition-all"onClick={() => window.location.href = course.apply_link}>
                             Apply Here
                         </button>
                     </div>
