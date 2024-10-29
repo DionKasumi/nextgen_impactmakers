@@ -43,6 +43,7 @@ const CardsContainer = ({
                             card_description={course.description}
                             card_price={course.price}
                             card_source={course.source}
+                            card_type="courses"
                         />
                     ))
                 ) : (

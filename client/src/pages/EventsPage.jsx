@@ -43,6 +43,7 @@ const CardsContainer = ({
                             card_description={event.description}
                             card_price={event.price}
                             card_source={event.source}
+                            card_type="events"
                         />
                     ))
                 ) : (
