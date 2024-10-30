@@ -79,6 +79,29 @@ const router = createBrowserRouter([
         ],
     },
     {
+        path: '/',
+        element: <TertiaryLayout />,
+        errorElement: <ErrorPage />,
+        children: [
+            {
+                path: '/UserProfileORG',
+                element: <UserProfileORG />,
+            },
+            {
+                path: '/PostingPage',
+                element: <PostingPage />,
+            },
+            {
+                path: '/UserProfile',
+                element: <UserProfile />,
+            },
+            {
+                path: '/UserEditProfile',
+                element: <UserEditProfile />,
+            },
+        ],
+    },
+    {
         path: '/login',
         element: <LoginPage />,
     },
