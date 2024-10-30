@@ -18,6 +18,8 @@ import InternshipsPage from './pages/InternshipPage.jsx';
 import InternshipDetailsPage from './pages/InternshipDetailsPage.jsx';
 import VolunteeringPage from './pages/VolunteeringPage.jsx';
 import VolunteeringDetailsPage from './pages/VolunteeringDetailsPage.jsx';
+import UserProfileORG from './pages/UserProfileORG.jsx';
+import PostingPage from './pages/PostingPage.jsx';
 import UserEditProfile from './pages/UserEditProfile.jsx';
 
 const router = createBrowserRouter([
@@ -80,6 +82,14 @@ const router = createBrowserRouter([
         element: <TertiaryLayout />,
         errorElement: <ErrorPage />,
         children: [
+            {
+                path: '/UserProfileORG',
+                element: <UserProfileORG />,
+            },
+            {
+                path: '/PostingPage',
+                element: <PostingPage />,
+            },
             {
                 path: '/UserEditProfile',
                 element: <UserEditProfile />,
