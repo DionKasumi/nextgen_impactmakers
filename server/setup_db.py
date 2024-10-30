@@ -3,7 +3,7 @@ import MySQLdb
 # Database connection parameters
 db_params = {
     'user': 'root', 
-    'passwd': '1234',  
+    'passwd': 'Profesionist24!',  
     'host': 'localhost',
     'port': 3306
 }
