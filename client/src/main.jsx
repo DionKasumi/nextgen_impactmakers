@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import PrimaryLayout from './routes/PrimaryLayout.jsx';
 import SecondaryLayout from './routes/SecondaryLayout.jsx';
+import TertiaryLayout from './routes/TertiaryLayout.jsx';
 import HomePage from './pages/HomePage.jsx';
 import ErrorPage from './pages/ErrorPage.jsx';
 import LoginPage from './pages/auth/LoginPage.jsx';
@@ -17,6 +18,10 @@ import InternshipsPage from './pages/InternshipPage.jsx';
 import InternshipDetailsPage from './pages/InternshipDetailsPage.jsx';
 import VolunteeringPage from './pages/VolunteeringPage.jsx';
 import VolunteeringDetailsPage from './pages/VolunteeringDetailsPage.jsx';
+import UserProfileORG from './pages/UserProfileORG.jsx';
+import PostingPage from './pages/PostingPage.jsx';
+import UserProfile from './pages/UserProfile.jsx';
+import UserEditProfile from './pages/UserEditProfile.jsx';
 
 const router = createBrowserRouter([
     {
@@ -47,7 +52,7 @@ const router = createBrowserRouter([
             {
                 path: '/Volunteering',
                 element: <VolunteeringPage />,
-            },
+            },          
         ],
     },
     {
@@ -70,6 +75,29 @@ const router = createBrowserRouter([
             {
                 path: '/volunteering/:id',
                 element: <VolunteeringDetailsPage />,
+            },
+        ],
+    },
+    {
+        path: '/',
+        element: <TertiaryLayout />,
+        errorElement: <ErrorPage />,
+        children: [
+            {
+                path: '/UserProfileORG',
+                element: <UserProfileORG />,
+            },
+            {
+                path: '/PostingPage',
+                element: <PostingPage />,
+            },
+            {
+                path: '/UserProfile',
+                element: <UserProfile />,
+            },
+            {
+                path: '/UserEditProfile',
+                element: <UserEditProfile />,
             },
         ],
     },
