@@ -73,23 +73,24 @@ def save_to_database(courses_list, source, email, phone_number, office_address, 
                 if not exists:
                     # Insert new course data with additional fields
                     insert_query = """
-                    INSERT INTO all_courses (source, title, trainer, description, price, students, rating, image_url, duration, email, phone_number, office_address, company_logo, label)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    INSERT INTO all_courses (source, title, trainer, description, price, students, rating, image_url, duration, email, phone_number, office_address, company_logo, apply_link,label)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s)
                     """
                     data = (
                         source,
                         course['Title'],
-                        course.get('Trainer', 'Unknown'),
+                        course.get('Trainer', 'N/A'),
                         course.get('Description', 'N/A'),
                         course.get('Price', 'N/A'),
-                        course.get('Students', 0),
+                        course.get('Students', 'N/A'),
                         course.get('Rating', 'N/A'),
                         course.get('Image_URL', 'N/A'),
                         course.get('Duration', 'N/A'),
-                        email,
-                        phone_number,
-                        office_address,
-                        company_logo,
+                        email,            
+                        phone_number,     
+                        office_address,   
+                        company_logo,     
+                        course.get('apply_link'),
                         label
                     )
                     cursor.execute(insert_query, data)
@@ -110,7 +111,8 @@ def save_to_database(courses_list, source, email, phone_number, office_address, 
         if db:
             db.close()
 
-# Scraper functions for various sources
+
+# Scraper function for ICK Kosovo
 def scrape_ick_kosovo(page):
     page.goto('https://ickosovo.com/training/courses', timeout=60000)
     
@@ -120,7 +122,10 @@ def scrape_ick_kosovo(page):
     courses_list = []
     for course in courses:
         try:
-            title = course.locator('.elementor-heading-title a').text_content(timeout=10000)
+            title_element = course.locator('.elementor-heading-title a')
+            title = title_element.text_content(timeout=10000)
+            apply_link = title_element.get_attribute('href', timeout=10000)  
+            
             description = course.locator('.elementor-widget-container p').text_content(timeout=10000)
             image_url = course.locator('img.attachment-full').get_attribute('src', timeout=10000)
             duration = course.locator('.meta-timeframe .elementor-button-text').text_content(timeout=10000)
@@ -137,13 +142,16 @@ def scrape_ick_kosovo(page):
                 'Trainer': trainer,
                 'Price': price,
                 'Students': students,
-                'Rating': rating
+                'Rating': rating,
+                'apply_link': apply_link  # Added the apply_link 
             })
         except Exception as e:
             print(f"Error processing a course from ICK Kosovo: {e}")
     
     return courses_list
 
+
+# Scraper function for BEETROOT ACADEMY
 def scrape_beetroot_academy(page):
     page.goto('https://xk.beetroot.academy/courses/online', timeout=60000)
     
@@ -159,19 +167,25 @@ def scrape_beetroot_academy(page):
             duration = training.locator('.intro_monthIcon').inner_text(timeout=10000)
             image_url = 'https://xk.beetroot.academy/static/logo-c96c7c4d19444146e8b100d14e93d1ac.svg'
 
+            # Extract the apply link
+            apply_link = training.locator('a.intro_box').get_attribute('href', timeout=10000)
+            apply_link = f"https://xk.beetroot.academy{apply_link}"  # Prepend the base URL
+
             courses_list.append({
                 'Title': title,
                 'Rating': rating,
                 'Description': description,
                 'Duration': duration,
                 'Trainer': None,
-                'Image_URL': image_url
+                'Image_URL': image_url,
+                'apply_link': apply_link  # Added the apply_link 
             })
         except Exception as e:
             print(f"Error processing a course from Beetroot Academy: {e}")
     
     return courses_list
 
+# Scraper function for PROBIT ACADEMY
 def scrape_probit_academy(page):
     page.goto('https://probitacademy.com/courses/', timeout=60000)
     
@@ -189,6 +203,9 @@ def scrape_probit_academy(page):
             rating = course.locator('.course-review .value').first.inner_text(timeout=5000).strip()
             image_url = course.locator('.course-thumbnail img').get_attribute('src', timeout=5000)
 
+            # Extract the apply link
+            apply_link = course.locator('.course-title a').get_attribute('href', timeout=5000)
+
             courses_list.append({
                 'Title': title,
                 'Trainer': trainer,
@@ -196,13 +213,16 @@ def scrape_probit_academy(page):
                 'Price': price,
                 'Students': students,
                 'Rating': rating,
-                'Image_URL': image_url
+                'Image_URL': image_url,
+                'apply_link': apply_link  # Added the apply_link 
             })
         except Exception as e:
             print(f"Error processing a course from Probit Academy: {e}")
     
     return courses_list
 
+
+# Scraper function for CREATIVE HUB KOSOVO
 def scrape_creative_hub_kosovo(page):
     page.goto('https://creativehubkos.com/', timeout=60000)
     page.wait_for_load_state('networkidle', timeout=10000)
@@ -229,19 +249,24 @@ def scrape_creative_hub_kosovo(page):
             description = training.locator('p').inner_text(timeout=10000)
             price = training.locator('.price').first.inner_text(timeout=10000).strip()
 
+            # Extract the apply link
+            apply_link = training.locator('a[href*="creativehubkos.com"]').get_attribute('href', timeout=10000)
+
             trainings_list.append({
                 'Title': title,
                 'Description': description,
                 'Price': price,
                 'Trainer': None,
                 'Students': None,
-                'Rating': None
+                'Rating': None,
+                'apply_link': apply_link  # Add the apply_link 
             })
         except Exception as e:
             print(f"Error processing training from Creative Hub Kosovo: {e}")
     
     return trainings_list
 
+# Scraper function for OUTKOS ACADEMY
 def scrape_outkos_academy(page):
     page.goto('https://outkos.academy/AllCourses/page/1', timeout=120000)
     
@@ -257,9 +282,16 @@ def scrape_outkos_academy(page):
             price = course.locator('.span2').inner_text(timeout=5000).strip()
             duration_elements = course.locator('.small-item.small-item1').all()
             duration = duration_elements[0].inner_text(timeout=5000).strip() if duration_elements else "Not Available"
+            
+            # Extract the image URL from the style attribute
             img_style = course.locator('a.img').get_attribute('style')
             image_url = re.search(r'url\(["\'](.*?)["\']\)', img_style)
             image_url = image_url.group(1) if image_url else None
+            
+            # Extract the apply link
+            apply_link = course.locator('a.info').get_attribute('href', timeout=5000)
+            # Prepend the base URL to the relative path
+            apply_link = f'https://outkos.academy{apply_link}' if apply_link else 'N/A'
 
             courses_list.append({
                 'Title': title,
@@ -267,13 +299,16 @@ def scrape_outkos_academy(page):
                 'Description': description,
                 'Price': price,
                 'Duration': duration,
-                'Image_URL': image_url
+                'Image_URL': image_url,
+                'apply_link': apply_link  # Add the apply_link 
             })
         except Exception as e:
             print(f"Error processing course from Outkos Academy: {e}")
 
     return courses_list
 
+
+# Scraper function for SHPIK TRAININGS
 def scrape_shpik_trainings(page):
     page.goto('https://trajnimet.info/', timeout=60000)
     
@@ -301,6 +336,11 @@ def scrape_shpik_trainings(page):
 
     courses_list = []
     for course_href in loaded_courses:
+        # Check if the course_href is a valid URL
+        if not course_href.startswith("http"):
+            print(f"Invalid URL found: {course_href}, skipping...")
+            continue  # Skip invalid URLs
+        
         try:
             page.goto(course_href, timeout=60000)
             page.wait_for_load_state('networkidle')
@@ -324,7 +364,8 @@ def scrape_shpik_trainings(page):
                 'Students': students,
                 'Rating': rating,
                 'Image_URL': image_url,
-                'Duration': duration
+                'Duration': duration,
+                'apply_link': course_href  # Add the apply_link as course_href
             })
 
         except Exception as e:

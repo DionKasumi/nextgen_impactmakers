@@ -45,6 +45,7 @@ const CardsContainer = ({
                             card_description={volunteer.description}
                             card_price={volunteer.price}
                             card_source={volunteer.source}
+                            card_type="volunteering"
                         />
                     ))
                 ) : (

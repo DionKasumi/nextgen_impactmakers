@@ -10,11 +10,11 @@ import SwiperCarousel from '../components/SwiperCarousel';
 const fetchCourse = async (id) => {
     try {
         const response = await axios.get(
-            `http://localhost:8080/api/courses/${id}`
+            `http://localhost:8080/api/events/${id}`
         );
         return response.data;
     } catch (error) {
-        console.error(`Error fetching course with id-${id}:`, error);
+        console.error(`Error fetching event with id-${id}:`, error);
         return [];
     }
 };
@@ -104,7 +104,7 @@ const EventDetailsPage = () => {
                         </div>
                     </div>
 
-                     {/* Event Details Section */}
+                    {/* Event Details Section */}
                     <div className="w-full h-full py-24 flex justify-center items-center flex-col bg-[#4F1ABE] bg-[url('../assets/image9.png')]">
                         <div className="w-5/6 text-white flex flex-col items-center mb-6">
                             <h1 className="text-3xl font-bold">Date & Time</h1>
@@ -147,18 +147,17 @@ const EventDetailsPage = () => {
                         </button>
                     </div>
 
-                    
                     <div className="w-full h-full py-24 bg-[url('../assets/image8.png')] flex justify-center items-center flex-col">
                         {/* Source of this Opportunity Content Div */}
                         <h1 className="font-bold text-2xl mb-12 -mt-12">
                             Source of this Opportunity
                         </h1>
                         <div className="flex flex-col bg-[#A3A9FE] w-full  md:w-4/6 h-auto p-3  justify-center items-center gap-10">
-                        <img
-                                    src={course.image_url}
-                                    alt="Course Image"
-                                    className="w-auto h-full mt-20 object-cover rounded-md select-none"
-                                />
+                            <img
+                                src={course.image_url}
+                                alt="Course Image"
+                                className="w-auto h-full mt-20 object-cover rounded-md select-none"
+                            />
                             <div className="w-5/6 justify-center items-center flex flex-col py-12">
                                 <h3 className="text-white">
                                     {course.source
