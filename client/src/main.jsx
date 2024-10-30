@@ -62,18 +62,18 @@ const router = createBrowserRouter([
         children: [
             {
                 path: '/courses/:id',
-                element: <TrainingDetailsPage />, 
+                element: <TrainingDetailsPage />,
             },
             {
-                path: '/courses/:id',
+                path: '/events/:id',
                 element: <EventDetailsPage />,
             },
             {
-                path: '/courses/:id',
+                path: '/internships/:id',
                 element: <InternshipDetailsPage />,
             },
             {
-                path: '/courses/:id',
+                path: '/volunteering/:id',
                 element: <VolunteeringDetailsPage />,
             },
         ],
