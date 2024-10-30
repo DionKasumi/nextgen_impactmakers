@@ -21,7 +21,7 @@ app.config['SESSION_COOKIE_SECURE'] = False    # Disable secure cookies for deve
 # Database connection parameters
 db_params = {
     'user': 'root',
-    'passwd': '12345678',
+    'passwd': '1234',
     'host': 'localhost',
     'port': 3306,
     'db': 'pye_data'
@@ -33,7 +33,7 @@ def fetch_courses_from_database():
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
         query = """
-        SELECT id, source, title, trainer, description, price, students, rating, image_url, duration , email, phone_number, office_address, company_logo 
+        SELECT id, source, title, trainer, description, price, students, rating, image_url, duration , email, phone_number, office_address, company_logo, apply_link 
         FROM all_courses
         """
         cursor.execute(query)
@@ -54,7 +54,7 @@ def fetch_course_by_id(course_id):
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
         query = """
-        SELECT id, source, title, trainer, description, price, students, rating, image_url, duration, email, phone_number, office_address, company_logo 
+        SELECT id, source, title, trainer, description, price, students, rating, image_url, duration, email, phone_number, office_address, company_logo, apply_link
         FROM all_courses
         WHERE id = %s
         """
@@ -88,7 +88,7 @@ def fetch_internships_from_database():
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
         query = """
-        SELECT id, source, title, description, posted_date, salary, duration, location, image_url 
+        SELECT id, source, title, description, posted_date, salary, duration, location, image_url, email, phone_number, office_address, company_logo, apply_link
         FROM all_internships
         """
         cursor.execute(query)
@@ -109,7 +109,7 @@ def fetch_internship_by_id(internship_id):
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
         query = """
-        SELECT id, source, title, description, posted_date, salary, duration, location, image_url 
+        SELECT id, source, title, description, posted_date, salary, duration, location, image_url, email, phone_number, office_address, company_logo, apply_link
         FROM all_internships
         WHERE id = %s
         """
@@ -143,7 +143,7 @@ def fetch_events_from_database():
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
         query = """
-        SELECT id, source, organizer, title, duration, location, image_url
+        SELECT id, source, organizer, title, duration, location, image_url, email, phone_number, office_address, company_logo, apply_link
         FROM all_events
         """
         cursor.execute(query)
@@ -164,7 +164,7 @@ def fetch_event_by_id(event_id):
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
         query = """
-        SELECT id, source, organizer, title, duration, location, image_url
+        SELECT id, source, organizer, title, duration, location, image_url, email, phone_number, office_address, company_logo, apply_link
         FROM all_events
         WHERE id = %s
         """
@@ -197,7 +197,7 @@ def fetch_volunteering_from_database():
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
         query = """
-        SELECT id, source, title, duration, cause, age_group, image_url
+        SELECT id, source, title, duration, cause, age_group, image_url, email, phone_number, office_address, company_logo, apply_link
         FROM all_volunteering
         """
         cursor.execute(query)
@@ -218,7 +218,7 @@ def fetch_volunteering_by_id(volunteering_id):
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
         query = """
-        SELECT id, source, title, duration, cause, age_group, image_url
+        SELECT id, source, title, duration, cause, age_group, image_url, email, phone_number, office_address, company_logo, apply_link
         FROM all_volunteering
         WHERE id = %s
         """

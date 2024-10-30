@@ -127,11 +127,11 @@ def create_database():
 
         # List of tables and new columns to add
         tables_and_columns = {
-            'all_courses': ['email', 'phone_number', 'office_address', 'company_logo'],
-            'all_events': ['email', 'phone_number', 'office_address', 'company_logo'],
-            'all_internships': ['email', 'phone_number', 'office_address', 'company_logo'],
-            'all_volunteering': ['email', 'phone_number', 'office_address', 'company_logo'],
-            'participants': ['preferences'],  # Adding preferences for participants
+            'all_courses': ['email', 'phone_number', 'office_address', 'company_logo', 'apply_link'], # Added apply_link as a new field
+            'all_events': ['email', 'phone_number', 'office_address', 'company_logo', 'apply_link'],
+            'all_internships': ['email', 'phone_number', 'office_address', 'company_logo', 'apply_link'],
+            'all_volunteering': ['email', 'phone_number', 'office_address', 'company_logo', 'apply_link'],
+            'participants': ['preferences'],  
         }
 
         for table, columns in tables_and_columns.items():

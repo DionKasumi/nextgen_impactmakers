@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import {
     Navigation,
@@ -16,15 +17,21 @@ import 'swiper/css/effect-coverflow';
 import CarouselCard from './CarouselCard';
 
 const SwiperCarousel = () => {
+    const location = useLocation();
+    let pathname = location.pathname.split('/')[1];
+    if (pathname.length == 0) {
+        pathname = 'courses';
+    }
+
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true); // Loading state
 
     useEffect(() => {
         // Function to fetch data from the Flask API
-        const fetchData = async () => {
+        const fetchData = async (pathname) => {
             try {
                 const response = await fetch(
-                    'http://localhost:8080/api/courses'
+                    `http://localhost:8080/api/${pathname}`
                 );
                 if (response.ok) {
                     const result = await response.json();
@@ -39,8 +46,7 @@ const SwiperCarousel = () => {
                 setLoading(false); // Set loading to false when data is fetched
             }
         };
-
-        fetchData();
+        fetchData(pathname);
     }, []);
 
     if (loading) {
@@ -84,6 +90,7 @@ const SwiperCarousel = () => {
                         card_img={item.image_url}
                         card_duration={item.duration}
                         card_source={item.source}
+                        card_type={pathname}
                     />
                 </SwiperSlide>
             ))}

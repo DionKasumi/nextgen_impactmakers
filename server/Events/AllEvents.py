@@ -24,8 +24,8 @@ def save_event_to_db(event):
 
         if not exists:
             insert_query = """
-            INSERT INTO all_events (source, organizer, title, duration, location, image_url, email, phone_number, office_address, company_logo)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO all_events (source, organizer, title, duration, location, image_url, email, phone_number, office_address, company_logo, apply_link)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
             cursor.execute(insert_query, (
                 event['Source'],
@@ -37,7 +37,8 @@ def save_event_to_db(event):
                 event['Email'],
                 event['Phone Number'],
                 event['Office Address'],
-                event['Company Logo']
+                event['Company Logo'],
+                event['Apply Link']  # New apply link field
             ))
             db.commit()
             print(f"Inserted new event: {event['Title']}")
@@ -71,6 +72,7 @@ def scrape_shpik_events():
                 time_element = event_card.locator('div.time')
                 duration = time_element.locator('span.month').text_content(timeout=5000).strip() + " " + time_element.locator('span.date').text_content(timeout=5000).strip()
                 organizer = 'N/A'
+                apply_link = event_card.locator('h2.title a').get_attribute('href', timeout=5000)  # Capture apply link
 
                 events_list.append({
                     'Source': 'SHPIK Events',
@@ -82,10 +84,11 @@ def scrape_shpik_events():
                     'Email': 'info@shpik.org',
                     'Phone Number': '+383 44 507 575',
                     'Office Address': 'Xheladin Hana p.n. F.P. 315. 10000 \n Prishtinë, Kosovë',
-                    'Company Logo': 'https://trajnimet.info/wp-content/uploads/2022/12/shpik-logo.png'
+                    'Company Logo': 'https://trajnimet.info/wp-content/uploads/2022/12/shpik-logo.png',
+                    'Apply Link': apply_link  # Store the apply link
                 })
                 
-                print(f"Scraped event {i + 1}: {title} | Location: {location}")
+                print(f"Scraped event {i + 1}: {title} | Location: {location} | Apply Link: {apply_link}")
 
             except Exception as e:
                 print(f"An error occurred while processing event {i + 1}: {e}")
@@ -107,6 +110,7 @@ def scrape_ict_kosovo():
         events_list = []
         for i, event_link in enumerate(event_links):
             try:
+                apply_link = event_link.get_attribute('href', timeout=5000)  # Capture apply link
                 event_link.click(timeout=5000)
                 title = page.locator('h3.elementor-heading-title').inner_text(timeout=10000)
                 if not title:
@@ -127,10 +131,11 @@ def scrape_ict_kosovo():
                     'Email': 'info@ictkosovo.eu',  
                     'Phone Number': '+383 44 916 156',  
                     'Office Address': 'Rruga Zagrebi, Hyrja 23 Kati 2 \n Prishtinë, Kosovë 10000', 
-                    'Company Logo': 'https://ictkosovo.eu/wp-content/uploads/2023/05/white.svg'
+                    'Company Logo': 'https://ictkosovo.eu/wp-content/uploads/2023/05/white.svg',
+                    'Apply Link': apply_link  # Store the apply link
                 })
                 
-                print(f"Scraped event {i + 1}: {title}")
+                print(f"Scraped event {i + 1}: {title} | Apply Link: {apply_link}")
 
                 page.go_back(timeout=5000)
 
@@ -160,3 +165,4 @@ while True:
     run_all_event_scrapers()
     print("All scrapers completed. Sleeping for 30 minutes...")
     time.sleep(30 * 60)
+
