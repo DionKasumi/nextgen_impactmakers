@@ -1,7 +1,6 @@
 from playwright.sync_api import sync_playwright
 import MySQLdb
 import time
-from datetime import datetime
 
 # Database connection parameters
 db_params = {
@@ -12,20 +11,54 @@ db_params = {
     'db': 'pye_data'  
 }
 
+# Function to assign label based on event title
+def assign_event_label(title):
+    title_lower = title.lower()
+    
+    # Technology & IT
+    if any(keyword in title_lower for keyword in ['technology', 'it', 'tech', 'software', 'programming', 'development', 'coding', 'ai']):
+        return 'Technology & IT'
+    
+    # Business & Marketing
+    elif any(keyword in title_lower for keyword in ['business', 'marketing', 'seo', 'sales', 'entrepreneurship']):
+        return 'Business & Marketing'
+    
+    # Design & Multimedia
+    elif any(keyword in title_lower for keyword in ['design', 'multimedia', 'graphics', 'illustrator', 'photoshop', 'aftereffect']):
+        return 'Design & Multimedia'
+    
+    # Education & Training
+    elif any(keyword in title_lower for keyword in ['education', 'training', 'workshop', 'conference', 'learning', 'academy']):
+        return 'Education & Training'
+    
+    # Networking
+    elif any(keyword in title_lower for keyword in ['networking', 'meetup', 'connect', 'conference']):
+        return 'Networking'
+    
+    # Other (default label)
+    else:
+        return 'Other'
+
+
+
 # Save the scraped event data to the MySQL database
 def save_event_to_db(event):
     try:
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor()
 
+        # Assign label to event
+        label = assign_event_label(event['Title'])
+
+        # Check if the event already exists
         check_query = "SELECT COUNT(*) FROM all_events WHERE title = %s AND source = %s"
         cursor.execute(check_query, (event['Title'], event['Source']))
         exists = cursor.fetchone()[0] > 0
 
         if not exists:
             insert_query = """
-            INSERT INTO all_events (source, organizer, title, duration, location, image_url, email, phone_number, office_address, company_logo)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO all_events (source, organizer, title, duration, location, image_url, email, phone_number, office_address, company_logo, label)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
             cursor.execute(insert_query, (
                 event['Source'],
@@ -37,10 +70,11 @@ def save_event_to_db(event):
                 event['Email'],
                 event['Phone Number'],
                 event['Office Address'],
-                event['Company Logo']
+                event['Company Logo'],
+                label
             ))
             db.commit()
-            print(f"Inserted new event: {event['Title']}")
+            print(f"Inserted new event: {event['Title']} with label {label}")
         else:
             print(f"Event already exists: {event['Title']}")
 

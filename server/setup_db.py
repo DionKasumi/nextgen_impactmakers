@@ -31,6 +31,7 @@ def create_database():
             rating VARCHAR(50),
             image_url VARCHAR(500),
             duration VARCHAR(255),
+            label VARCHAR(255),  
             UNIQUE(title, source)
         );
         """)
@@ -44,7 +45,9 @@ def create_database():
             title VARCHAR(255),
             duration VARCHAR(255),
             location VARCHAR(255),
-            image_url VARCHAR(255)
+            image_url VARCHAR(255),
+            label VARCHAR(255),  
+            UNIQUE(title, source)
         );
         """)
         
@@ -59,7 +62,9 @@ def create_database():
             salary VARCHAR(100),
             duration VARCHAR(100),
             location VARCHAR(255),
-            image_url VARCHAR(500)
+            image_url VARCHAR(500),
+            label VARCHAR(255),  
+            UNIQUE(title, source)
         );
         """)
 
@@ -73,6 +78,7 @@ def create_database():
             cause TEXT,
             age_group VARCHAR(255),
             image_url TEXT,
+            label VARCHAR(255),  
             UNIQUE(title, source)
         );
         """)
