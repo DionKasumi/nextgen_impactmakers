@@ -12,6 +12,46 @@ db_params = {
     'db': 'pye_data'
 }
 
+# Function to assign label based on title
+def assign_label(title):
+    title_lower = title.lower()
+    
+    # Data & Analytics
+    if any(keyword in title_lower for keyword in ['data', 'analitikë', 'analizë', 'analytics', 'statistics', 'big data', 'data science', 'machine learning', 'ai']):
+        return 'Data & Analytics'
+    
+    # Development (Including Programming Languages and Frameworks)
+    elif any(keyword in title_lower for keyword in [
+        'development', 'zhvillim', 'programim', 'coding', 'kodim', 'applications', 'software', 'programming', 'app',
+        'javascript', 'python', 'node', 'html', 'css', 'angular', 'react', 'php', 'sql', 'mysql', 'c++', 'java', 'nosql', 'laravel', 'typescript', 'ruby', 'bash', 'powershell', 'swift','wordpress','kotlin','qa','front','back',
+        'seo', '.net'
+    ]):
+        return 'Development'
+    
+    # Design
+    elif any(keyword in title_lower for keyword in ['design', 'dizajn', 'ux', 'ui', 'graphic', 'graphics', 'vizual', 'multimedia', 'illustrator', 'photoshop', 'adobe']):
+        return 'Design'
+    
+    # Business & Marketing
+    elif any(keyword in title_lower for keyword in ['business', 'biznes', 'marketing', 'shitje', 'sales', 'ekonomi', 'economy', 'management', 'menaxhim', 'sociale']):
+        return 'Business & Marketing'
+    
+    # Management
+    elif any(keyword in title_lower for keyword in ['management', 'menaxhim', 'leadership', 'udhëheqje', 'administration', 'administratë', 'planning', 'planifikim']):
+        return 'Management'
+    
+    # IT & Networking
+    elif any(keyword in title_lower for keyword in ['networking', 'rrjeta', 'it', 'security', 'siguri', 'technology', 'teknologji', 'server', 'cisco']):
+        return 'IT & Networking'
+    
+    # Education & Training
+    elif any(keyword in title_lower for keyword in ['education', 'arsim', 'teaching', 'mësim', 'training', 'trajnimi', 'school', 'shkollë', 'qualification', 'kualifikim']):
+        return 'Education & Training'
+    
+    # Other (set to title for easy review)
+    else:
+        return 'Other'
+
 # Function to save course data to the database
 def save_to_database(courses_list, source, email, phone_number, office_address, company_logo):
     db = None
@@ -22,6 +62,9 @@ def save_to_database(courses_list, source, email, phone_number, office_address, 
 
         for course in courses_list:
             try:
+                # Determine the label for the course
+                label = assign_label(course['Title'])
+
                 # Check if the course already exists
                 check_query = "SELECT COUNT(*) FROM all_courses WHERE title = %s AND source = %s"
                 cursor.execute(check_query, (course['Title'], source))
@@ -30,8 +73,8 @@ def save_to_database(courses_list, source, email, phone_number, office_address, 
                 if not exists:
                     # Insert new course data with additional fields
                     insert_query = """
-                    INSERT INTO all_courses (source, title, trainer, description, price, students, rating, image_url, duration, email, phone_number, office_address, company_logo, apply_link)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    INSERT INTO all_courses (source, title, trainer, description, price, students, rating, image_url, duration, email, phone_number, office_address, company_logo, apply_link,label)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s)
                     """
                     data = (
                         source,
@@ -47,11 +90,12 @@ def save_to_database(courses_list, source, email, phone_number, office_address, 
                         phone_number,     
                         office_address,   
                         company_logo,     
-                        course.get('apply_link')  # New field
+                        course.get('apply_link'),
+                        label
                     )
                     cursor.execute(insert_query, data)
                     db.commit()
-                    print(f"Inserted new course from {source}: {course['Title']}")
+                    print(f"Inserted new course from {source}: {course['Title']} with label {label}")
                 else:
                     print(f"Course already exists in {source}: {course['Title']}")
 
@@ -273,7 +317,7 @@ def scrape_shpik_trainings(page):
 
     while not all_courses_loaded:
         page.evaluate('window.scrollBy(0, document.body.scrollHeight)')
-        page.wait_for_timeout(2000)  # Wait for the page to load new content
+        page.wait_for_timeout(2000)
 
         courses = page.locator('//div[contains(@class, "item")]')
         current_courses = [course.locator('a.training-post').get_attribute('href') for course in courses.all()]
@@ -299,10 +343,9 @@ def scrape_shpik_trainings(page):
         
         try:
             page.goto(course_href, timeout=60000)
-            page.wait_for_load_state('networkidle')  # Ensure the page has fully loaded
-            page.wait_for_timeout(2000)  # Give extra time for dynamic content to load
+            page.wait_for_load_state('networkidle')
+            page.wait_for_timeout(2000)
 
-            # Extracting data
             title = page.locator('.course-content-box h2').inner_text(timeout=10000) if page.locator('.course-content-box h2').count() > 0 else 'N/A'
             trainer = page.locator('p:has-text("Trajner:")').inner_text(timeout=10000).replace('Trajner:', '').strip() if page.locator('p:has-text("Trajner:")').count() > 0 else 'N/A'
             description = page.locator('.course-content-box .description').inner_text(timeout=10000) if page.locator('.course-content-box .description').count() > 0 else 'N/A'
@@ -310,12 +353,9 @@ def scrape_shpik_trainings(page):
             students = int(page.locator('p:has-text("Numri i studentëve:")').inner_text(timeout=10000).replace('Numri i studentëve:', '').strip()) if page.locator('p:has-text("Numri i studentëve:")').count() > 0 else 0
             rating = page.locator('p:has-text("Vlerësimi:")').inner_text(timeout=10000).replace('Vlerësimi:', '').strip() if page.locator('p:has-text("Vlerësimi:")').count() > 0 else 'N/A'
             
-            # Scraping the first image found
             image_url = page.locator('.featured-image img').first.get_attribute('src') if page.locator('.featured-image img').count() > 0 else 'N/A'
-
             duration = page.locator('p:has-text("Kohëzgjatja:")').inner_text(timeout=10000).replace('Kohëzgjatja:', '').strip() if page.locator('p:has-text("Kohëzgjatja:")').count() > 0 else 'N/A'
 
-            # Prepare course data
             courses_list.append({
                 'Title': title,
                 'Trainer': trainer,
@@ -332,7 +372,6 @@ def scrape_shpik_trainings(page):
             print(f"Error processing a course from ShpikTrainings: {e}")
 
     return courses_list
-
 
 # Main scraping logic that loops through the websites
 def main():
@@ -409,9 +448,8 @@ def main():
 
         browser.close()
 
-
 if __name__ == '__main__':
     while True:
         main()
         print("Sleeping for 30 minutes...")
-        time.sleep(30 * 60)  # Sleep for 30 minutes
+        time.sleep(30 * 60)
