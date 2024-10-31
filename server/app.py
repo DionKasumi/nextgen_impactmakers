@@ -362,23 +362,34 @@ def signup():
         data.get('preferences', [])
     )
 
-# --- Helper Functions for Login ---
 def check_participant(email, password):
     try:
+        # Connect to the database
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        
+        # Retrieve the participant's data
         query = "SELECT * FROM participants WHERE email = %s"
         cursor.execute(query, [email])
         user = cursor.fetchone()
+        
         cursor.close()
         db.close()
 
+        # Check if user exists and if password matches
         if user and bcrypt.checkpw(password.encode('utf-8'), user['password'].encode('utf-8')):
-            return True
-        return False
+            # Save user preferences and other data in session
+            session['user_id'] = user['id']
+            session['username'] = user['username']
+            session['email'] = user['email']
+            session['phone'] = user['phone']
+            session['preferences'] = user['preferences'].split(', ') if user['preferences'] else []
+
+            return user  # Return all user data as needed
+        return None
     except MySQLdb.Error as e:
         print(f"MySQL error during participant login: {e}")
-        return False
+        return None
 
 def check_organization(email_of_org, password_of_org):
     try:
@@ -854,6 +865,51 @@ def admin_update_training(training_id):
     else:
         return jsonify({'error': 'Failed to update training'}), 500
 
+
+def fetch_data_from_table(table_name, preferences):
+    data = []
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+
+        # If preferences exist, filter the query
+        if preferences:
+            placeholders = ', '.join(['%s'] * len(preferences))
+            query = f"SELECT * FROM {table_name} WHERE label IN ({placeholders})"
+            cursor.execute(query, preferences)
+        else:
+            # Return an empty result if no preferences are set
+            return []
+
+        data = cursor.fetchall()
+    except MySQLdb.Error as e:
+        print(f"MySQL error in {table_name}: {e}")
+    finally:
+        cursor.close()
+        db.close()
+    return data
+
+# API to fetch all user data based on preferences
+@app.route('/api/user/all_data', methods=['GET'])
+def get_all_user_data():
+    # Retrieve user preferences from the session
+    preferences = session.get('preferences', [])
+    
+    # Fetch data from each table based on preferences
+    courses = fetch_data_from_table('all_courses', preferences)
+    internships = fetch_data_from_table('all_internships', preferences)
+    events = fetch_data_from_table('all_events', preferences)
+    volunteering = fetch_data_from_table('all_volunteering', preferences)
+
+    # Combine the results into one JSON response
+    response_data = {
+        "courses": courses,
+        "internships": internships,
+        "events": events,
+        "volunteering": volunteering
+    }
+    
+    return jsonify(response_data), 200
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8080)
