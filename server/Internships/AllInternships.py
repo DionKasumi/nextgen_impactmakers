@@ -12,11 +12,158 @@ db_params = {
     'db': 'pye_data'
 }
 
+def assign_label(title):
+    title_lower = title.lower()
+
+    # Information Technology
+    if any(keyword in title_lower for keyword in [
+        'teknologji', 'informative', 'it', 'development', 'developer', 'programues', 'software', 'networking', 
+        'data', 'analitika', 'informatikë', 'programim', 'programming', 'it support', 'administrator', 
+        'qa', 'quality assurance', 'system engineer', 'help desk', 'sistemues', 'it consultant', 
+        'card personalization', 'database', 'zhvillues softueri','dizajn','dizajner','grafik','grafikë','web','web developer','web designer','graphic designer','graphic design','ui','ux','ui/ux','ui/ux designer'
+    ]):
+        return 'Information Technology'
+    
+    # Human Resources
+    elif any(keyword in title_lower for keyword in [
+        'burime njerëzore', 'hr', 'recruit', 'rekrutues', 'staff', 'punësimi', 'human resources', 
+        'administrator', 'hr specialist', 'training', 'customer excellence specialist', 'customer support', 
+        'customer care', 'zyrtar burime njerëzore', 'koordinator', 'asistent administrativ', 
+        'specialist i burimeve njerëzore dhe administratës','burimeve','njerëzore'
+    ]):
+        return 'Human Resources'
+    
+    # Engineering and Construction
+    elif any(keyword in title_lower for keyword in [
+        'inxhinier', 'ndërtimtari', 'engineering', 'construction', 'architect', 'civil', 'ndërtim', 
+        'mechanical engineer', 'automekanik', 'axhustator', 'ashensor', 'polirues mermeri', 'electrician', 
+        'technician', 'elektroinstalues', 'prodhues', 'kuzhinier', 'saldues', 'teknik', 'montues', 'mjeshtër'
+    ]):
+        return 'Engineering and Construction'
+    
+    # Healthcare
+    elif any(keyword in title_lower for keyword in [
+        'shëndetësi', 'mjek', 'doktor', 'nurse', 'vet', 'health', 'veterinar', 'psikolog', 
+        'dentist', 'infermiere', 'pharmacy', 'edukat', 'medic', 'kujdes për fëmijë', 'fizioterapeut', 
+        'laborant', 'farmaci', 'teknike e farmacisë'
+    ]):
+        return 'Healthcare'
+    
+    # Transport
+    elif any(keyword in title_lower for keyword in [
+        'transport', 'logjistikë', 'logistics', 'shipping', 'delivery', 'driver', 'shofer', 
+        'transportues', 'motorist', 'logistics unit', 'fleet'
+    ]):
+        return 'Transport'
+    
+    # Logistics
+    elif any(keyword in title_lower for keyword in [
+        'logjistikë', 'depo', 'magazinë', 'warehouse', 'supply', 'distribution', 'depoist', 
+        'picker', 'assembler', 'inventory'
+    ]):
+        return 'Logistics'
+    
+    # Craft and Trade
+    elif any(keyword in title_lower for keyword in [
+        'zeje', 'zanat', 'craft', 'artisan', 'artizan', 'punëtor', 'handyman', 'electrician', 
+        'plumber', 'repair', 'shankist', 'patronist', 'kamarier', 'banakier', 'polirues', 
+        'montim', 'rrobaqepëse', 'berber', 'hairdresser', 'frizer', 'parukier', 'barber', 
+        'stitcher', 'operator', 'sektorist', 'avancues', 'gaferr', 'bariste', 'kuzhinier','mirëmbajtëse','pastruese','pastrues','arkëtare','arkatar/e','monter','skarist'
+    ]):
+        return 'Craft and Trade'
+    
+    # Legal
+    elif any(keyword in title_lower for keyword in [
+        'juridik', 'ligj', 'avokat', 'law', 'legal', 'attorney', 'paralegal', 'notary', 
+        'specialist ligjor', 'compliance'
+    ]):
+        return 'Legal'
+    
+    # Media
+    elif any(keyword in title_lower for keyword in [
+        'media', 'gazetar', 'journalism', 'press', 'news', 'broadcast', 'reporter', 'kameraman', 
+        'fotograf', 'videographer', 'tik tok', 'content creator'
+    ]):
+        return 'Media'
+    
+    # Management
+    elif any(keyword in title_lower for keyword in [
+        'menaxhment', 'menaxher', 'manager', 'management', 'executive', 'coordinator', 
+        'team lead', 'supervisor', 'operational assistant', 'patronist', 'service center lead', 
+        'viši menadžer za rizike', 'zyrtar në qendrën e thirrjeve'
+    ]):
+        return 'Management'
+    
+    # Hospitality
+    elif any(keyword in title_lower for keyword in [
+        'hotel', 'hotelieri', 'hospitality', 'recepsionist', 'reception', 'kamarier', 'waiter', 
+        'banakier', 'restaurant', 'barista', 'housekeeping', 'nanny', 'cook', 'chef', 
+        'pastruese', 'bariste', 'kfc', 'kuzhinier'
+    ]):
+        return 'Hospitality'
+    
+    # Research and Development
+    elif any(keyword in title_lower for keyword in [
+        'hulumtim', 'zhvillim', 'research', 'development', 'analizë', 'analysis', 'researcher', 
+        'advisor', 'market insights', 'consultant', 'project development'
+    ]):
+        return 'Research and Development'
+    
+    # Maintenance and Security
+    elif any(keyword in title_lower for keyword in [
+        'mirëmbajtje', 'sigurim', 'maintenance', 'security', 'safety', 'janitor', 'cleaning', 
+        'security guard', 'guard', 'mechanic', 'operator', 'technical staff', 'kontrakt', 
+        'mjeshtër'
+    ]):
+        return 'Maintenance and Security'
+    
+    # Electronics and Energy
+    elif any(keyword in title_lower for keyword in [
+        'elektronikë', 'energjetikë', 'elektricist', 'electronics', 'energy', 'electric', 
+        'technician', 'installer', 'power', 'engineering'
+    ]):
+        return 'Electronics and Energy'
+    
+    # Manufacturing and Processing
+    elif any(keyword in title_lower for keyword in [
+        'prodhimtari', 'përpunim', 'manufacturing', 'production', 'assembly', 'assembler', 
+        'fabrication', 'production line', 'processing'
+    ]):
+        return 'Manufacturing and Processing'
+    
+    # Education and Training
+    elif any(keyword in title_lower for keyword in [
+        'edukatore', 'arsimi', 'teacher', 'professor', 'mësues', 'mësimdhënës', 'education', 
+        'trainer', 'trajnimi', 'learning', 'coach', 'instructor'
+    ]):
+        return 'Education and Training'
+    
+    # Finance and Accounting
+    elif any(keyword in title_lower for keyword in [
+        'finance', 'accounting', 'kontabilist', 'financier', 'financial', 'accountant', 'auditor', 
+        'treasury', 'billing', 'finance officer', 'invoice', 'zyrtar i financave', 
+        'asistent administrativ në financa', 'faturist','financa'
+    ]):
+        return 'Finance and Accounting'
+    
+    # Marketing and Sales
+    elif any(keyword in title_lower for keyword in [
+        'marketing', 'shitje', 'sales', 'advertising', 'promoter', 'brand', 'public relations', 
+        'pr', 'agent', 'marketing specialist', 'market', 'customer service', 'merchandiser', 
+        'agjent doganor', 'agjent'
+    ]):
+        return 'Marketing and Sales'
+    
+    # Fallback
+    else:
+        return 'Other'
+
 # Function to save job data to the database
 def save_job_to_db(job):
     try:
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor()
+        label = assign_label(job['title'])
 
         check_query = "SELECT COUNT(*) FROM all_internships WHERE title = %s AND source = %s"
         cursor.execute(check_query, (job['title'], job['source']))
@@ -24,8 +171,8 @@ def save_job_to_db(job):
 
         if not exists:
             insert_query = """
-            INSERT INTO all_internships (source, title, description, posted_date, salary, duration, location, image_url, email, phone_number, office_address, company_logo, apply_link)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO all_internships (source, title, description, posted_date, salary, duration, location, image_url, email, phone_number, office_address, company_logo, apply_link, label)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s)
             """
             cursor.execute(insert_query, (
                 job['source'],
@@ -40,10 +187,11 @@ def save_job_to_db(job):
                 job.get('phone_number'),
                 job.get('office_address'),
                 job.get('company_logo'),
-                job.get('apply_link')
+                job.get('apply_link'),
+                label
             ))
             db.commit()
-            print(f"Inserted new job: {job['title']} at {job['company_name']}")
+            print(f"Inserted new job: {job['title']} with label {label}")
         else:
             print(f"Job already exists: {job['title']} at {job['company_name']}")
 
@@ -286,7 +434,7 @@ def scrape_superpuna_rks():
         finally:
             browser.close()
 
-
+# Function to run all scrapers
 def run_all_scrapers():
     print("Starting Kosova Job scraper...")
     scrape_kosova_job()
