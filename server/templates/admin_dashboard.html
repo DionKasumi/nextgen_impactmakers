@@ -56,10 +56,13 @@
                         Manage Users
                     </a>
                     <div id="usersSubMenu" class="submenu">
-                        <a href="#" id=" approveOrganizationsLink" class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-800"> Approve Organizations</a>
-                        <a href="#" id="checkAndChangeAccountInfoLink" class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-800">Check and Change Account Info</a>
-                        <a href="#" id="banDeleteUsersLink" class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-800">Ban/Delete users</a>
-                    </div>
+    <a href="#" id="approveOrganizationsLink" class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-800">
+        Approve Organizations
+    </a>
+    <a href="#" id="checkAndChangeAccountInfoLink" class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-800">Check and Change Account Info</a>
+    <a href="#" id="banDeleteUsersLink" class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-800">Ban/Delete users</a>
+</div>
+
                     <div>
                         <a
                             id="manageCardsLink"
@@ -116,25 +119,23 @@
                 </table>
             </div>
 
-            <div class="hidden-section" id="approveOrganizationsTableContainer" style="display: none;">
-                <h2 class="text-2xl font-bold mb-4">Approve Organizations</h2>
-                <h3 class="text-xl font-semibold mb-4">Approve Pending Organizations</h3>
-                <table class="min-w-full bg-white">
-                    <thead>
-                        <tr>
-                            <th class="border-b">Organization Name</th>
-                            <th class="border-b">Email</th>
-                            <th class="border-b">Phone Number</th>
-                            <th class="border-b">Website URL</th>
-                            <th class="border-b">Description</th>
-                            <th class="border-b">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="approveOrganizationsTableBody">
-                        <!-- Organizations will be dynamically inserted here -->
-                    </tbody>
-                </table>
-            </div>
+           <div id="approveOrganizationsTableContainer" style="display: none;">
+    <h2 class="text-2xl font-bold mb-4">Approve Organizations</h2>
+    <table class="min-w-full bg-white">
+        <thead>
+            <tr>
+                <th class="border-b">Organization Name</th>
+                <th class="border-b">Email</th>
+                <th class="border-b">Phone Number</th>
+                <th class="border-b">Website URL</th>
+                <th class="border-b">Description</th>
+                <th class="border-b">Actions</th>
+            </tr>
+        </thead>
+        <tbody id="approveOrganizationsTableBody">
+        </tbody>
+    </table>
+</div>
 
             <script>
                 function showApproveOrganizations() {
@@ -519,33 +520,65 @@ function cancelEdit(row) {
           document.getElementById('organizationsTableContainer').style.display = 'none'; 
         });
 
-        // Approve organization
-        function approveOrganization(orgId) {
-          fetch(`/api/admin/organizations/approve/${orgId}`, {
-            method: 'POST'
-          }).then(response => {
-            if (response.ok) {
-              alert('Organization approved successfully.');
-              window.location.reload(); // Refresh the page to see updated data
-            } else {
-              alert('Error approving organization.');
-            }
-          });
-        }
+// Show Approve Organizations Table
+document.getElementById('approveOrganizationsLink').addEventListener('click', function(event) {
+    event.stopPropagation();
+    highlightActiveLink('approveOrganizationsLink');
+    document.getElementById('greeting').style.display = 'none';
+    document.getElementById('greetingDescription').style.display = 'none';
+    document.getElementById('approveOrganizationsTableContainer').style.display = 'block';
 
-        // Reject organization
-        function rejectOrganization(orgId) {
-          fetch(`/api/admin/organizations/reject/${orgId}`, {
-            method: 'POST'
-          }).then(response => {
-            if (response.ok) {
-              alert('Organization rejected successfully.');
-              window.location.reload(); // Refresh the page to see updated data
-            } else {
-              alert('Error rejecting organization.');
-            }
-          });
+    fetch('/api/admin/organizations')
+        .then(response => response.json())
+        .then(data => {
+            const tableBody = document.getElementById('approveOrganizationsTableBody');
+            tableBody.innerHTML = ''; // Clear existing rows
+            data.forEach(org => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="py-2 px-4 border-b">${org.name_of_org}</td>
+                    <td class="py-2 px-4 border-b">${org.email_of_org}</td>
+                    <td class="py-2 px-4 border-b">${org.phone_number_of_org}</td>
+                    <td class="py-2 px-4 border-b">${org.url_of_org || 'N/A'}</td>
+                    <td class="py-2 px-4 border-b">${org.description_of_org || 'N/A'}</td>
+                    <td class="py-2 px-4 border-b">
+                        <button onclick="approveOrganization(${org.id})" class="bg-green-500 text-white px-2 py-1 rounded">Approve</button>
+                        <button onclick="rejectOrganization(${org.id})" class="bg-red-500 text-white px-2 py-1 rounded">Reject</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        });
+});
+
+// Approve organization
+function approveOrganization(orgId) {
+    fetch(`/api/admin/organizations/approve/${orgId}`, {
+        method: 'POST'
+    }).then(response => {
+        if (response.ok) {
+            alert('Organization approved successfully.');
+            window.location.reload();
+        } else {
+            alert('Error approving organization.');
         }
+    });
+}
+
+// Reject organization
+function rejectOrganization(orgId) {
+    fetch(`/api/admin/organizations/reject/${orgId}`, {
+        method: 'POST'
+    }).then(response => {
+        if (response.ok) {
+            alert('Organization rejected successfully.');
+            window.location.reload();
+        } else {
+            alert('Error rejecting organization.');
+        }
+    });
+}
+
       </script>
 
       <script>
