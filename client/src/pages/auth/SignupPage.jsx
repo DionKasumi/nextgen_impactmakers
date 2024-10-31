@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -95,6 +95,30 @@ const ParticipantForm = ({ participantData, handleChange, errors }) => {
 
 const ParticipantSecondForm = ({ preferencesData, handleChange }) => {
     const [checked, setChecked] = useState(preferencesData || []);
+    const [labels, setLabels] = useState([]);
+
+    useEffect(() => {
+        const fetchLabels = async () => {
+            try {
+                const response = await axios.get(
+                    'http://localhost:8080/api/labels'
+                );
+                let fetchedLabels = response.data.labels || [];
+
+                // Move "Other" to the end of the array if it exists
+                fetchedLabels = fetchedLabels.filter(
+                    (label) => label !== 'Other'
+                );
+                fetchedLabels.push('Other');
+
+                setLabels(fetchedLabels);
+            } catch (error) {
+                console.error('Error fetching labels:', error);
+            }
+        };
+
+        fetchLabels();
+    }, []);
 
     const handleToggle = (value) => () => {
         const currentIndex = checked.indexOf(value);
@@ -111,38 +135,32 @@ const ParticipantSecondForm = ({ preferencesData, handleChange }) => {
     };
 
     return (
-        <ThemeProvider theme={theme}>
-            <List className="w-full bg-[#A3A9FE45] rounded-md h-auto max-h-96 overflow-y-scroll">
-                {['Programming', 'Art', 'Design', 'Music', 'Technology'].map(
-                    (value, index) => {
-                        const labelId = `checkbox-list-label-${index}`;
-                        return (
-                            <ListItem key={index} disablePadding>
-                                <ListItemButton
-                                    onClick={handleToggle(value)}
-                                    dense
-                                >
-                                    <ListItemText
-                                        id={labelId}
-                                        primary={value}
+        <List className="w-full bg-[#A3A9FE45] rounded-md h-auto max-h-96 overflow-y-scroll">
+            {labels.length > 0 ? (
+                labels.map((value, index) => {
+                    const labelId = `checkbox-list-label-${index}`;
+                    return (
+                        <ListItem key={index} disablePadding>
+                            <ListItemButton onClick={handleToggle(value)} dense>
+                                <ListItemText id={labelId} primary={value} />
+                                <ListItemIcon>
+                                    <Checkbox
+                                        edge="end"
+                                        checked={checked.includes(value)}
+                                        disableRipple
+                                        inputProps={{
+                                            'aria-labelledby': labelId,
+                                        }}
                                     />
-                                    <ListItemIcon>
-                                        <Checkbox
-                                            edge="end"
-                                            checked={checked.includes(value)}
-                                            disableRipple
-                                            inputProps={{
-                                                'aria-labelledby': labelId,
-                                            }}
-                                        />
-                                    </ListItemIcon>
-                                </ListItemButton>
-                            </ListItem>
-                        );
-                    }
-                )}
-            </List>
-        </ThemeProvider>
+                                </ListItemIcon>
+                            </ListItemButton>
+                        </ListItem>
+                    );
+                })
+            ) : (
+                <p>No labels available</p>
+            )}
+        </List>
     );
 };
 

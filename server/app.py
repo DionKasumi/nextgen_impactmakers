@@ -248,14 +248,49 @@ def get_volunteering_by_id(volunteering_id):
 
 
 # --- Helper Functions ---
+def fetch_unique_labels():
+    labels = set()  # Using a set to avoid duplicates
+
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+
+        # List of tables to query
+        tables = ['all_courses', 'all_events', 'all_internships', 'all_volunteering']
+
+        for table in tables:
+            query = f"SELECT DISTINCT label FROM {table} WHERE label IS NOT NULL"
+            cursor.execute(query)
+            table_labels = [row[0] for row in cursor.fetchall()]
+            labels.update(table_labels)  # Add to the set to keep unique values
+
+    except MySQLdb.Error as e:
+        print(f"Database error: {e}")
+    finally:
+        cursor.close()
+        db.close()
+
+    return list(labels)  # Convert the set back to a list for JSON serialization
+
+# API endpoint to get unique labels (preferences) for the frontend
+@app.route('/api/labels', methods=['GET'])
+def get_labels():
+    labels = fetch_unique_labels()
+    return jsonify(labels=labels), 200
+
+# Add participant with preferences
 def add_participant(username, email, phone, password, preferences):
+    # Fetch valid labels for validation
+    valid_labels = fetch_unique_labels()
+    
+    # Filter preferences to ensure only valid labels are stored
+    valid_preferences = [pref for pref in preferences if pref in valid_labels]
+
+    # Convert preferences list to a string if needed
+    preferences_str = ', '.join(valid_preferences)
+
+    # Hash the password
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-    
-    
-    if isinstance(preferences, list):
-        preferences_str = ', '.join(preferences)  
-    else:
-        preferences_str = preferences
 
     try:
         db = MySQLdb.connect(**db_params)
@@ -271,13 +306,17 @@ def add_participant(username, email, phone, password, preferences):
         db.close()
     return jsonify({"message": "Participant created successfully."}), 201
 
-
+# Add organization
 def add_organization(name_of_org, email_of_org, phone_number_of_org, password_of_org, url_of_org, description_of_org):
+    # Hash the password
     hashed_password = bcrypt.hashpw(password_of_org.encode('utf-8'), bcrypt.gensalt())
     try:
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor()
-        query = "INSERT INTO organizations (name_of_org, email_of_org, phone_number_of_org, password_of_org, url_of_org, description_of_org) VALUES (%s, %s, %s, %s, %s, %s)"
+        query = """
+            INSERT INTO organizations (name_of_org, email_of_org, phone_number_of_org, password_of_org, url_of_org, description_of_org)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """
         cursor.execute(query, (name_of_org, email_of_org, phone_number_of_org, hashed_password, url_of_org, description_of_org))
         db.commit()
         cursor.close()
@@ -288,12 +327,13 @@ def add_organization(name_of_org, email_of_org, phone_number_of_org, password_of
         db.close()
     return jsonify({"message": "Organization created successfully."}), 201
 
-# --- Sign Up Route --- (Fixed and Updated)
+# --- Signup Route ---
 @app.route('/signup', methods=['POST'])
 def signup():
     data = request.get_json()
     print(f"Signup data received: {data}")  # Log the incoming data for debugging
 
+    # Check if the signup is for an organization
     if 'isOrg' in data and data['isOrg']:
         # Organization signup
         required_fields = ['name_of_org', 'email_of_org', 'phone_number_of_org', 'password_of_org', 'url_of_org', 'description_of_org']
@@ -308,19 +348,19 @@ def signup():
             data['url_of_org'], 
             data['description_of_org']
         )
-    else:
-        # Participant signup
-        required_fields = ['username', 'email', 'phone', 'password']
-        for field in required_fields:
-            if field not in data:
-                return jsonify({"error": f"Missing field {field} for participant signup."}), 400
-        return add_participant(
-            data['username'], 
-            data['email'], 
-            data['phone'], 
-            data['password'],
-            data.get('preferences', [])
-        )
+
+    # Participant signup
+    required_fields = ['username', 'email', 'phone', 'password']
+    for field in required_fields:
+        if field not in data:
+            return jsonify({"error": f"Missing field {field} for participant signup."}), 400
+    return add_participant(
+        data['username'], 
+        data['email'], 
+        data['phone'], 
+        data['password'],
+        data.get('preferences', [])
+    )
 
 # --- Helper Functions for Login ---
 def check_participant(email, password):
