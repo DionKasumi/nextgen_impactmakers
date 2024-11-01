@@ -5,6 +5,13 @@ import bcrypt
 from datetime import datetime
 import secrets
 
+
+## Integrate the setup_db.py to run each time the app starts 
+from setup_db import create_database
+
+create_database()
+
+
 app = Flask(__name__)
 
 # Configure CORS to allow credentials (cookies) to be sent from cross-origin requests
