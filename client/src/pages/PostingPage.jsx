@@ -35,7 +35,7 @@ const Posting = () => {
         
       return { ...prev, [category]: updatedOptions };
     });
-    setErrorMessage(""); // 
+    setErrorMessage(""); // Reset error message when a selection is made
   };
 
   const handleSubmit = () => {
@@ -44,22 +44,20 @@ const Posting = () => {
     if (isFormValid) {
       console.log("Form submitted successfully!");
     } else {
-      // Set error message to prompt the user
       setErrorMessage("It looks like you missed a few questions. Please answer all of them to continue.");
     }
   };
 
   return (
-    <div className="relative text-white h-full w-full bg-gradient-to-b from-[#4F1ABE] to-[#A78DDF] to-[#ffffff] flex flex-col items-center px-6 py-8">
-      <img src="assets/Group 750.png" alt="Background" className="absolute inset-0 w-full h-full object-cover z-0 opacity-50" />
-
+    <div className="relative text-white h-full w-full bg-gradient-to-b from-[#4F1ABE] to-[#A78DDF] to-[#FFFFFF]  flex flex-col items-center px-4 md:px-6 py-8">
+      <img src="/assets/Group 750.png" alt="Background" className="absolute inset-0 w-full h-full object-cover opacity-50" />
       <div className="relative w-full max-w-md mt-24 p-8 rounded-lg z-10">
-        <h2 className="text-3xl font-bold mb-12 text-white">ORG logo ORG name</h2>
-        <p className="text-white mb-24">Please give us some info about your event!</p>
+        <h2 className="text-3xl font-bold mb-12 text-white text-center md:text-left">ORG logo ORG name</h2>
+        <p className="text-white mb-24 text-center md:text-left">Please give us some info about your event!</p>
       </div>
 
-      <div className="relative flex flex-col w-3/4 h-auto mb-12 z-10">
-        <h1 className="font-bold text-2xl mb-4">Post Opportunity through</h1>
+      <div className="relative flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24  w-full max-w-md md:w-3/4 h-auto mb-12 z-10 md:items-start">
+        <h1 className="font-bold text-2xl mb-4 text-center md:text-left">Post Opportunity through</h1>
         <CheckboxGroup
           options={["Opportunity’s URL", "Typing in the info about the opportunity"]}
           category="opportunityType"
@@ -68,8 +66,8 @@ const Posting = () => {
         />
       </div>
 
-      <div className="relative flex flex-col w-3/4 h-auto mb-12 z-10">
-        <h1 className="font-bold text-2xl mb-4">What type of activity are you posting?</h1>
+      <div className="relative flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24  w-full max-w-md md:w-3/4 h-auto mb-12 z-10 md:items-start">
+      <h1 className="font-bold text-2xl mb-4 text-center md:text-left">What type of activity are you posting?</h1>
         <CheckboxGroup
           options={["Event", "Trainings", "Volunteering", "Internships"]}
           category="opportunityType"
@@ -78,8 +76,8 @@ const Posting = () => {
         />
       </div>
 
-      <div className="relative flex flex-col w-3/4 h-auto mb-12 z-10">
-        <h1 className="font-bold text-2xl mb-4">Location</h1>
+      <div className="relative flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24  w-full max-w-md md:w-3/4 h-auto mb-12 z-10 md:items-start">
+      <h1 className="font-bold text-2xl mb-4 text-center md:text-left">Location</h1>
         <CheckboxGroup
           options={["Prishtina", "Gjilan", "Prizren"]}
           category="location"
@@ -88,8 +86,8 @@ const Posting = () => {
         />
       </div>
 
-      <div className="relative flex flex-col w-3/4 h-auto mb-12 z-10">
-        <h1 className="font-bold text-2xl mb-4">Special Features</h1>
+      <div className="relative flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24  w-full max-w-md md:w-3/4 h-auto mb-12 z-10 md:items-start">
+      <h1 className="font-bold text-2xl mb-4 text-center md:text-left">Special Features</h1>
         <CheckboxGroup
           options={["Remote", "In office", "Hybrid"]}
           category="specialFeatures"
@@ -98,8 +96,8 @@ const Posting = () => {
         />
       </div>
 
-      <div className="relative flex flex-col w-3/4 h-auto mb-12 z-10">
-        <h1 className="font-bold text-2xl mb-4">Duration</h1>
+      <div className="relative flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24  w-full max-w-md md:w-3/4 h-auto mb-12 z-10 md:items-start">
+      <h1 className="font-bold text-2xl mb-4 text-center md:text-left">Duration</h1>
         <CheckboxGroup
           options={["3 months", "4 months", "6 months"]}
           category="duration"
@@ -109,25 +107,25 @@ const Posting = () => {
       </div>
 
       {/* Description Box */}
-      <div className="relative w-3/4 text-black flex flex-col font-extrabold items-start z-10">
-        <h1>Description of the activity</h1>
-        <input
-          type="text"
+      <div className="relative text-black font-bold flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24  w-full max-w-md md:w-3/4 h-auto mb-12 z-10 md:items-start">
+      <h1>Description of the activity</h1>
+       <textarea
           placeholder=""
-          className="px-72 py-24 mt-6 border border-black rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
-        />
+          className="px-6 py-4 mt-6 font-light border border-black rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
+          rows="5" 
+          cols="50"
+  />
       </div>
 
-      <div className="relative w-3/4 mt-8 items-start z-10">
+      <div className="relative flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24  w-full max-w-md md:w-3/4 h-auto mb-12 z-10 md:items-start">
         <button
           onClick={handleSubmit}
-          className="px-12 py-4 bg-[#4F1ABE] text-white rounded-2xl"
+          className="px-12 py-4 bg-[#4F1ABE] text-white rounded-2xl w-full md:w-auto"
         >
           Post
         </button>
-        {/* Error Message */}
         {errorMessage && (
-          <p className="text-red-500 mt-2 ">{errorMessage}</p>
+          <p className="text-red-500 mt-2 text-center md:text-left">{errorMessage}</p>
         )}
       </div>
     </div>

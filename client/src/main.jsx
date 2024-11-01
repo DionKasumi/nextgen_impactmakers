@@ -20,6 +20,7 @@ import VolunteeringPage from './pages/VolunteeringPage.jsx';
 import VolunteeringDetailsPage from './pages/VolunteeringDetailsPage.jsx';
 import UserProfileORG from './pages/UserProfileORG.jsx';
 import PostingPage from './pages/PostingPage.jsx';
+import UserProfile from './pages/UserProfile.jsx';
 import UserEditProfile from './pages/UserEditProfile.jsx';
 
 const router = createBrowserRouter([
@@ -83,17 +84,22 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
         children: [
             {
-                path: '/UserProfileORG',
+                path: '/profile/org',
                 element: <UserProfileORG />,
             },
             {
-                path: '/PostingPage',
+                path: '/profile/org/post',
                 element: <PostingPage />,
             },
             {
-                path: '/UserEditProfile',
+                path: '/profile',
+                element: <UserProfile />,
+            },
+            {
+                path: '/profile/edit',
                 element: <UserEditProfile />,
             },
+            
         ],
     },
     
