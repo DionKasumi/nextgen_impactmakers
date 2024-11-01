@@ -1,6 +1,4 @@
-/* eslint-disable react/prop-types */
 import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import {
     Navigation,
@@ -12,49 +10,15 @@ import {
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import '../styles/Carousel.css'; // Ensure this is correctly imported
+import '../styles/Carousel.css';
 import 'swiper/css/effect-coverflow';
 import CarouselCard from './CarouselCard';
+import axios from 'axios';
+import SkeletonCard from './SkeletonCard';
 
-const SwiperCarousel = () => {
-    const location = useLocation();
-    let pathname = location.pathname.split('/')[1];
-    if (pathname.length == 0) {
-        pathname = 'courses';
-    }
+axios.defaults.withCredentials = true;
 
-    const [data, setData] = useState([]);
-    const [loading, setLoading] = useState(true); // Loading state
-
-    useEffect(() => {
-        // Function to fetch data from the Flask API
-        const fetchData = async (pathname) => {
-            try {
-                const response = await fetch(
-                    `http://localhost:8080/api/${pathname}`
-                );
-                if (response.ok) {
-                    const result = await response.json();
-                    // Limit to 5 items
-                    setData(result.slice(0, 5));
-                } else {
-                    console.error('Failed to fetch courses');
-                }
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            } finally {
-                setLoading(false); // Set loading to false when data is fetched
-            }
-        };
-        fetchData(pathname);
-    }, []);
-
-    if (loading) {
-        return (
-            <div className="flex justify-center items-center">Loading...</div>
-        ); // You can replace this with a spinner or skeleton screen
-    }
-
+const SwiperCarousel = ({ data = [] }) => {
     return (
         <Swiper
             modules={[Navigation, Pagination, A11y, Autoplay, EffectCoverflow]}
@@ -80,20 +44,30 @@ const SwiperCarousel = () => {
             pagination={{ clickable: true }}
             className="custom-swiper mb-24 w-full md:w-[80%]"
         >
-            {data.map((item) => (
-                <SwiperSlide key={item.id} className="custom-slide">
-                    <CarouselCard
-                        id={item.id}
-                        card_title={item.title}
-                        card_description={item.description}
-                        card_price={item.price}
-                        card_img={item.image_url}
-                        card_duration={item.duration}
-                        card_source={item.source}
-                        card_type={pathname}
-                    />
-                </SwiperSlide>
-            ))}
+            {data.length === 0
+                ? // Render 3 SkeletonCard slides when data is loading
+                  Array(5)
+                      .fill(null)
+                      .map((_, index) => (
+                          <SwiperSlide key={index} className="custom-slide">
+                              <SkeletonCard isSwiperCard={true} />
+                          </SwiperSlide>
+                      ))
+                : // Map through actual data if available
+                  data.map((item) => (
+                      <SwiperSlide key={item.id} className="custom-slide">
+                          <CarouselCard
+                              id={item.id}
+                              card_title={item.title}
+                              card_description={item.description}
+                              card_price={item.price}
+                              card_img={item.image_url}
+                              card_duration={item.duration}
+                              card_source={item.source}
+                              card_type={item.type}
+                          />
+                      </SwiperSlide>
+                  ))}
         </Swiper>
     );
 };

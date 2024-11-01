@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import SectionWrapper from '../hoc/SectionWrapper';
 import Card from '../components/Card';
 import Filter from '../components/Filter';
+import SkeletonCard from '../components/SkeletonCard';
 import axios from 'axios';
 
 // Function to fetch event data from the API
@@ -32,25 +33,25 @@ const CardsContainer = ({
                     isFilterOpen ? 'lg:grid-cols-2' : 'lg:grid-cols-3'
                 } gap-y-8 justify-items-center`}
             >
-                {events.length > 0 ? (
-                    events.map((event, index) => (
-                        <Card
-                            key={index}
-                            id={event.id}
-                            card_title={event.title}
-                            card_img={event.image_url}
-                            card_duration={event.duration}
-                            card_description={event.description}
-                            card_price={event.price}
-                            card_source={event.source}
-                            card_type="events"
-                        />
-                    ))
-                ) : (
-                    <p className="text-center text-gray-500">
-                        No events available
-                    </p>
-                )}
+                {events.length > 0
+                    ? events.map((event, index) => (
+                          <Card
+                              key={index}
+                              id={event.id}
+                              card_title={event.title}
+                              card_img={event.image_url}
+                              card_duration={event.duration}
+                              card_description={event.description}
+                              card_price={event.price}
+                              card_source={event.source}
+                              card_type="events"
+                          />
+                      ))
+                    : Array(6)
+                          .fill(null)
+                          .map((_, index) => (
+                              <SkeletonCard key={index} isSwiperCard={false} />
+                          ))}
             </div>
 
             {!allEventsLoaded && events.length > 0 ? (
