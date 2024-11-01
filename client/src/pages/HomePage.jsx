@@ -2,8 +2,74 @@ import SectionWrapper from '../hoc/SectionWrapper';
 import SwiperCarousel from '../components/SwiperCarousel';
 import { useState, useEffect, useRef } from 'react';
 import CountUp from 'react-countup';
+import axios from 'axios';
+
+axios.defaults.withCredentials = true;
 
 const FirstPart = () => {
+    const [carouselData, setCarouselData] = useState([]);
+    const checkSession = async () => {
+        try {
+            const response = await axios.get(
+                'http://localhost:8080/api/session'
+            );
+            return response.data.isLoggedIn; // Return boolean
+        } catch (error) {
+            console.error('Error checking session:', error);
+            return false;
+        }
+    };
+
+    useEffect(() => {
+        const fetchCarouselData = async () => {
+            try {
+                const loggedIn = await checkSession();
+                const endpoint = loggedIn
+                    ? `http://localhost:8080/api/user/all_data`
+                    : `http://localhost:8080/api/courses`;
+
+                const response = await axios.get(endpoint);
+
+                if (response.status === 200) {
+                    const result = response.data;
+                    let gatheredData = [];
+
+                    if (loggedIn && typeof result === 'object') {
+                        for (const category in result) {
+                            console.log(category);
+                            if (Array.isArray(result[category])) {
+                                const remainingSlots = 5 - gatheredData.length;
+
+                                // Add type property to each item and limit to remaining slots
+                                const itemsWithCategory = result[category]
+                                    .slice(0, remainingSlots)
+                                    .map((item) => ({
+                                        ...item,
+                                        type: category,
+                                    }));
+
+                                gatheredData.push(...itemsWithCategory);
+
+                                if (gatheredData.length >= 5) break; // Stop when there is 5 items
+                            }
+                        }
+                    } else if (Array.isArray(result)) {
+                        // For non-logged-in users, add default type 'course' or similar
+                        gatheredData = result
+                            .slice(0, 5)
+                            .map((item) => ({ ...item, type: 'courses' }));
+                    }
+                    setCarouselData(gatheredData);
+                } else {
+                    console.error('Failed to fetch cards');
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        fetchCarouselData();
+    }, []);
+
     return (
         <div className="w-full h-full pt-20 sm:pt-32 md:pt-40 flex flex-col justify-center items-center bg-[url('../assets/back1.png')] bg-no-repeat bg-cover">
             <div className="w-full min-h-svh items-center flex flex-col relative top-[15%] md:top-[20%] px-4 sm:px-8 lg:px-12">
@@ -27,8 +93,9 @@ const FirstPart = () => {
                         className="w-full md:w-auto mb-4 md:mb-0 md:mr-5 border border-gray-300 rounded px-8 md:px-20 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         name="select-category"
                         id="select-category"
+                        defaultValue="" // Sets default value for the select
                     >
-                        <option value="" disabled selected>
+                        <option value="" disabled>
                             Select category
                         </option>
                         <option value="1">Events</option>
@@ -44,7 +111,7 @@ const FirstPart = () => {
                     </button>
                 </div>
                 {/* Swiper Carousel */}
-                <SwiperCarousel />
+                <SwiperCarousel data={carouselData} />
             </div>
             {/* Chatbot Image */}
             <div className="fixed bottom-5 right-5 m-5">
@@ -248,6 +315,69 @@ const FourthPart = () => {
 };
 
 const FivethPart = () => {
+    const [carouselData, setCarouselData] = useState([]);
+    const checkSession = async () => {
+        try {
+            const response = await axios.get(
+                'http://localhost:8080/api/session'
+            );
+            return response.data.isLoggedIn; // Return boolean
+        } catch (error) {
+            console.error('Error checking session:', error);
+            return false;
+        }
+    };
+
+    useEffect(() => {
+        const fetchCarouselData = async () => {
+            try {
+                const loggedIn = await checkSession();
+                const endpoint = loggedIn
+                    ? `http://localhost:8080/api/user/all_data`
+                    : `http://localhost:8080/api/courses`;
+
+                const response = await axios.get(endpoint);
+
+                if (response.status === 200) {
+                    const result = response.data;
+                    let gatheredData = [];
+
+                    if (loggedIn && typeof result === 'object') {
+                        for (const category in result) {
+                            console.log(category);
+                            if (Array.isArray(result[category])) {
+                                const remainingSlots = 5 - gatheredData.length;
+
+                                // Add type property to each item and limit to remaining slots
+                                const itemsWithCategory = result[category]
+                                    .slice(0, remainingSlots)
+                                    .map((item) => ({
+                                        ...item,
+                                        type: category,
+                                    }));
+
+                                gatheredData.push(...itemsWithCategory);
+
+                                if (gatheredData.length >= 5) break; // Stop when there is 5 items
+                            }
+                        }
+                    } else if (Array.isArray(result)) {
+                        // For non-logged-in users, add default type 'course' or similar
+                        gatheredData = result
+                            .slice(0, 5)
+                            .map((item) => ({ ...item, type: 'courses' }));
+                    }
+                    setCarouselData(gatheredData);
+                } else {
+                    console.error('Failed to fetch cards');
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        fetchCarouselData();
+    }, []);
+
     return (
         <div className="w-full min-h-screen flex flex-col justify-center items-center bg-[url('../assets/group1.png')] bg-no-repeat bg-cover px-4 md:px-8 lg:px-0 py-20 md:py-32">
             <div>
@@ -258,7 +388,7 @@ const FivethPart = () => {
                     Find your next opportunity
                 </h2>
             </div>
-            <SwiperCarousel />
+            <SwiperCarousel data={carouselData} />
         </div>
     );
 };

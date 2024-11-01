@@ -12,13 +12,19 @@ const CarouselCard = ({
     card_description,
     card_price,
     card_img,
+    card_type,
 }) => {
     const swiperSlide = useSwiperSlide();
+
     const [heart, setHeart] = useState(false);
+
     const navigate = useNavigate();
 
     const handleClick = () => {
-        navigate(`/courses/${id}`);
+        if (card_type == undefined) {
+            return;
+        }
+        navigate(`/${card_type}/${id}`);
     };
 
     const handleHeartClick = (event) => {
@@ -32,7 +38,7 @@ const CarouselCard = ({
                 !swiperSlide.isActive
                     ? 'scale-75 hover:scale-[0.77]'
                     : 'scale-100 hover:scale-[102%]'
-            } transition-all box-border select-none`}
+            } transition-all box-border select-none shadow-lg`}
             onClick={handleClick}
         >
             <div className="w-full h-4/6 bg-gray-400 flex flex-col justify-center items-center rounded-[8px] relative">
@@ -43,7 +49,9 @@ const CarouselCard = ({
                         style={{
                             backgroundImage: `url(${card_img})`,
                         }}
-                    ></div>
+                    >
+                        <div className="w-full h-full bg-gradient-to-t from-[#4F1ABE] rounded-md select-none"></div>
+                    </div>
                 ) : (
                     <img
                         src="../assets/no_image.svg"

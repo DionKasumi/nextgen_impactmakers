@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import SectionWrapper from '../hoc/SectionWrapper';
 import Card from '../components/Card';
 import Filter from '../components/Filter';
+import SkeletonCard from '../components/SkeletonCard';
 import axios from 'axios';
 
 // Function to fetch course data from the API
@@ -32,25 +33,25 @@ const CardsContainer = ({
                     isFilterOpen ? 'lg:grid-cols-2' : 'lg:grid-cols-3'
                 } gap-y-8 justify-items-center`}
             >
-                {courses.length > 0 ? (
-                    courses.map((course, index) => (
-                        <Card
-                            key={index}
-                            id={course.id}
-                            card_title={course.title}
-                            card_img={course.image_url}
-                            card_duration={course.duration}
-                            card_description={course.description}
-                            card_price={course.price}
-                            card_source={course.source}
-                            card_type="courses"
-                        />
-                    ))
-                ) : (
-                    <p className="text-center text-gray-500">
-                        No courses available
-                    </p>
-                )}
+                {courses.length > 0
+                    ? courses.map((course, index) => (
+                          <Card
+                              key={index}
+                              id={course.id}
+                              card_title={course.title}
+                              card_img={course.image_url}
+                              card_duration={course.duration}
+                              card_description={course.description}
+                              card_price={course.price}
+                              card_source={course.source}
+                              card_type="courses"
+                          />
+                      ))
+                    : Array(6)
+                          .fill(null)
+                          .map((_, index) => (
+                              <SkeletonCard key={index} isSwiperCard={false} />
+                          ))}
             </div>
 
             {!allCoursesLoaded && courses.length > 0 ? (

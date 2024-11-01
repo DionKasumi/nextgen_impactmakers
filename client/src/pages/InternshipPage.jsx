@@ -3,6 +3,7 @@ import SectionWrapper from '../hoc/SectionWrapper';
 import Card from '../components/Card';
 import Filter from '../components/Filter';
 import axios from 'axios';
+import SkeletonCard from '../components/SkeletonCard';
 
 // Function to fetch internships data from the API
 const fetchInternships = async () => {
@@ -34,25 +35,25 @@ const CardsContainer = ({
                     isFilterOpen ? 'lg:grid-cols-2' : 'lg:grid-cols-3'
                 } gap-y-8 justify-items-center`}
             >
-                {internships.length > 0 ? (
-                    internships.map((internship, index) => (
-                        <Card
-                            key={index}
-                            id={internship.id}
-                            card_title={internship.title}
-                            card_img={internship.image_url}
-                            card_duration={internship.duration}
-                            card_description={internship.description}
-                            card_price={internship.price}
-                            card_source={internship.source}
-                            card_type="internships"
-                        />
-                    ))
-                ) : (
-                    <p className="text-center text-gray-500">
-                        No internships available
-                    </p>
-                )}
+                {internships.length > 0
+                    ? internships.map((internship, index) => (
+                          <Card
+                              key={index}
+                              id={internship.id}
+                              card_title={internship.title}
+                              card_img={internship.image_url}
+                              card_duration={internship.duration}
+                              card_description={internship.description}
+                              card_price={internship.price}
+                              card_source={internship.source}
+                              card_type="internships"
+                          />
+                      ))
+                    : Array(6)
+                          .fill(null)
+                          .map((_, index) => (
+                              <SkeletonCard key={index} isSwiperCard={false} />
+                          ))}
             </div>
 
             {!allInternshipsLoaded && internships.length > 0 ? (

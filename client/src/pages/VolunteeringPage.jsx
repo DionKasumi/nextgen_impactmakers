@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import SectionWrapper from '../hoc/SectionWrapper';
 import Card from '../components/Card';
 import Filter from '../components/Filter';
+import SkeletonCard from '../components/SkeletonCard';
 import axios from 'axios';
 
 // Function to fetch course data from the API
@@ -34,25 +35,25 @@ const CardsContainer = ({
                     isFilterOpen ? 'lg:grid-cols-2' : 'lg:grid-cols-3'
                 } gap-y-8 justify-items-center`}
             >
-                {volunteerings.length > 0 ? (
-                    volunteerings.map((volunteer, index) => (
-                        <Card
-                            key={index}
-                            id={volunteer.id}
-                            card_title={volunteer.title}
-                            card_img={volunteer.image_url}
-                            card_duration={volunteer.duration}
-                            card_description={volunteer.description}
-                            card_price={volunteer.price}
-                            card_source={volunteer.source}
-                            card_type="volunteering"
-                        />
-                    ))
-                ) : (
-                    <p className="text-center text-gray-500">
-                        No volunteerings available
-                    </p>
-                )}
+                {volunteerings.length > 0
+                    ? volunteerings.map((volunteer, index) => (
+                          <Card
+                              key={index}
+                              id={volunteer.id}
+                              card_title={volunteer.title}
+                              card_img={volunteer.image_url}
+                              card_duration={volunteer.duration}
+                              card_description={volunteer.description}
+                              card_price={volunteer.price}
+                              card_source={volunteer.source}
+                              card_type="volunteering"
+                          />
+                      ))
+                    : Array(6)
+                          .fill(null)
+                          .map((_, index) => (
+                              <SkeletonCard key={index} isSwiperCard={false} />
+                          ))}
             </div>
 
             {!allVolunteeringsLoaded && volunteerings.length > 0 ? (

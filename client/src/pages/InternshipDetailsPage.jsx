@@ -72,6 +72,35 @@ const InternshipDetailsPage = () => {
         }
     };
 
+    const [carouselData, setCarouselData] = useState([]);
+
+    useEffect(() => {
+        const fetchCarouselData = async () => {
+            try {
+                const endpoint = `http://localhost:8080/api/internships`;
+
+                const response = await axios.get(endpoint);
+
+                if (response.status === 200) {
+                    const result = response.data;
+                    let gatheredData = [];
+
+                    if (typeof result === 'object') {
+                        gatheredData = result
+                            .slice(0, 5)
+                            .map((item) => ({ ...item, type: 'internships' }));
+                    }
+                    setCarouselData(gatheredData);
+                } else {
+                    console.error('Failed to fetch cards');
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        fetchCarouselData();
+    }, []);
+
     return (
         <>
             <div className="w-full h-full flex flex-col justify-between items-center">
@@ -211,7 +240,7 @@ const InternshipDetailsPage = () => {
                         </div>
                         <div className="w-full h-full">
                             {/* Carousel */}
-                            <SwiperCarousel />
+                            <SwiperCarousel data={carouselData} />
                         </div>
                         <a
                             href="/Internships"
