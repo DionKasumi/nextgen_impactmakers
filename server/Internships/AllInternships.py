@@ -3,7 +3,7 @@ import MySQLdb
 import time
 from datetime import datetime
 
-
+# Database connection parameters
 db_params = {
     'user': 'root',
     'passwd': '1234',
@@ -12,21 +12,167 @@ db_params = {
     'db': 'pye_data'
 }
 
+def assign_label(title):
+    title_lower = title.lower()
+
+    # Information Technology
+    if any(keyword in title_lower for keyword in [
+        'teknologji', 'informative', 'it', 'development', 'developer', 'programues', 'software', 'networking', 
+        'data', 'analitika', 'informatikë', 'programim', 'programming', 'it support', 'administrator', 
+        'qa', 'quality assurance', 'system engineer', 'help desk', 'sistemues', 'it consultant', 
+        'card personalization', 'database', 'zhvillues softueri','dizajn','dizajner','grafik','grafikë','web','web developer','web designer','graphic designer','graphic design','ui','ux','ui/ux','ui/ux designer'
+    ]):
+        return 'Information Technology'
+    
+    # Human Resources
+    elif any(keyword in title_lower for keyword in [
+        'burime njerëzore', 'hr', 'recruit', 'rekrutues', 'staff', 'punësimi', 'human resources', 
+        'administrator', 'hr specialist', 'training', 'customer excellence specialist', 'customer support', 
+        'customer care', 'zyrtar burime njerëzore', 'koordinator', 'asistent administrativ', 
+        'specialist i burimeve njerëzore dhe administratës','burimeve','njerëzore'
+    ]):
+        return 'Human Resources'
+    
+    # Engineering and Construction
+    elif any(keyword in title_lower for keyword in [
+        'inxhinier', 'ndërtimtari', 'engineering', 'construction', 'architect', 'civil', 'ndërtim', 
+        'mechanical engineer', 'automekanik', 'axhustator', 'ashensor', 'polirues mermeri', 'electrician', 
+        'technician', 'elektroinstalues', 'prodhues', 'kuzhinier', 'saldues', 'teknik', 'montues', 'mjeshtër'
+    ]):
+        return 'Engineering and Construction'
+    
+    # Healthcare
+    elif any(keyword in title_lower for keyword in [
+        'shëndetësi', 'mjek', 'doktor', 'nurse', 'vet', 'health', 'veterinar', 'psikolog', 
+        'dentist', 'infermiere', 'pharmacy', 'edukat', 'medic', 'kujdes për fëmijë', 'fizioterapeut', 
+        'laborant', 'farmaci', 'teknike e farmacisë'
+    ]):
+        return 'Healthcare'
+    
+    # Transport
+    elif any(keyword in title_lower for keyword in [
+        'transport', 'logjistikë', 'logistics', 'shipping', 'delivery', 'driver', 'shofer', 
+        'transportues', 'motorist', 'logistics unit', 'fleet'
+    ]):
+        return 'Transport'
+    
+    # Logistics
+    elif any(keyword in title_lower for keyword in [
+        'logjistikë', 'depo', 'magazinë', 'warehouse', 'supply', 'distribution', 'depoist', 
+        'picker', 'assembler', 'inventory'
+    ]):
+        return 'Logistics'
+    
+    # Craft and Trade
+    elif any(keyword in title_lower for keyword in [
+        'zeje', 'zanat', 'craft', 'artisan', 'artizan', 'punëtor', 'handyman', 'electrician', 
+        'plumber', 'repair', 'shankist', 'patronist', 'kamarier', 'banakier', 'polirues', 
+        'montim', 'rrobaqepëse', 'berber', 'hairdresser', 'frizer', 'parukier', 'barber', 
+        'stitcher', 'operator', 'sektorist', 'avancues', 'gaferr', 'bariste', 'kuzhinier','mirëmbajtëse','pastruese','pastrues','arkëtare','arkatar/e','monter','skarist'
+    ]):
+        return 'Craft and Trade'
+    
+    # Legal
+    elif any(keyword in title_lower for keyword in [
+        'juridik', 'ligj', 'avokat', 'law', 'legal', 'attorney', 'paralegal', 'notary', 
+        'specialist ligjor', 'compliance'
+    ]):
+        return 'Legal'
+    
+    # Media
+    elif any(keyword in title_lower for keyword in [
+        'media', 'gazetar', 'journalism', 'press', 'news', 'broadcast', 'reporter', 'kameraman', 
+        'fotograf', 'videographer', 'tik tok', 'content creator'
+    ]):
+        return 'Media'
+    
+    # Management
+    elif any(keyword in title_lower for keyword in [
+        'menaxhment', 'menaxher', 'manager', 'management', 'executive', 'coordinator', 
+        'team lead', 'supervisor', 'operational assistant', 'patronist', 'service center lead', 
+        'viši menadžer za rizike', 'zyrtar në qendrën e thirrjeve'
+    ]):
+        return 'Management'
+    
+    # Hospitality
+    elif any(keyword in title_lower for keyword in [
+        'hotel', 'hotelieri', 'hospitality', 'recepsionist', 'reception', 'kamarier', 'waiter', 
+        'banakier', 'restaurant', 'barista', 'housekeeping', 'nanny', 'cook', 'chef', 
+        'pastruese', 'bariste', 'kfc', 'kuzhinier'
+    ]):
+        return 'Hospitality'
+    
+    # Research and Development
+    elif any(keyword in title_lower for keyword in [
+        'hulumtim', 'zhvillim', 'research', 'development', 'analizë', 'analysis', 'researcher', 
+        'advisor', 'market insights', 'consultant', 'project development'
+    ]):
+        return 'Research and Development'
+    
+    # Maintenance and Security
+    elif any(keyword in title_lower for keyword in [
+        'mirëmbajtje', 'sigurim', 'maintenance', 'security', 'safety', 'janitor', 'cleaning', 
+        'security guard', 'guard', 'mechanic', 'operator', 'technical staff', 'kontrakt', 
+        'mjeshtër'
+    ]):
+        return 'Maintenance and Security'
+    
+    # Electronics and Energy
+    elif any(keyword in title_lower for keyword in [
+        'elektronikë', 'energjetikë', 'elektricist', 'electronics', 'energy', 'electric', 
+        'technician', 'installer', 'power', 'engineering'
+    ]):
+        return 'Electronics and Energy'
+    
+    # Manufacturing and Processing
+    elif any(keyword in title_lower for keyword in [
+        'prodhimtari', 'përpunim', 'manufacturing', 'production', 'assembly', 'assembler', 
+        'fabrication', 'production line', 'processing'
+    ]):
+        return 'Manufacturing and Processing'
+    
+    # Education and Training
+    elif any(keyword in title_lower for keyword in [
+        'edukatore', 'arsimi', 'teacher', 'professor', 'mësues', 'mësimdhënës', 'education', 
+        'trainer', 'trajnimi', 'learning', 'coach', 'instructor'
+    ]):
+        return 'Education and Training'
+    
+    # Finance and Accounting
+    elif any(keyword in title_lower for keyword in [
+        'finance', 'accounting', 'kontabilist', 'financier', 'financial', 'accountant', 'auditor', 
+        'treasury', 'billing', 'finance officer', 'invoice', 'zyrtar i financave', 
+        'asistent administrativ në financa', 'faturist','financa'
+    ]):
+        return 'Finance and Accounting'
+    
+    # Marketing and Sales
+    elif any(keyword in title_lower for keyword in [
+        'marketing', 'shitje', 'sales', 'advertising', 'promoter', 'brand', 'public relations', 
+        'pr', 'agent', 'marketing specialist', 'market', 'customer service', 'merchandiser', 
+        'agjent doganor', 'agjent'
+    ]):
+        return 'Marketing and Sales'
+    
+    # Fallback
+    else:
+        return 'Other'
+
 # Function to save job data to the database
 def save_job_to_db(job):
     try:
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor()
+        label = assign_label(job['title'])
 
-        
         check_query = "SELECT COUNT(*) FROM all_internships WHERE title = %s AND source = %s"
         cursor.execute(check_query, (job['title'], job['source']))
         exists = cursor.fetchone()[0] > 0
 
         if not exists:
             insert_query = """
-            INSERT INTO all_internships (source, title, description, posted_date, salary, duration, location, image_url, email, phone_number, office_address, company_logo)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO all_internships (source, title, description, posted_date, salary, duration, location, image_url, email, phone_number, office_address, company_logo, apply_link, label)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s)
             """
             cursor.execute(insert_query, (
                 job['source'],
@@ -37,13 +183,15 @@ def save_job_to_db(job):
                 job['duration'],
                 job['location'],
                 job['image_url'],
-                job.get('email'),  # Set default value for email
-                job.get('phone_number'),  # Set default value for phone number
-                job.get('office_address'),  # Set default value for office address
-                job.get('company_logo')  # Set default value for company logo
+                job.get('email'),
+                job.get('phone_number'),
+                job.get('office_address'),
+                job.get('company_logo'),
+                job.get('apply_link'),
+                label
             ))
             db.commit()
-            print(f"Inserted new job: {job['title']} at {job['company_name']}")
+            print(f"Inserted new job: {job['title']} with label {label}")
         else:
             print(f"Job already exists: {job['title']} at {job['company_name']}")
 
@@ -81,6 +229,7 @@ def scrape_kosova_job():
                     try:
                         job_box = job_boxes.nth(index)
                         title_element = job_box.locator('.jobListTitle')
+                        apply_link = job_box.locator('a').get_attribute('href')  # Ensure you get the link correctly
                         location_element = job_box.locator('.jobListCity')
                         posted_date_element = title_element.get_attribute('date')
                         image_element = job_box.locator('.jobListImage')
@@ -93,20 +242,20 @@ def scrape_kosova_job():
 
                         posted_date_db = datetime.strptime(posted_date, '%Y-%m-%d %H:%M:%S').date() if posted_date != 'N/A' else None
 
-                        
                         job_data = {
                             'source': "Kosova Job",
                             'title': title,
                             'company_name': company_name,
-                            'description': 'N/A',  
+                            'description': 'N/A',
                             'posted_date': posted_date_db,
                             'salary': 'N/A',
                             'duration': 'N/A',
                             'location': location,
                             'image_url': image_url,
-                            'email': 'info@kosovajob.com',  
-                            'phone_number': '+383 45 111 414',  
-                            'office_address': 'Rr. Perandori Justinian Nr. 62 \n Prishtinë, Kosovë 10000', 
+                            'apply_link': apply_link,  # Added apply_link here
+                            'email': 'info@kosovajob.com',
+                            'phone_number': '+383 45 111 414',
+                            'office_address': 'Rr. Perandori Justinian Nr. 62 \n Prishtinë, Kosovë 10000',
                             'company_logo': 'https://media.licdn.com/dms/image/v2/C510BAQEag0LO89qZXg/company-logo_200_200/company-logo_200_200/0/1631397947063?e=1737590400&v=beta&t=kgGYn5GtFXkacaKXrJRAmNk-dZFbHd3SSjP8IGi0pvo'
                         }
                         save_job_to_db(job_data)
@@ -154,6 +303,14 @@ def scrape_kosovo_generation():
                         location = location_element.inner_text() if location_element.count() > 0 else 'N/A'
                         image_url = image_element.get_attribute('src') if image_element.count() > 0 else 'N/A'
 
+                         # Click the job card to open the detail page
+                        job_card.click()
+                        page.wait_for_load_state('networkidle')
+
+                        # Get the current URL for the job details
+                        apply_link = page.url
+                        print(f"Found apply link: {apply_link}")
+
                        
                         job_data = {
                             'source': "Kosovo Generation Unlimited",
@@ -168,9 +325,15 @@ def scrape_kosovo_generation():
                             'email': 'info@kosovogenu.com',  
                             'phone_number': '+383 49 236 543',  
                             'office_address': 'Tringe Ismajli Nr. 23 \n Prishtinë, Kosovë 10000', 
-                            'company_logo': 'https://kosovogenu.com/images/Frame.png'
+                            'company_logo': 'https://kosovogenu.com/images/Frame.png',
+                            'apply_link' : apply_link
                         }
                         save_job_to_db(job_data)
+
+                        # Go back to the job list page
+                        page.go_back()
+                        page.wait_for_load_state('networkidle')
+
                     except Exception as e:
                         print(f"Error handling internship element: {e}")
 
@@ -186,6 +349,7 @@ def scrape_kosovo_generation():
         finally:
             browser.close()
 
+
 # Function for scraper 3 (Superpuna RKS)
 def scrape_superpuna_rks():
     with sync_playwright() as p:
@@ -196,7 +360,7 @@ def scrape_superpuna_rks():
         try:
             previous_job_count = 0
             while True:
-                job_boxes_selector = '//div[contains(@class, "px-7 py-6 border border-gray-200")]'
+                job_boxes_selector = '//a[contains(@class, "mb-10 block")]'  # Updated selector to target the <a> element
                 page.wait_for_selector(job_boxes_selector, timeout=20000)
                 job_boxes = page.locator(job_boxes_selector)
                 job_box_count = job_boxes.count()
@@ -225,27 +389,33 @@ def scrape_superpuna_rks():
 
                         posted_date_db = datetime.strptime(posted_date, '%b %d, %Y').date() if posted_date != 'N/A' else None
 
-                    
+                        # Get the apply link directly from the <a> tag
+                        apply_link = job_box.get_attribute('href')  # Extracting the href attribute
+                        print(f"Found apply link: {apply_link}")
+
                         job_data = {
                             'source': "Superpuna",
                             'title': title,
                             'company_name': company_name,
-                            'description': 'N/A',  
+                            'description': 'N/A',
                             'posted_date': posted_date_db,
                             'salary': salary,
                             'duration': 'N/A',
                             'location': location,
                             'image_url': 'https://superpuna.rks-gov.net/images/MFPT-logo.svg',
-                            'email': 'kontakt.superpuna@rks-gov.net',  
-                            'phone_number': 'N/A',  
-                            'office_address': 'Ndërtesa e Qeverisë, Sheshi Nëna Terezë \n Prishtinë, Republika e Kosovës', 
-                            'company_logo': 'https://media.licdn.com/dms/image/v2/C4D0BAQFtUr7p40eSIQ/company-logo_200_200/company-logo_200_200/0/1675417948635/superpuna_logo?e=1737590400&v=beta&t=KF2U6tR5UDgshxeWXZGEn95ZIIZ95QdvA8GV0cFL8Uo'
+                            'email': 'kontakt.superpuna@rks-gov.net',
+                            'phone_number': 'N/A',
+                            'office_address': 'Ndërtesa e Qeverisë, Sheshi Nëna Terezë \n Prishtinë, Republika e Kosovës',
+                            'company_logo': 'https://media.licdn.com/dms/image/v2/C4D0BAQFtUr7p40eSIQ/company-logo_200_200/company-logo_200_200/0/1675417948635/superpuna_logo?e=1737590400&v=beta&t=KF2U6tR5UDgshxeWXZGEn95ZIIZ95QdvA8GV0cFL8Uo',
+                            'apply_link': apply_link
                         }
 
                         save_job_to_db(job_data)
 
                     except Exception as e:
-                        print(f"Error handling job box element: {e}")
+                        print(f"Error handling job box element at index {index}: {e}")
+                        # Wait for the job boxes to reload before retrying
+                        page.wait_for_selector(job_boxes_selector, timeout=20000)
 
                 previous_job_count = job_box_count
 
@@ -253,12 +423,8 @@ def scrape_superpuna_rks():
                 if next_button.count() > 0 and next_button.is_enabled():
                     print("Clicking 'Shiko më shumë' button to load more jobs.")
                     next_button.click()
-
                     print("Waiting for 10 seconds for new jobs to load...")
-                    page.wait_for_timeout(20000)
-
-                    page.wait_for_load_state('networkidle')
-
+                    page.wait_for_timeout(10000)
                 else:
                     print("No more pages to load.")
                     break
@@ -268,7 +434,7 @@ def scrape_superpuna_rks():
         finally:
             browser.close()
 
-
+# Function to run all scrapers
 def run_all_scrapers():
     print("Starting Kosova Job scraper...")
     scrape_kosova_job()
@@ -287,3 +453,4 @@ while True:
     run_all_scrapers()
     print("All scrapers completed. Sleeping for 30 minutes...")
     time.sleep(30 * 60)
+

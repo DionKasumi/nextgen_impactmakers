@@ -1,54 +1,124 @@
 import SectionWrapper from '../hoc/SectionWrapper';
 import SwiperCarousel from '../components/SwiperCarousel';
-import { useState, useEffect, useRef } from 'react'; 
+import { useState, useEffect, useRef } from 'react';
 import CountUp from 'react-countup';
+import axios from 'axios';
+
+axios.defaults.withCredentials = true;
 
 const FirstPart = () => {
+    const [carouselData, setCarouselData] = useState([]);
+    const checkSession = async () => {
+        try {
+            const response = await axios.get(
+                'http://localhost:8080/api/session'
+            );
+            return response.data.isLoggedIn; // Return boolean
+        } catch (error) {
+            console.error('Error checking session:', error);
+            return false;
+        }
+    };
+
+    useEffect(() => {
+        const fetchCarouselData = async () => {
+            try {
+                const loggedIn = await checkSession();
+                const endpoint = loggedIn
+                    ? `http://localhost:8080/api/user/all_data`
+                    : `http://localhost:8080/api/courses`;
+
+                const response = await axios.get(endpoint);
+
+                if (response.status === 200) {
+                    const result = response.data;
+                    let gatheredData = [];
+
+                    if (loggedIn && typeof result === 'object') {
+                        for (const category in result) {
+                            console.log(category);
+                            if (Array.isArray(result[category])) {
+                                const remainingSlots = 5 - gatheredData.length;
+
+                                // Add type property to each item and limit to remaining slots
+                                const itemsWithCategory = result[category]
+                                    .slice(0, remainingSlots)
+                                    .map((item) => ({
+                                        ...item,
+                                        type: category,
+                                    }));
+
+                                gatheredData.push(...itemsWithCategory);
+
+                                if (gatheredData.length >= 5) break; // Stop when there is 5 items
+                            }
+                        }
+                    } else if (Array.isArray(result)) {
+                        // For non-logged-in users, add default type 'course' or similar
+                        gatheredData = result
+                            .slice(0, 5)
+                            .map((item) => ({ ...item, type: 'courses' }));
+                    }
+                    setCarouselData(gatheredData);
+                } else {
+                    console.error('Failed to fetch cards');
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        fetchCarouselData();
+    }, []);
+
     return (
-        <div className="w-full h-screen flex flex-col justify-center items-center bg-[url('../assets/back1.png')] ">
-            
-            <div className="w-full min-h-svh items-center flex flex-col relative top-[20%] mb-20 ">
-                <div className="flex flex-row ">
-                <img
-                src="../assets/Group 703.png"
-                alt="Decorative Image"
-                className="w-25 h-20 mb-10 object-cover opacity-100" 
-            />
-                    <h1 className="text-4xl text-white mb-8 ml-24 mr-40 font-bold  ">
-                        Opportunities In One!
+        <div className="w-full h-full pt-20 sm:pt-32 md:pt-40 flex flex-col justify-center items-center bg-[url('../assets/back1.png')] bg-no-repeat bg-cover">
+            <div className="w-full min-h-svh items-center flex flex-col relative top-[15%] md:top-[20%] px-4 sm:px-8 lg:px-12">
+                <div className="flex flex-col md:flex-row items-center md:justify-center space-x-4 md:space-x-8">
+                    {/* Image Container */}
+                    <div className="flex-shrink-0">
+                        <img
+                            src="../assets/Group 703.png"
+                            alt="Decorative Image"
+                            className="w-25 h-20 mb-4 mr-24 md:mb-10 md:w-25 md:h-20 object-cover opacity-100"
+                        />
+                    </div>
+                    {/* Title */}
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl text-white mb-6 pr-10 md:mb-8 font-bold text-center md:text-left whitespace-nowrap">
+                        Opportunities in One!
                     </h1>
                 </div>
-                <div className="mb-20">
+                {/* Dropdown and Button */}
+                <div className="mb-12 md:mb-20 flex flex-col md:flex-row items-center justify-center">
                     <select
-                        className="mr-5 border border-gray-300 rounded px-20 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full md:w-auto mb-4 md:mb-0 md:mr-5 border border-gray-300 rounded px-8 md:px-20 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         name="select-category"
                         id="select-category"
+                        defaultValue="" // Sets default value for the select
                     >
-                        <option value="" disabled selected>
+                        <option value="" disabled>
                             Select category
                         </option>
-                        <option value="1">val 1</option>
-                        <option value="2">val 2</option>
-                        <option value="3">val 3</option>
-                        <option value="4">val 4</option>
-                        <option value="5">val 5</option>
+                        <option value="1">Events</option>
+                        <option value="2">Internships</option>
+                        <option value="3">Volunteering</option>
+                        <option value="4">Trainings</option>
                     </select>
                     <button
                         type="submit"
-                        class="py-2 px-20 bg-[#44FFD1] text-black font-semibold  rounded-10px"
+                        className="w-full md:w-auto py-2 px-10 md:px-20 bg-[#44FFD1] text-black font-semibold rounded"
                     >
                         Search
                     </button>
-
                 </div>
-                <SwiperCarousel />
-                
+                {/* Swiper Carousel */}
+                <SwiperCarousel data={carouselData} />
             </div>
-            <div className="absolute bottom-0 right-0 m-5">
+            {/* Chatbot Image */}
+            <div className="fixed bottom-5 right-5 m-5">
                 <img
-                    src="../assets/image 1.png" 
+                    src="../assets/image 1.png"
                     alt="chatbot"
-                    className="w-25 h-25 object-cover "
+                    className="w-16 h-16 sm:w-20 sm:h-20 lg:w-25 lg:h-25 object-cover"
                 />
             </div>
         </div>
@@ -57,14 +127,15 @@ const FirstPart = () => {
 
 const SecondPart = () => {
     return (
-        <div className="bg-[#4F1ABE] text-white py-32 min-h-[500px] w-full relative overflow-hidden">
-            <div className="container mx-auto text-center">
-                <h2 className="text-[48px] font-bold mb-16">About PYE</h2>
-
-
-
-                <p className="text-[18px] max-w-lg mx-auto">
-                A platform aimedlimed at providing a trustful source of all Events, trainings, interships, and Volunteering opportunities in Kosova
+        <div className="bg-[#4F1ABE] text-white py-12 sm:py-16 md:py-24 lg:py-32 min-h-[300px] md:min-h-[500px] w-full">
+            <div className="container mx-auto text-center px-4 sm:px-8 lg:px-0">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[48px] font-bold mb-4 sm:mb-6 lg:mb-16">
+                    About PYE
+                </h2>
+                <p className="text-sm sm:text-base md:text-lg max-w-md sm:max-w-lg lg:max-w-xl mx-auto leading-relaxed">
+                    A Platform Aimedlimed At Providing A Trustful Source Of All
+                    Events, Trainings, Interships And Volunteering Opportunities
+                    In Kosova
                 </p>
             </div>
         </div>
@@ -73,88 +144,91 @@ const SecondPart = () => {
 
 const ThirdPart = () => {
     return (
-        <div className="relative w-full h-screen ">
+        <div className="relative w-full h-auto py-10">
             <img
                 src="../assets/image 4.png"
                 alt="Background Decorative Image"
-                className="absolute inset-0 w-full h-full object-cover opacity-50" 
+                className="absolute inset-0 w-full h-full object-cover opacity-50"
             />
 
-            <div className="relative flex flex-col items-center justify-center h-full bg-white bg-opacity-0 py-16">
-                <h2 className="text-center text-4xl font-bold mb-16">
+            <div className="relative flex flex-col items-center justify-center h-full bg-white bg-opacity-0 py-16 px-4 sm:px-8">
+                <h2 className="text-center text-2xl sm:text-3xl md:text-4xl font-bold mb-8 sm:mb-12 md:mb-16">
                     Our Services
                 </h2>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl mx-auto">
-    
-                <a href="/internships"> 
-                <div className="relative flex flex-col items-center group">
-                    <img
-                        src="../assets/Group 769.png" // Default image
-                        alt="internships"
-                        className="w-[400px] h-[350px] -mt-0 object-cover rounded-lg" 
-                    />
-                    <img
-                        src="../assets/image 9.png" // Hover image
-                        alt="internships Hover"
-                        className="absolute top-0 left-0 w-[400px] h-[360px] -mt-1  rounded-xl object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300" // Shown on hover
-                    />
-                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 sm:gap-8 md:gap-12 max-w-6xl mx-auto">
+                    {/* Internships Card */}
+                    <a href="/internships" className="group">
+                        <div className="relative flex flex-col items-center">
+                            <img
+                                src="../assets/Group 769.png"
+                                alt="internships"
+                                className="w-full h-40 sm:h-52 md:h-64 lg:h-72 object-cover rounded-lg transition-transform duration-300 ease-in-out"
+                            />
+                            <img
+                                src="../assets/image 9.png"
+                                alt="internships Hover"
+                                className="absolute top-0 left-0 w-full h-40 sm:h-52 md:h-64 lg:h-72 rounded-lg object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                            />
+                        </div>
                     </a>
 
-                <a href="/trainings"> 
-                    <div className="relative flex flex-col items-center group">
-                        <img
-                        src="../assets/Group 770.png" // Default image
-                        alt="trainings"
-                        className="w-[400px] h-[350px] mb-2 object-cover rounded-lg "
-                        />
-                        <img
-                        src="../assets/image 9.png" // Hover image
-                        alt="trainings Hover"
-                        className="absolute top-0 left-0 w-[400px] h-[360px] -mt-1 object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300" // Shown on hover
-                        />
-                    </div>
-                </a>
-                <a href="/volunteering"> 
-                <div className="relative flex flex-col items-center group">
-                    <img
-                        src="../assets/Group 771.png" // Default image
-                        alt="volunteering"
-                        className="w-[400px] h-[350px] mb-2 object-cover rounded-lg " 
-                    />
-                    <img
-                        src="../assets/image 9.png" // Hover image
-                        alt="volunteering Hover"
-                        className="absolute w-[400px] h-[360px] -mt-1  object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300" // Shown on hover
-                    />
-                </div>
-                </a>
+                    {/* Trainings Card */}
+                    <a href="/trainings" className="group">
+                        <div className="relative flex flex-col items-center">
+                            <img
+                                src="../assets/Group 770.png"
+                                alt="trainings"
+                                className="w-full h-40 sm:h-52 md:h-64 lg:h-72 object-cover rounded-lg transition-transform duration-300 ease-in-out"
+                            />
+                            <img
+                                src="../assets/image 9.png"
+                                alt="trainings Hover"
+                                className="absolute top-0 left-0 w-full h-40 sm:h-52 md:h-64 lg:h-72 rounded-lg object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                            />
+                        </div>
+                    </a>
 
-                <a href="/events"> 
-                <div className="relative flex flex-col items-center group">
-                    <img
-                        src="../assets/Group 772.png" // Default image
-                        alt="events"
-                        className="w-[400px] h-[350px] mb-2 object-cover rounded-lg" 
-                    />
-                    <img
-                        src="../assets/image 9.png" // Hover image
-                        alt="events Hover"
-                        className="absolute top-0 left-0 w-[400px] h-[360px] -mt-1 object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300" // Shown on hover
-                    />
-                </div>
-                </a>
+                    {/* Volunteering Card */}
+                    <a href="/volunteering" className="group">
+                        <div className="relative flex flex-col items-center">
+                            <img
+                                src="../assets/Group 771.png"
+                                alt="volunteering"
+                                className="w-full h-40 sm:h-52 md:h-64 lg:h-72 object-cover rounded-lg transition-transform duration-300 ease-in-out"
+                            />
+                            <img
+                                src="../assets/image 9.png"
+                                alt="volunteering Hover"
+                                className="absolute top-0 left-0 w-full h-40 sm:h-52 md:h-64 lg:h-72 rounded-lg object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                            />
+                        </div>
+                    </a>
+
+                    {/* Events Card */}
+                    <a href="/events" className="group">
+                        <div className="relative flex flex-col items-center">
+                            <img
+                                src="../assets/Group 772.png"
+                                alt="events"
+                                className="w-full h-40 sm:h-52 md:h-64 lg:h-72 object-cover rounded-lg transition-transform duration-300 ease-in-out"
+                            />
+                            <img
+                                src="../assets/image 9.png"
+                                alt="events Hover"
+                                className="absolute top-0 left-0 w-full h-40 sm:h-52 md:h-64 lg:h-72 rounded-lg object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                            />
+                        </div>
+                    </a>
                 </div>
             </div>
         </div>
     );
 };
 
-
 const FourthPart = () => {
     const [startCounter, setStartCounter] = useState(false);
-    const counterRef = useRef(null); 
+    const counterRef = useRef(null);
 
     useEffect(() => {
         const observer = new IntersectionObserver(
@@ -162,10 +236,10 @@ const FourthPart = () => {
                 if (entries[0].isIntersecting) {
                     setStartCounter(true); // Start counter when in view
                 } else {
-                    setStartCounter(false); 
+                    setStartCounter(false);
                 }
             },
-            { threshold: 0.5 } 
+            { threshold: 0.5 }
         );
 
         if (counterRef.current) {
@@ -180,50 +254,60 @@ const FourthPart = () => {
     }, []);
 
     return (
-        <div ref={counterRef} className="relative w-full h-full">
+        <div ref={counterRef} className="relative w-full h-auto py-20">
             <img
                 src="../assets/back2.png"
                 alt="Background Decorative Image"
-                className="absolute inset-0 w-full h-full object-cover opacity-90 py-30"
+                className="absolute inset-0 w-full h-full object-cover opacity-90"
             />
 
-            <div className="relative flex flex-col items-center justify-center h-full bg-white bg-opacity-0 py-20">
-
-                <h1 className="text-5xl text-white text-center mb-10 font-bold">
+            <div className="relative flex flex-col items-center justify-center h-full bg-white bg-opacity-0 px-4 md:px-8 lg:px-16 py-16 md:py-20 lg:py-24">
+                <h1 className="text-3xl md:text-4xl lg:text-5xl text-white text-center mb-6 font-bold">
                     Registered
                 </h1>
 
-                <h2 className="text-[32px] text-white mb-20 font-poppins font-light opacity-100">
+                <h2 className="text-lg md:text-2xl lg:text-3xl text-white text-center mb-24 font-poppins font-light">
                     Users and Organizations
                 </h2>
 
-                <div className="flex flex-nowrap justify-center mt-10 gap-80 max-w-2xl mx-auto text-center overflow-x-auto">
-                    
-
-                    <div className=" text-white flex flex-col items-center italic">
+                <div className="flex flex-col sm:flex-row justify-center gap-8 sm:gap-12 md:gap-20 lg:gap-32 max-w-4xl mx-auto text-center overflow-x-auto">
+                    {/* Individuals Counter */}
+                    <div className="text-white flex flex-col items-center italic">
                         <img
                             src="../assets/Group 745.png"
                             alt="Individuals"
-                            className="w-[120px] h-[120px] mb-2"
+                            className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 mb-24"
                         />
-                        <h1 className="text-4xl text-[#6bf1c6] text-center mt-10 mb-10 font-bold">
-                            {startCounter ? <CountUp end={50000} duration={2} /> : '0'} {/* Counter for Individuals */}
+                        <h1 className="text-3xl md:text-4xl lg:text-5xl text-[#6bf1c6] text-center font-bold">
+                            {startCounter ? (
+                                <CountUp end={50000} duration={2} />
+                            ) : (
+                                '0'
+                            )}
                         </h1>
-                        <p className="text-xl">Individuals</p>
+                        <p className="text-base sm:text-lg md:text-xl mt-12">
+                            Individuals
+                        </p>
                     </div>
 
-
-                    <div className="text-white flex flex-col items-center italic">
+                    {/* Organizations Counter */}
+                    <div className="text-white flex flex-col items-center italic ">
                         <img
                             src="../assets/Group 718.png"
                             alt="Organizations"
-                            className="w-[120px] h-[120px] mb-2"
+                            className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 mb-24"
                         />
-                        <h1 className="text-4xl text-[#6bf1c6] text-center mt-10 mb-10 font-bold">
-                            {startCounter ? <CountUp end={50001} duration={2} /> : '0'} {/* Counter for Organizations */}
+                        <h1 className="text-3xl md:text-4xl lg:text-5xl text-[#6bf1c6] text-center font-bold">
+                            {startCounter ? (
+                                <CountUp end={50001} duration={2} />
+                            ) : (
+                                '0'
+                            )}
                         </h1>
-                        <p className="text-xl">Organizations</p>
-                    </div>                  
+                        <p className="text-base sm:text-lg md:text-xl mt-12">
+                            Organizations
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -231,101 +315,177 @@ const FourthPart = () => {
 };
 
 const FivethPart = () => {
-    return (
-        <div className="w-full h-screen flex flex-col justify-center items-center bg-[url('../assets/group1.png')]">
-                <div className=" ">
-                    <h1 className="text-4xl text-white text-center -mt-50 mb-10 font-bold  ">
-                        Upcoming Opportunities
-                    </h1>
+    const [carouselData, setCarouselData] = useState([]);
+    const checkSession = async () => {
+        try {
+            const response = await axios.get(
+                'http://localhost:8080/api/session'
+            );
+            return response.data.isLoggedIn; // Return boolean
+        } catch (error) {
+            console.error('Error checking session:', error);
+            return false;
+        }
+    };
 
-                    <h2 className="text-[24px] text-white text-center mb-10 font-poppins font-light opacity-100">
-                        Find your next opportunity{' '}
-                    </h2>
-                </div>
-                <div className=""></div>
-                <SwiperCarousel />
-            
+    useEffect(() => {
+        const fetchCarouselData = async () => {
+            try {
+                const loggedIn = await checkSession();
+                const endpoint = loggedIn
+                    ? `http://localhost:8080/api/user/all_data`
+                    : `http://localhost:8080/api/courses`;
+
+                const response = await axios.get(endpoint);
+
+                if (response.status === 200) {
+                    const result = response.data;
+                    let gatheredData = [];
+
+                    if (loggedIn && typeof result === 'object') {
+                        for (const category in result) {
+                            console.log(category);
+                            if (Array.isArray(result[category])) {
+                                const remainingSlots = 5 - gatheredData.length;
+
+                                // Add type property to each item and limit to remaining slots
+                                const itemsWithCategory = result[category]
+                                    .slice(0, remainingSlots)
+                                    .map((item) => ({
+                                        ...item,
+                                        type: category,
+                                    }));
+
+                                gatheredData.push(...itemsWithCategory);
+
+                                if (gatheredData.length >= 5) break; // Stop when there is 5 items
+                            }
+                        }
+                    } else if (Array.isArray(result)) {
+                        // For non-logged-in users, add default type 'course' or similar
+                        gatheredData = result
+                            .slice(0, 5)
+                            .map((item) => ({ ...item, type: 'courses' }));
+                    }
+                    setCarouselData(gatheredData);
+                } else {
+                    console.error('Failed to fetch cards');
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        fetchCarouselData();
+    }, []);
+
+    return (
+        <div className="w-full min-h-screen flex flex-col justify-center items-center bg-[url('../assets/group1.png')] bg-no-repeat bg-cover px-4 md:px-8 lg:px-0 py-20 md:py-32">
+            <div>
+                <h1 className="text-2xl md:text-4xl lg:text-5xl text-white text-center font-bold mb-4 md:mb-8">
+                    Upcoming Opportunities
+                </h1>
+                <h2 className="text-lg md:text-2xl lg:text-3xl text-white text-center font-light mb-10 md:mb-12">
+                    Find your next opportunity
+                </h2>
+            </div>
+            <SwiperCarousel data={carouselData} />
         </div>
     );
 };
 
-
 const SixthPart = () => {
     return (
-        <div className="text-black py-32 min-h-[500px] w-full relative overflow-hidden">           
-            <div className="container mx-auto text-center">
-            <div className="pt-[0rem] pb-[7rem] "></div>
+        <div className="relative w-full min-h-[500px] overflow-hidden px-4">
             <img
                 src="../assets/Group 749.png"
                 alt="Background Decorative Image"
                 className="absolute inset-0 w-full h-full object-cover opacity-50"
             />
-
-            <div class="text-center text-3xl font-popins font-light z-10">Never stop growing with PYE!</div>    
-            </div>        
+            <div className="flex items-center justify-center min-h-[500px]">
+                <div className="text-center text-2xl md:text-3xl font-light z-10">
+                    Never stop growing with PYE!
+                </div>
+            </div>
         </div>
     );
 };
 
-
-
 const SeventhPart = () => {
-  // State to manage the order of the cards
+    // State to manage the order of the cards
     const [selectedCard, setSelectedCard] = useState('yellow');
 
-return (
-    <div className="w-full h-full flex flex-col bg-[url('../assets/background3.png')] justify-center items-center py-20">
-        <div className="text-white text-5xl font-bold mb-48">Reviews</div>
+    return (
+        <div className="w-full h-full flex flex-col bg-[url('../assets/background3.png')] justify-center items-center py-20">
+            <div className="text-white text-5xl font-bold mb-48">Reviews</div>
 
             <div className="relative w-full flex justify-center items-center -space-x-80">
-
-        <div
-        onClick={() => setSelectedCard('teal')}
-        className={`relative flex flex-col justify-center items-center rounded-xl bg-[#4FEAC6] w-[44rem] h-56 p-6 shadow-lg transition-transform duration-500 ease-in-out 
-            ${selectedCard === 'teal' ? 'z-50 mb-44 scale-110 relative left-96 scale-110' : 'z-10  scale-100'}
+                <div
+                    onClick={() => setSelectedCard('teal')}
+                    className={`relative flex flex-col justify-center items-center rounded-xl bg-[#4FEAC6] w-[44rem] h-56 p-6 shadow-lg transition-transform duration-500 ease-in-out 
+            ${
+                selectedCard === 'teal'
+                    ? 'z-50 mb-44 scale-110 relative left-96'
+                    : 'z-10  scale-100'
+            }
         `}
-        >
-            <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full bg-white border-2 border-[#F6F49D]"></div>
-            <h1 className="text-lg mb-8 self-start">Username</h1>
-            <div className="text-sm md:text-base text-black">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi             </div>
-        </div>
-
-
-        <div
-            onClick={() => setSelectedCard('yellow')}
-            className={`relative flex flex-col justify-center items-center rounded-xl bg-[#F6F49D] w-[44rem] h-56 p-6 shadow-lg transition-transform duration-500 ease-in-out 
-            ${selectedCard === 'yellow' ? 'z-50 mb-44 scale-110' : 'relative right-96  z-20 scale-100'}
-            `}
-        >
-            <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full bg-white border-2 border-[#F6F49D]"></div>
-            <h1 className="text-lg mb-8 self-start">Username</h1>
-            <div className="text-sm md:text-base text-black">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi 
+                >
+                    <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full bg-white border-2 border-[#F6F49D]"></div>
+                    <h1 className="text-lg mb-8 self-start">Username</h1>
+                    <div className="text-sm md:text-base text-black">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                        sed do eiusmod tempor incididunt ut labore et dolore
+                        magna aliqua. Ut enim ad minim veniam, quis nostrud
+                        exercitation ullamco laboris nisi{' '}
                     </div>
-        </div>
+                </div>
 
+                <div
+                    onClick={() => setSelectedCard('yellow')}
+                    className={`relative flex flex-col justify-center items-center rounded-xl bg-[#F6F49D] w-[44rem] h-56 p-6 shadow-lg transition-transform duration-500 ease-in-out 
+            ${
+                selectedCard === 'yellow'
+                    ? 'z-50 mb-44 scale-110'
+                    : 'relative right-96  z-20 scale-100'
+            }
+            `}
+                >
+                    <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full bg-white border-2 border-[#F6F49D]"></div>
+                    <h1 className="text-lg mb-8 self-start">Username</h1>
+                    <div className="text-sm md:text-base text-black">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                        sed do eiusmod tempor incididunt ut labore et dolore
+                        magna aliqua. Ut enim ad minim veniam, quis nostrud
+                        exercitation ullamco laboris nisi
+                    </div>
+                </div>
 
-        <div
-        onClick={() => setSelectedCard('lavender')}
-        className={`relative flex flex-col justify-center items-center rounded-xl bg-[#B3B5FF] w-[44rem] h-56 p-6 shadow-lg transition-transform duration-500 ease-in-out 
-            ${selectedCard === 'lavender' ? 'z-50 mb-44 relative right-80 scale-110' : 'z-30 scale-100'}
+                <div
+                    onClick={() => setSelectedCard('lavender')}
+                    className={`relative flex flex-col justify-center items-center rounded-xl bg-[#B3B5FF] w-[44rem] h-56 p-6 shadow-lg transition-transform duration-500 ease-in-out 
+            ${
+                selectedCard === 'lavender'
+                    ? 'z-50 mb-44 relative right-80 scale-110'
+                    : 'z-30 scale-100'
+            }
         `}
-        >
-            <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full bg-white border-2 border-[#F6F49D]"></div>
-            <h1 className="text-lg mb-8 self-start">Username</h1>
-            <div className="text-sm md:text-base text-black">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi            
+                >
+                    <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full bg-white border-2 border-[#F6F49D]"></div>
+                    <h1 className="text-lg mb-8 self-start">Username</h1>
+                    <div className="text-sm md:text-base text-black">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                        sed do eiusmod tempor incididunt ut labore et dolore
+                        magna aliqua. Ut enim ad minim veniam, quis nostrud
+                        exercitation ullamco laboris nisi
+                    </div>
+                </div>
             </div>
         </div>
-        </div>
-    </div>
-);
+    );
 };
 
 const HomePage = () => {
     return (
-        <div className="w-full h-full flex flex-col justify-between items-center">
+        <div className="w-full h-full flex flex-col">
             <FirstPart />
             <SecondPart />
             <ThirdPart />

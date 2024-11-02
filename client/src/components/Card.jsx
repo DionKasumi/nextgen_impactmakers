@@ -11,13 +11,17 @@ const Card = ({
     card_description,
     card_price,
     card_img,
+    card_type,
 }) => {
     const [heart, setHeart] = useState(false);
 
     const navigate = useNavigate();
 
     const handleClick = () => {
-        navigate(`/courses/${id}`);
+        if (card_type == undefined) {
+            return;
+        }
+        navigate(`/${card_type}/${id}`);
     };
 
     const handleHeartClick = (event) => {
@@ -27,7 +31,7 @@ const Card = ({
 
     return (
         <div
-            className="w-64 h-64 lg:w-80 lg:h-80 xl:w-96 xl:h-96 bg-white rounded-[16px] lg:rounded-[20px] xl:rounded-[24px] p-2 lg:p-3 xl:p-4 hover:scale-[102%] transition-all box-border select-none"
+            className="w-64 h-64 lg:w-80 lg:h-80 xl:w-96 xl:h-96 bg-white rounded-[16px] lg:rounded-[20px] xl:rounded-[24px] p-2 lg:p-3 xl:p-4 hover:scale-[102%] transition-all box-border select-none shadow-lg"
             onClick={handleClick}
         >
             <div className="w-full h-4/6 bg-gray-400 flex flex-col justify-center items-center rounded-[8px] relative">
@@ -38,7 +42,9 @@ const Card = ({
                         style={{
                             backgroundImage: `url(${card_img})`,
                         }}
-                    ></div>
+                    >
+                        <div className="w-full h-full bg-gradient-to-t from-[#4F1ABE] rounded-md select-none"></div>
+                    </div>
                 ) : (
                     <img
                         src="../assets/no_image.svg"
@@ -67,12 +73,12 @@ const Card = ({
                     {!heart ? (
                         <GoHeart
                             onClick={handleHeartClick} // Handles heart click
-                            className="scale-125 lg:scale-[2] text-[#EA2727] origin-center hover:scale-[2.2] transition-all hover:cursor-pointer"
+                            className="scale-125 lg:scale-[2] text-[#EA2727] origin-center hover:scale-[1.45] lg:hover:scale-[2.2] transition-all hover:cursor-pointer"
                         />
                     ) : (
                         <GoHeartFill
                             onClick={handleHeartClick} // Handles heart click
-                            className="scale-125 lg:scale-[2] text-[#EA2727] origin-center hover:scale-[2.2] transition-all hover:cursor-pointer"
+                            className="scale-125 lg:scale-[2] text-[#EA2727] origin-center hover:scale-[1.45] lg:hover:scale-[2.2] transition-all hover:cursor-pointer"
                         />
                     )}
                 </div>

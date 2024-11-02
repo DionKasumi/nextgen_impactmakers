@@ -12,6 +12,46 @@ db_params = {
     'db': 'pye_data'
 }
 
+# Function to assign label based on title
+def assign_label(title):
+    title_lower = title.lower()
+    
+    # Data & Analytics
+    if any(keyword in title_lower for keyword in ['data', 'analitikë', 'analizë', 'analytics', 'statistics', 'big data', 'data science', 'machine learning', 'ai']):
+        return 'Data & Analytics'
+    
+    # Development (Including Programming Languages and Frameworks)
+    elif any(keyword in title_lower for keyword in [
+        'development', 'zhvillim', 'programim', 'coding', 'kodim', 'applications', 'software', 'programming', 'app',
+        'javascript', 'python', 'node', 'html', 'css', 'angular', 'react', 'php', 'sql', 'mysql', 'c++', 'java', 'nosql', 'laravel', 'typescript', 'ruby', 'bash', 'powershell', 'swift','wordpress','kotlin','qa','front','back',
+        'seo', '.net'
+    ]):
+        return 'Development'
+    
+    # Design
+    elif any(keyword in title_lower for keyword in ['design', 'dizajn', 'ux', 'ui', 'graphic', 'graphics', 'vizual', 'multimedia', 'illustrator', 'photoshop', 'adobe']):
+        return 'Design'
+    
+    # Business & Marketing
+    elif any(keyword in title_lower for keyword in ['business', 'biznes', 'marketing', 'shitje', 'sales', 'ekonomi', 'economy', 'management', 'menaxhim', 'sociale']):
+        return 'Business & Marketing'
+    
+    # Management
+    elif any(keyword in title_lower for keyword in ['management', 'menaxhim', 'leadership', 'udhëheqje', 'administration', 'administratë', 'planning', 'planifikim']):
+        return 'Management'
+    
+    # IT & Networking
+    elif any(keyword in title_lower for keyword in ['networking', 'rrjeta', 'it', 'security', 'siguri', 'technology', 'teknologji', 'server', 'cisco']):
+        return 'IT & Networking'
+    
+    # Education & Training
+    elif any(keyword in title_lower for keyword in ['education', 'arsim', 'teaching', 'mësim', 'training', 'trajnimi', 'school', 'shkollë', 'qualification', 'kualifikim']):
+        return 'Education & Training'
+    
+    # Other (set to title for easy review)
+    else:
+        return 'Other'
+
 # Function to save course data to the database
 def save_to_database(courses_list, source, email, phone_number, office_address, company_logo):
     db = None
@@ -22,6 +62,9 @@ def save_to_database(courses_list, source, email, phone_number, office_address, 
 
         for course in courses_list:
             try:
+                # Determine the label for the course
+                label = assign_label(course['Title'])
+
                 # Check if the course already exists
                 check_query = "SELECT COUNT(*) FROM all_courses WHERE title = %s AND source = %s"
                 cursor.execute(check_query, (course['Title'], source))
@@ -30,27 +73,29 @@ def save_to_database(courses_list, source, email, phone_number, office_address, 
                 if not exists:
                     # Insert new course data with additional fields
                     insert_query = """
-                    INSERT INTO all_courses (source, title, trainer, description, price, students, rating, image_url, duration, email, phone_number, office_address, company_logo)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    INSERT INTO all_courses (source, title, trainer, description, price, students, rating, image_url, duration, email, phone_number, office_address, company_logo, apply_link,label)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s)
                     """
                     data = (
                         source,
                         course['Title'],
-                        course.get('Trainer', 'Unknown'),
+                        course.get('Trainer', 'N/A'),
                         course.get('Description', 'N/A'),
                         course.get('Price', 'N/A'),
-                        course.get('Students', 0),
+                        course.get('Students', 'N/A'),
                         course.get('Rating', 'N/A'),
                         course.get('Image_URL', 'N/A'),
                         course.get('Duration', 'N/A'),
-                        email,            # New field
-                        phone_number,     # New field
-                        office_address,   # New field
-                        company_logo      # New field
+                        email,            
+                        phone_number,     
+                        office_address,   
+                        company_logo,     
+                        course.get('apply_link'),
+                        label
                     )
                     cursor.execute(insert_query, data)
                     db.commit()
-                    print(f"Inserted new course from {source}: {course['Title']}")
+                    print(f"Inserted new course from {source}: {course['Title']} with label {label}")
                 else:
                     print(f"Course already exists in {source}: {course['Title']}")
 
@@ -67,7 +112,7 @@ def save_to_database(courses_list, source, email, phone_number, office_address, 
             db.close()
 
 
-# Scraper functions for various sources
+# Scraper function for ICK Kosovo
 def scrape_ick_kosovo(page):
     page.goto('https://ickosovo.com/training/courses', timeout=60000)
     
@@ -77,7 +122,10 @@ def scrape_ick_kosovo(page):
     courses_list = []
     for course in courses:
         try:
-            title = course.locator('.elementor-heading-title a').text_content(timeout=10000)
+            title_element = course.locator('.elementor-heading-title a')
+            title = title_element.text_content(timeout=10000)
+            apply_link = title_element.get_attribute('href', timeout=10000)  
+            
             description = course.locator('.elementor-widget-container p').text_content(timeout=10000)
             image_url = course.locator('img.attachment-full').get_attribute('src', timeout=10000)
             duration = course.locator('.meta-timeframe .elementor-button-text').text_content(timeout=10000)
@@ -94,13 +142,16 @@ def scrape_ick_kosovo(page):
                 'Trainer': trainer,
                 'Price': price,
                 'Students': students,
-                'Rating': rating
+                'Rating': rating,
+                'apply_link': apply_link  # Added the apply_link 
             })
         except Exception as e:
             print(f"Error processing a course from ICK Kosovo: {e}")
     
     return courses_list
 
+
+# Scraper function for BEETROOT ACADEMY
 def scrape_beetroot_academy(page):
     page.goto('https://xk.beetroot.academy/courses/online', timeout=60000)
     
@@ -116,19 +167,25 @@ def scrape_beetroot_academy(page):
             duration = training.locator('.intro_monthIcon').inner_text(timeout=10000)
             image_url = 'https://xk.beetroot.academy/static/logo-c96c7c4d19444146e8b100d14e93d1ac.svg'
 
+            # Extract the apply link
+            apply_link = training.locator('a.intro_box').get_attribute('href', timeout=10000)
+            apply_link = f"https://xk.beetroot.academy{apply_link}"  # Prepend the base URL
+
             courses_list.append({
                 'Title': title,
                 'Rating': rating,
                 'Description': description,
                 'Duration': duration,
                 'Trainer': None,
-                'Image_URL': image_url
+                'Image_URL': image_url,
+                'apply_link': apply_link  # Added the apply_link 
             })
         except Exception as e:
             print(f"Error processing a course from Beetroot Academy: {e}")
     
     return courses_list
 
+# Scraper function for PROBIT ACADEMY
 def scrape_probit_academy(page):
     page.goto('https://probitacademy.com/courses/', timeout=60000)
     
@@ -146,6 +203,9 @@ def scrape_probit_academy(page):
             rating = course.locator('.course-review .value').first.inner_text(timeout=5000).strip()
             image_url = course.locator('.course-thumbnail img').get_attribute('src', timeout=5000)
 
+            # Extract the apply link
+            apply_link = course.locator('.course-title a').get_attribute('href', timeout=5000)
+
             courses_list.append({
                 'Title': title,
                 'Trainer': trainer,
@@ -153,13 +213,16 @@ def scrape_probit_academy(page):
                 'Price': price,
                 'Students': students,
                 'Rating': rating,
-                'Image_URL': image_url
+                'Image_URL': image_url,
+                'apply_link': apply_link  # Added the apply_link 
             })
         except Exception as e:
             print(f"Error processing a course from Probit Academy: {e}")
     
     return courses_list
 
+
+# Scraper function for CREATIVE HUB KOSOVO
 def scrape_creative_hub_kosovo(page):
     page.goto('https://creativehubkos.com/', timeout=60000)
     page.wait_for_load_state('networkidle', timeout=10000)
@@ -186,19 +249,24 @@ def scrape_creative_hub_kosovo(page):
             description = training.locator('p').inner_text(timeout=10000)
             price = training.locator('.price').first.inner_text(timeout=10000).strip()
 
+            # Extract the apply link
+            apply_link = training.locator('a[href*="creativehubkos.com"]').get_attribute('href', timeout=10000)
+
             trainings_list.append({
                 'Title': title,
                 'Description': description,
                 'Price': price,
                 'Trainer': None,
                 'Students': None,
-                'Rating': None
+                'Rating': None,
+                'apply_link': apply_link  # Add the apply_link 
             })
         except Exception as e:
             print(f"Error processing training from Creative Hub Kosovo: {e}")
     
     return trainings_list
 
+# Scraper function for OUTKOS ACADEMY
 def scrape_outkos_academy(page):
     page.goto('https://outkos.academy/AllCourses/page/1', timeout=120000)
     
@@ -214,9 +282,16 @@ def scrape_outkos_academy(page):
             price = course.locator('.span2').inner_text(timeout=5000).strip()
             duration_elements = course.locator('.small-item.small-item1').all()
             duration = duration_elements[0].inner_text(timeout=5000).strip() if duration_elements else "Not Available"
+            
+            # Extract the image URL from the style attribute
             img_style = course.locator('a.img').get_attribute('style')
             image_url = re.search(r'url\(["\'](.*?)["\']\)', img_style)
             image_url = image_url.group(1) if image_url else None
+            
+            # Extract the apply link
+            apply_link = course.locator('a.info').get_attribute('href', timeout=5000)
+            # Prepend the base URL to the relative path
+            apply_link = f'https://outkos.academy{apply_link}' if apply_link else 'N/A'
 
             courses_list.append({
                 'Title': title,
@@ -224,13 +299,16 @@ def scrape_outkos_academy(page):
                 'Description': description,
                 'Price': price,
                 'Duration': duration,
-                'Image_URL': image_url
+                'Image_URL': image_url,
+                'apply_link': apply_link  # Add the apply_link 
             })
         except Exception as e:
             print(f"Error processing course from Outkos Academy: {e}")
 
     return courses_list
 
+
+# Scraper function for SHPIK TRAININGS
 def scrape_shpik_trainings(page):
     page.goto('https://trajnimet.info/', timeout=60000)
     
@@ -239,7 +317,7 @@ def scrape_shpik_trainings(page):
 
     while not all_courses_loaded:
         page.evaluate('window.scrollBy(0, document.body.scrollHeight)')
-        page.wait_for_timeout(2000)  # Wait for the page to load new content
+        page.wait_for_timeout(2000)
 
         courses = page.locator('//div[contains(@class, "item")]')
         current_courses = [course.locator('a.training-post').get_attribute('href') for course in courses.all()]
@@ -258,12 +336,16 @@ def scrape_shpik_trainings(page):
 
     courses_list = []
     for course_href in loaded_courses:
+        # Check if the course_href is a valid URL
+        if not course_href.startswith("http"):
+            print(f"Invalid URL found: {course_href}, skipping...")
+            continue  # Skip invalid URLs
+        
         try:
             page.goto(course_href, timeout=60000)
-            page.wait_for_load_state('networkidle')  # Ensure the page has fully loaded
-            page.wait_for_timeout(2000)  # Give extra time for dynamic content to load
+            page.wait_for_load_state('networkidle')
+            page.wait_for_timeout(2000)
 
-            # Extracting data
             title = page.locator('.course-content-box h2').inner_text(timeout=10000) if page.locator('.course-content-box h2').count() > 0 else 'N/A'
             trainer = page.locator('p:has-text("Trajner:")').inner_text(timeout=10000).replace('Trajner:', '').strip() if page.locator('p:has-text("Trajner:")').count() > 0 else 'N/A'
             description = page.locator('.course-content-box .description').inner_text(timeout=10000) if page.locator('.course-content-box .description').count() > 0 else 'N/A'
@@ -271,12 +353,9 @@ def scrape_shpik_trainings(page):
             students = int(page.locator('p:has-text("Numri i studentëve:")').inner_text(timeout=10000).replace('Numri i studentëve:', '').strip()) if page.locator('p:has-text("Numri i studentëve:")').count() > 0 else 0
             rating = page.locator('p:has-text("Vlerësimi:")').inner_text(timeout=10000).replace('Vlerësimi:', '').strip() if page.locator('p:has-text("Vlerësimi:")').count() > 0 else 'N/A'
             
-            # Scraping the first image found
             image_url = page.locator('.featured-image img').first.get_attribute('src') if page.locator('.featured-image img').count() > 0 else 'N/A'
-
             duration = page.locator('p:has-text("Kohëzgjatja:")').inner_text(timeout=10000).replace('Kohëzgjatja:', '').strip() if page.locator('p:has-text("Kohëzgjatja:")').count() > 0 else 'N/A'
 
-            # Prepare course data
             courses_list.append({
                 'Title': title,
                 'Trainer': trainer,
@@ -285,14 +364,14 @@ def scrape_shpik_trainings(page):
                 'Students': students,
                 'Rating': rating,
                 'Image_URL': image_url,
-                'Duration': duration
+                'Duration': duration,
+                'apply_link': course_href  # Add the apply_link as course_href
             })
 
         except Exception as e:
             print(f"Error processing a course from ShpikTrainings: {e}")
 
     return courses_list
-
 
 # Main scraping logic that loops through the websites
 def main():
@@ -369,9 +448,8 @@ def main():
 
         browser.close()
 
-
 if __name__ == '__main__':
     while True:
         main()
         print("Sleeping for 30 minutes...")
-        time.sleep(30 * 60)  # Sleep for 30 minutes
+        time.sleep(30 * 60)

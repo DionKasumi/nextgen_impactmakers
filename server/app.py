@@ -5,6 +5,13 @@ import bcrypt
 from datetime import datetime
 import secrets
 
+
+## Integrate the setup_db.py to run each time the app starts 
+from setup_db import create_database
+
+create_database()
+
+
 app = Flask(__name__)
 
 # Configure CORS to allow credentials (cookies) to be sent from cross-origin requests
@@ -33,7 +40,7 @@ def fetch_courses_from_database():
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
         query = """
-        SELECT id, source, title, trainer, description, price, students, rating, image_url, duration , email, phone_number, office_address, company_logo 
+        SELECT id, source, title, trainer, description, price, students, rating, image_url, duration , email, phone_number, office_address, company_logo, apply_link 
         FROM all_courses
         """
         cursor.execute(query)
@@ -54,7 +61,7 @@ def fetch_course_by_id(course_id):
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
         query = """
-        SELECT id, source, title, trainer, description, price, students, rating, image_url, duration, email, phone_number, office_address, company_logo 
+        SELECT id, source, title, trainer, description, price, students, rating, image_url, duration, email, phone_number, office_address, company_logo, apply_link
         FROM all_courses
         WHERE id = %s
         """
@@ -82,15 +89,215 @@ def get_course(course_id):
         abort(404, description="Course not found")
     return jsonify(course)
 
+def fetch_internships_from_database():
+    internships = []
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        query = """
+        SELECT id, source, title, description, posted_date, salary, duration, location, image_url, email, phone_number, office_address, company_logo, apply_link
+        FROM all_internships
+        """
+        cursor.execute(query)
+        internships = cursor.fetchall()
+    except MySQLdb.Error as e:
+        print(f"MySQL error: {e}")
+    finally:
+        try:
+            cursor.close()
+            db.close()
+        except MySQLdb.Error as e:
+            print(f"Error closing connection: {e}")
+    return internships
+
+def fetch_internship_by_id(internship_id):
+    internship = None
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        query = """
+        SELECT id, source, title, description, posted_date, salary, duration, location, image_url, email, phone_number, office_address, company_logo, apply_link
+        FROM all_internships
+        WHERE id = %s
+        """
+        cursor.execute(query, (internship_id,))
+        internship = cursor.fetchone()
+    except MySQLdb.Error as e:
+        print(f"MySQL error: {e}")
+    finally:
+        try:
+            cursor.close()
+            db.close()
+        except MySQLdb.Error as e:
+            print(f"Error closing connection: {e}")
+    return internship
+
+@app.route('/api/internships', methods=['GET'])
+def get_internships():
+    internships = fetch_internships_from_database()
+    return jsonify(internships)
+
+@app.route('/api/internships/<int:internship_id>', methods=['GET'])
+def get_internship(internship_id):
+    internship = fetch_internship_by_id(internship_id)
+    if internship is None:
+        abort(404, description="Internship not found")
+    return jsonify(internship)
+
+def fetch_events_from_database():
+    events = []
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        query = """
+        SELECT id, source, organizer, title, duration, location, image_url, email, phone_number, office_address, company_logo, apply_link
+        FROM all_events
+        """
+        cursor.execute(query)
+        events = cursor.fetchall()
+    except MySQLdb.Error as e:
+        print(f"MySQL error: {e}")
+    finally:
+        try:
+            cursor.close()
+            db.close()
+        except MySQLdb.Error as e:
+            print(f"Error closing connection: {e}")
+    return events
+
+def fetch_event_by_id(event_id):
+    event = None
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        query = """
+        SELECT id, source, organizer, title, duration, location, image_url, email, phone_number, office_address, company_logo, apply_link
+        FROM all_events
+        WHERE id = %s
+        """
+        cursor.execute(query, (event_id,))
+        event = cursor.fetchone()
+    except MySQLdb.Error as e:
+        print(f"MySQL error: {e}")
+    finally:
+        try:
+            cursor.close()
+            db.close()
+        except MySQLdb.Error as e:
+            print(f"Error closing connection: {e}")
+    return event
+@app.route('/api/events', methods=['GET'])
+def get_events():
+    events = fetch_events_from_database()
+    return jsonify(events)
+
+@app.route('/api/events/<int:event_id>', methods=['GET'])
+def get_event(event_id):
+    event = fetch_event_by_id(event_id)
+    if event is None:
+        abort(404, description="Event not found")
+    return jsonify(event)
+
+def fetch_volunteering_from_database():
+    volunteering_opportunities = []
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        query = """
+        SELECT id, source, title, duration, cause, age_group, image_url, email, phone_number, office_address, company_logo, apply_link
+        FROM all_volunteering
+        """
+        cursor.execute(query)
+        volunteering_opportunities = cursor.fetchall()
+    except MySQLdb.Error as e:
+        print(f"MySQL error: {e}")
+    finally:
+        try:
+            cursor.close()
+            db.close()
+        except MySQLdb.Error as e:
+            print(f"Error closing connection: {e}")
+    return volunteering_opportunities
+
+def fetch_volunteering_by_id(volunteering_id):
+    volunteering = None
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        query = """
+        SELECT id, source, title, duration, cause, age_group, image_url, email, phone_number, office_address, company_logo, apply_link
+        FROM all_volunteering
+        WHERE id = %s
+        """
+        cursor.execute(query, (volunteering_id,))
+        volunteering = cursor.fetchone()
+    except MySQLdb.Error as e:
+        print(f"MySQL error: {e}")
+    finally:
+        try:
+            cursor.close()
+            db.close()
+        except MySQLdb.Error as e:
+            print(f"Error closing connection: {e}")
+    return volunteering
+
+@app.route('/api/volunteering', methods=['GET'])
+def get_volunteering():
+    volunteering_opportunities = fetch_volunteering_from_database()
+    return jsonify(volunteering_opportunities)
+
+@app.route('/api/volunteering/<int:volunteering_id>', methods=['GET'])
+def get_volunteering_by_id(volunteering_id):
+    volunteering = fetch_volunteering_by_id(volunteering_id)
+    if volunteering is None:
+        abort(404, description="Volunteering opportunity not found")
+    return jsonify(volunteering)
+
+
 # --- Helper Functions ---
+def fetch_unique_labels():
+    labels = set()  # Using a set to avoid duplicates
+
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+
+        # List of tables to query
+        tables = ['all_courses', 'all_events', 'all_internships', 'all_volunteering']
+
+        for table in tables:
+            query = f"SELECT DISTINCT label FROM {table} WHERE label IS NOT NULL"
+            cursor.execute(query)
+            table_labels = [row[0] for row in cursor.fetchall()]
+            labels.update(table_labels)  # Add to the set to keep unique values
+
+    except MySQLdb.Error as e:
+        print(f"Database error: {e}")
+    finally:
+        cursor.close()
+        db.close()
+
+    return list(labels)  # Convert the set back to a list for JSON serialization
+
+# API endpoint to get unique labels (preferences) for the frontend
+@app.route('/api/labels', methods=['GET'])
+def get_labels():
+    labels = fetch_unique_labels()
+    return jsonify(labels=labels), 200
+
+# Add participant with preferences
 def add_participant(username, email, phone, password, preferences):
+    # Fetch valid labels for validation
+    valid_labels = fetch_unique_labels()
+    
+    # Filter preferences to ensure only valid labels are stored
+    valid_preferences = [pref for pref in preferences if pref in valid_labels]
+
+    # Convert preferences list to a string if needed
+    preferences_str = ', '.join(valid_preferences)
+
+    # Hash the password
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-    
-    
-    if isinstance(preferences, list):
-        preferences_str = ', '.join(preferences)  
-    else:
-        preferences_str = preferences
 
     try:
         db = MySQLdb.connect(**db_params)
@@ -106,13 +313,17 @@ def add_participant(username, email, phone, password, preferences):
         db.close()
     return jsonify({"message": "Participant created successfully."}), 201
 
-
+# Add organization
 def add_organization(name_of_org, email_of_org, phone_number_of_org, password_of_org, url_of_org, description_of_org):
+    # Hash the password
     hashed_password = bcrypt.hashpw(password_of_org.encode('utf-8'), bcrypt.gensalt())
     try:
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor()
-        query = "INSERT INTO organizations (name_of_org, email_of_org, phone_number_of_org, password_of_org, url_of_org, description_of_org) VALUES (%s, %s, %s, %s, %s, %s)"
+        query = """
+            INSERT INTO organizations (name_of_org, email_of_org, phone_number_of_org, password_of_org, url_of_org, description_of_org)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """
         cursor.execute(query, (name_of_org, email_of_org, phone_number_of_org, hashed_password, url_of_org, description_of_org))
         db.commit()
         cursor.close()
@@ -123,12 +334,13 @@ def add_organization(name_of_org, email_of_org, phone_number_of_org, password_of
         db.close()
     return jsonify({"message": "Organization created successfully."}), 201
 
-# --- Sign Up Route --- (Fixed and Updated)
+# --- Signup Route ---
 @app.route('/signup', methods=['POST'])
 def signup():
     data = request.get_json()
     print(f"Signup data received: {data}")  # Log the incoming data for debugging
 
+    # Check if the signup is for an organization
     if 'isOrg' in data and data['isOrg']:
         # Organization signup
         required_fields = ['name_of_org', 'email_of_org', 'phone_number_of_org', 'password_of_org', 'url_of_org', 'description_of_org']
@@ -143,37 +355,48 @@ def signup():
             data['url_of_org'], 
             data['description_of_org']
         )
-    else:
-        # Participant signup
-        required_fields = ['username', 'email', 'phone', 'password']
-        for field in required_fields:
-            if field not in data:
-                return jsonify({"error": f"Missing field {field} for participant signup."}), 400
-        return add_participant(
-            data['username'], 
-            data['email'], 
-            data['phone'], 
-            data['password'],
-            data.get('preferences', [])
-        )
 
-# --- Helper Functions for Login ---
+    # Participant signup
+    required_fields = ['username', 'email', 'phone', 'password']
+    for field in required_fields:
+        if field not in data:
+            return jsonify({"error": f"Missing field {field} for participant signup."}), 400
+    return add_participant(
+        data['username'], 
+        data['email'], 
+        data['phone'], 
+        data['password'],
+        data.get('preferences', [])
+    )
+
 def check_participant(email, password):
     try:
+        # Connect to the database
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        
+        # Retrieve the participant's data
         query = "SELECT * FROM participants WHERE email = %s"
         cursor.execute(query, [email])
         user = cursor.fetchone()
+        
         cursor.close()
         db.close()
 
+        # Check if user exists and if password matches
         if user and bcrypt.checkpw(password.encode('utf-8'), user['password'].encode('utf-8')):
-            return True
-        return False
+            # Save user preferences and other data in session
+            session['user_id'] = user['id']
+            session['username'] = user['username']
+            session['email'] = user['email']
+            session['phone'] = user['phone']
+            session['preferences'] = user['preferences'].split(', ') if user['preferences'] else []
+
+            return user  # Return all user data as needed
+        return None
     except MySQLdb.Error as e:
         print(f"MySQL error during participant login: {e}")
-        return False
+        return None
 
 def check_organization(email_of_org, password_of_org):
     try:
@@ -649,6 +872,51 @@ def admin_update_training(training_id):
     else:
         return jsonify({'error': 'Failed to update training'}), 500
 
+
+def fetch_data_from_table(table_name, preferences):
+    data = []
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+
+        # If preferences exist, filter the query
+        if preferences:
+            placeholders = ', '.join(['%s'] * len(preferences))
+            query = f"SELECT * FROM {table_name} WHERE label IN ({placeholders})"
+            cursor.execute(query, preferences)
+        else:
+            # Return an empty result if no preferences are set
+            return []
+
+        data = cursor.fetchall()
+    except MySQLdb.Error as e:
+        print(f"MySQL error in {table_name}: {e}")
+    finally:
+        cursor.close()
+        db.close()
+    return data
+
+# API to fetch all user data based on preferences
+@app.route('/api/user/all_data', methods=['GET'])
+def get_all_user_data():
+    # Retrieve user preferences from the session
+    preferences = session.get('preferences', [])
+    
+    # Fetch data from each table based on preferences
+    courses = fetch_data_from_table('all_courses', preferences)
+    internships = fetch_data_from_table('all_internships', preferences)
+    events = fetch_data_from_table('all_events', preferences)
+    volunteering = fetch_data_from_table('all_volunteering', preferences)
+
+    # Combine the results into one JSON response
+    response_data = {
+        "courses": courses,
+        "internships": internships,
+        "events": events,
+        "volunteering": volunteering
+    }
+    
+    return jsonify(response_data), 200
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8080)

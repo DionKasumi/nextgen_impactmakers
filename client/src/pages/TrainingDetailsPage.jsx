@@ -24,7 +24,7 @@ const TestimonialCard = () => {
         <div className="bg-[#44FFD1] w-full sm:w-3/4 md:w-2/4 h-auto p-6 flex flex-row justify-center items-center gap-10">
             {/* Testimonial Card */}
             <div className="font-bold">
-                <h2>Surname</h2>
+                <h2>Username</h2>
             </div>
             <div>
                 <p className="text-sm mb-2 text-wrap text-ellipsis overflow-hidden whitespace-nowrap line-clamp-4">
@@ -56,6 +56,35 @@ const TrainingDetailsPage = () => {
         };
         fetchData();
     }, [id]);
+
+    const [carouselData, setCarouselData] = useState([]);
+
+    useEffect(() => {
+        const fetchCarouselData = async () => {
+            try {
+                const endpoint = `http://localhost:8080/api/courses`;
+
+                const response = await axios.get(endpoint);
+
+                if (response.status === 200) {
+                    const result = response.data;
+                    let gatheredData = [];
+
+                    if (typeof result === 'object') {
+                        gatheredData = result
+                            .slice(0, 5)
+                            .map((item) => ({ ...item, type: 'courses' }));
+                    }
+                    setCarouselData(gatheredData);
+                } else {
+                    console.error('Failed to fetch cards');
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        fetchCarouselData();
+    }, []);
 
     return (
         <>
@@ -92,12 +121,7 @@ const TrainingDetailsPage = () => {
                                 Key Responsibilities
                             </h1>
                             <p className="text-center w-full md:w-1/2">
-                                Lorem ipsum dolor sit amet consectetur
-                                adipisicing elit. Sint amet qui mollitia
-                                temporibus, perspiciatis ex eos doloribus,
-                                distinctio recusandae repellat iste error
-                                quisquam! Reprehenderit illum ipsa iusto, minima
-                                mollitia similique.
+                                Visit Source for more information.
                             </p>
                         </div>
                         <div className="flex flex-col justify-center items-center w-5/6 h-auto mb-12">
@@ -113,7 +137,7 @@ const TrainingDetailsPage = () => {
                             </ol>
                         </div>
                     </div>
-                    <div className="w-full h-full py-24 flex justify-center items-center flex-col bg-[#4F1ABE] bg-[url('../assets/image6.png')]">        
+                    <div className="w-full h-full py-24 flex justify-center items-center flex-col bg-[#4F1ABE] bg-[url('../assets/image6.png')]">
                         {/* Secondary Content Div */}
                         <div className="w-5/6 text-white flex flex-col items-center mb-6">
                             <h1 className="text-3xl font-bold">Skill Level</h1>
@@ -135,7 +159,12 @@ const TrainingDetailsPage = () => {
                             <h1 className="text-3xl font-bold">Organization</h1>
                             <p>{course.source ? course.source : 'No Source'}</p>
                         </div>
-                        <button className="px-16 py-6 bg-white text-black font-bold text-xl rounded-lg hover:scale-105 transition-all">
+                        <button
+                            className="px-16 py-6 bg-white text-black font-bold text-xl rounded-lg hover:scale-105 transition-all"
+                            onClick={() =>
+                                (window.location.href = course.apply_link)
+                            }
+                        >
                             Apply Here
                         </button>
                     </div>
@@ -145,11 +174,11 @@ const TrainingDetailsPage = () => {
                             Source of this Opportunity
                         </h1>
                         <div className="flex flex-col bg-[#A3A9FE] w-full  md:w-4/6 h-auto p-3  justify-center items-center gap-10">
-                        <img
-                                    src={course.company_logo}
-                                    alt="Course Image"
-                                    className="w-auto h-full mt-20 object-cover rounded-md select-none"
-                                />
+                            <img
+                                src={course.company_logo}
+                                alt="Course Image"
+                                className="w-auto h-full mt-20 object-cover rounded-md select-none"
+                            />
                             <div className="w-5/6 justify-center items-center flex flex-col py-12">
                                 <h3 className="text-white">
                                     {course.source
@@ -191,9 +220,12 @@ const TrainingDetailsPage = () => {
                         </div>
                         <div className="w-full h-full">
                             {/* Carousel */}
-                            <SwiperCarousel />
+                            <SwiperCarousel data={carouselData} />
                         </div>
-                        <a href="/trainings" className="font-light text-lg pl-96">
+                        <a
+                            href="/trainings"
+                            className="font-light text-lg pl-96"
+                        >
                             ← Go back to all trainings
                         </a>
                     </div>

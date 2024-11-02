@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import SectionWrapper from '../hoc/SectionWrapper';
-import { IoMdArrowDropdown } from 'react-icons/io';
 import Card from '../components/Card';
+import Filter from '../components/Filter';
+import SkeletonCard from '../components/SkeletonCard';
 import axios from 'axios';
 
 // Function to fetch course data from the API
@@ -15,272 +16,42 @@ const fetchCourses = async () => {
     }
 };
 
-const generateFilter = ({ filterList = [], selectedValues, handleChange }) => {
-    return filterList.map((type, index) =>
-        !type.isPrice ? (
-            <div key={index} className="first:mb-8 mb-8 last:mt-8">
-                <h1 className="ml-8 text-xl text-white font-bold">
-                    {type.title}
-                </h1>
-                <ul className="text-white text-xl mt-4">
-                    {type.items.map((item, index2) => {
-                        const isChecked =
-                            item.value === selectedValues[item.name];
-                        return (
-                            <li key={index2} className="py-2 flex items-center">
-                                <input
-                                    type="radio"
-                                    name={item.name}
-                                    id={item.id}
-                                    value={item.value}
-                                    checked={isChecked}
-                                    onChange={handleChange}
-                                    className="hidden"
-                                />
-                                <div className="relative flex items-center">
-                                    <div className="flex items-center justify-center w-5 h-5 mr-3 rounded-full border-2 border-white">
-                                        <div
-                                            className={`w-5 h-5 rounded-full bg-white transition-opacity duration-200 ease-in-out ${
-                                                isChecked
-                                                    ? 'opacity-100'
-                                                    : 'opacity-0'
-                                            }`}
-                                        />
-                                    </div>
-                                    <label
-                                        htmlFor={item.id}
-                                        className="cursor-pointer select-none border-b border-b-white"
-                                    >
-                                        {item.display}
-                                    </label>
-                                </div>
-                            </li>
-                        );
-                    })}
-                </ul>
-            </div>
-        ) : (
-            <div key={index} className="my-8 text-white">
-                <h1 className="ml-8 text-xl text-white font-bold">Price</h1>
-                <div className="flex flex-row justify-start items-center ml-8 mt-4 text-xl">
-                    <p className="mr-4">
-                        Min{' '}
-                        <IoMdArrowDropdown className="inline hover:cursor-pointer" />
-                    </p>
-                    <p>
-                        Max{' '}
-                        <IoMdArrowDropdown className="inline hover:cursor-pointer" />
-                    </p>
-                </div>
-            </div>
-        )
-    );
-};
-
-
-const SideBar = () => {
-    const [selectedValues, setSelectedValues] = useState({});
-
-    const handleChange = (Training) => {
-        const { name, value } = Training.target;
-        setSelectedValues((prevValues) => ({
-            ...prevValues,
-            [name]: value,
-        }));
-    };
-
-    const handleSearch = () => {
-        console.log("Search clicked", selectedValues);
-    };
-
+const CardsContainer = ({
+    courses,
+    loadMoreCourses,
+    allCoursesLoaded,
+    isFilterOpen,
+}) => {
     return (
-        <div className="w-1/4 min-h-96 p-4 hidden lg:flex flex-col">
-            <div className="border-r border-gray-300 pr-4"> {/* Vertical line  */}
-                {generateFilter({
-                    filterList: [
-                        {
-                            isPrice: false,
-                            title: 'Location',
-                            items: [                                
-                                {
-                                    display: 'Prishtina',
-                                    name: 'location_radio',
-                                    id: 'prishtina',
-                                    value: 'Prishtina',
-                                },
-                                {
-                                    display: 'Gjilan',
-                                    name: 'location_radio',
-                                    id: 'gjilan',
-                                    value: 'Gjilan',
-                                },
-                                {
-                                    display: 'Prizren',
-                                    name: 'location_radio',
-                                    id: 'prizren',
-                                    value: 'Prizren',
-                                },
-                            ],
-                        },
-                        {
-                            isPrice: false,
-                            title: 'Fields',
-                            items: [
-                                {
-                                    display: 'Python',
-                                    name: 'fields_radio',
-                                    id: 'python',
-                                    value: 'Python',
-                                },
-                                {
-                                    display: 'Social Media',
-                                    name: 'fields_radio',
-                                    id: 'social_media',
-                                    value: 'Social Media',
-                                },
-                                {
-                                    display: 'Digital Marketing',
-                                    name: 'fields_radio',
-                                    id: 'digital_marketing',
-                                    value: 'Digital Marketing',
-                                },
-                                {
-                                    display: 'Graphic Design',
-                                    name: 'fields_radio',
-                                    id: 'graphic_design',
-                                    value: 'Graphic Design',
-                                },
-                                {
-                                    display: 'UI/UX',
-                                    name: 'fields_radio',
-                                    id: 'ui_ux',
-                                    value: 'UI/UX',
-                                },
-                                {
-                                    display: 'Cyber Security',
-                                    name: 'fields_radio',
-                                    id: 'cyber_security',
-                                    value: 'Cyber Security',
-                                },
-                            ],
-                        },
-                        {
-                            isPrice: false,
-                            title: 'Skill Level',
-                            items: [
-                                {
-                                    display: 'Beginner',
-                                    name: 'skill_radio',
-                                    id: 'Beginner',
-                                    value: 'Beginner',
-                                },
-                                {
-                                    display: 'Intermediete',
-                                    name: 'skill_radio',
-                                    id: 'intermediete',
-                                    value: 'intermediete',
-                                },
-                                {
-                                    display: 'Advanced',
-                                    name: 'skill_radio',
-                                    id: 'Advanced',
-                                    value: 'Advanced',
-                                },
-                            ],
-                        },
-                        {
-                            isPrice: false,
-                            title: 'Availability',
-                            items: [
-                                {
-                                    display: 'Event Classes',
-                                    name: 'availability_radio',
-                                    id: 'event_classes',
-                                    value: 'Event Classes',
-                                },
-                                {
-                                    display: 'Weekend Classes',
-                                    name: 'availability_radio',
-                                    id: 'weekend_classes',
-                                    value: 'Weekend Classes',
-                                },
-                                {
-                                    display: 'Flexibile',
-                                    name: 'availability_radio',
-                                    id: 'flexibile',
-                                    value: 'Flexibile',
-                                },
-                            ],
-                        },
-                        {
-                            isPrice: false,
-                            title: 'Duration',
-                            items: [
-                                {
-                                    display: 'Workshops',
-                                    name: 'duration_radio',
-                                    id: 'workshops',
-                                    value: 'Workshops',
-                                },
-                                {
-                                    display: '3 Months',
-                                    name: 'duration_radio',
-                                    id: 'three_months',
-                                    value: '3 Months',
-                                },
-                                {
-                                    display: '6 Months',
-                                    name: 'duration_radio',
-                                    id: 'six_months',
-                                    value: '6 Months',
-                                },
-                                {
-                                    display: '1 Year',
-                                    name: 'duration_radio',
-                                    id: 'one_year',
-                                    value: '1 Year',
-                                },
-                            ],
-                        },  
-                    ],             
-                    selectedValues,
-                    handleChange,
-                })}
-            </div>
-
-            {/* Search Button outside the vertical line */}
-            <button 
-                className="mt-10 bg-white text-indigo-700 font-semibold py-3 px-4 rounded hover:bg-blue-200"
-                onClick={handleSearch}
+        <div
+            className={`flex justify-center items-center flex-col ${
+                isFilterOpen ? 'col-start-1 sm:col-start-2' : 'col-start-1'
+            } col-end-5`}
+        >
+            <div
+                className={`w-full h-full grid grid-cols-1 md:grid-cols-2 ${
+                    isFilterOpen ? 'lg:grid-cols-2' : 'lg:grid-cols-3'
+                } gap-y-8 justify-items-center`}
             >
-                Search
-            </button>
-        </div>
-    );
-};
-
-const CardsContainer = ({ courses, loadMoreCourses, allCoursesLoaded }) => {
-    return (
-        <div className="w-4/4 lg:w-3/4 h-min flex justify-center items-center flex-col">
-            <div className="w-full h-full grid grid-cols-1 md:grid-cols-2 gap-8 justify-items-center">
-                {courses.length > 0 ? (
-                    courses.map((course, index) => (
-                        <Card
-                            key={index}
-                            id={course.id}
-                            card_title={course.title}
-                            card_img={course.image_url}
-                            card_duration={course.duration}
-                            card_description={course.description}
-                            card_price={course.price}
-                            card_source={course.source}
-                        />
-                    ))
-                ) : (
-                    <p className="text-center text-gray-500">
-                        No courses available
-                    </p>
-                )}
+                {courses.length > 0
+                    ? courses.map((course, index) => (
+                          <Card
+                              key={index}
+                              id={course.id}
+                              card_title={course.title}
+                              card_img={course.image_url}
+                              card_duration={course.duration}
+                              card_description={course.description}
+                              card_price={course.price}
+                              card_source={course.source}
+                              card_type="courses"
+                          />
+                      ))
+                    : Array(6)
+                          .fill(null)
+                          .map((_, index) => (
+                              <SkeletonCard key={index} isSwiperCard={false} />
+                          ))}
             </div>
 
             {!allCoursesLoaded && courses.length > 0 ? (
@@ -297,9 +68,13 @@ const CardsContainer = ({ courses, loadMoreCourses, allCoursesLoaded }) => {
     );
 };
 
-const HomePage = () => {
+const TrainingsPage = () => {
     const [courses, setCourses] = useState([]);
     const [visibleCourses, setVisibleCourses] = useState(6);
+    const [selectedValues, setSelectedValues] = useState({
+        minPrice: '',
+        maxPrice: '',
+    });
 
     useEffect(() => {
         const fetchData = async () => {
@@ -309,11 +84,28 @@ const HomePage = () => {
         fetchData();
     }, []);
 
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        setSelectedValues((prevValues) => ({
+            ...prevValues,
+            [name]: value,
+        }));
+    };
+
+    const handleSearch = () => {
+        console.log('Search clicked', selectedValues);
+    };
+
     const loadMoreCourses = () => {
         setVisibleCourses((prevVisibleCourses) => prevVisibleCourses + 6);
     };
 
     const allCoursesLoaded = visibleCourses >= courses.length;
+
+    const [isFilterOpen, setIsFilterOpen] = useState(true);
+    const handleFilterToggle = (val) => {
+        setIsFilterOpen(!val);
+    };
 
     return (
         <div className="w-full h-full flex flex-col justify-between items-center">
@@ -324,12 +116,165 @@ const HomePage = () => {
                         Pick up your preferences
                     </p>
                 </div>
-                <div className="flex flex-row justify-center w-5/6 h-auto">
-                    <SideBar />
+                {/* <div className="flex flex-row justify-between w-5/6 h-auto"> */}
+                <div className="grid grid-cols-4 w-5/6 h-auto">
+                    <Filter
+                        filterList={[
+                            {
+                                isPrice: false,
+                                title: 'Location',
+                                items: [
+                                    {
+                                        display: 'Prishtina',
+                                        name: 'location_radio',
+                                        id: 'prishtina',
+                                        value: 'Prishtina',
+                                    },
+                                    {
+                                        display: 'Gjilan',
+                                        name: 'location_radio',
+                                        id: 'gjilan',
+                                        value: 'Gjilan',
+                                    },
+                                    {
+                                        display: 'Prizren',
+                                        name: 'location_radio',
+                                        id: 'prizren',
+                                        value: 'Prizren',
+                                    },
+                                ],
+                            },
+                            {
+                                isPrice: false,
+                                title: 'Fields',
+                                items: [
+                                    {
+                                        display: 'Python',
+                                        name: 'fields_radio',
+                                        id: 'python',
+                                        value: 'Python',
+                                    },
+                                    {
+                                        display: 'Social Media',
+                                        name: 'fields_radio',
+                                        id: 'social_media',
+                                        value: 'Social Media',
+                                    },
+                                    {
+                                        display: 'Digital Marketing',
+                                        name: 'fields_radio',
+                                        id: 'digital_marketing',
+                                        value: 'Digital Marketing',
+                                    },
+                                    {
+                                        display: 'Graphic Design',
+                                        name: 'fields_radio',
+                                        id: 'graphic_design',
+                                        value: 'Graphic Design',
+                                    },
+                                    {
+                                        display: 'UI/UX',
+                                        name: 'fields_radio',
+                                        id: 'ui_ux',
+                                        value: 'UI/UX',
+                                    },
+                                    {
+                                        display: 'Cyber Security',
+                                        name: 'fields_radio',
+                                        id: 'cyber_security',
+                                        value: 'Cyber Security',
+                                    },
+                                ],
+                            },
+                            {
+                                isPrice: false,
+                                title: 'Skill Level',
+                                items: [
+                                    {
+                                        display: 'Beginner',
+                                        name: 'skill_radio',
+                                        id: 'Beginner',
+                                        value: 'Beginner',
+                                    },
+                                    {
+                                        display: 'Intermediete',
+                                        name: 'skill_radio',
+                                        id: 'intermediete',
+                                        value: 'intermediete',
+                                    },
+                                    {
+                                        display: 'Advanced',
+                                        name: 'skill_radio',
+                                        id: 'Advanced',
+                                        value: 'Advanced',
+                                    },
+                                ],
+                            },
+                            {
+                                isPrice: false,
+                                title: 'Availability',
+                                items: [
+                                    {
+                                        display: 'Event Classes',
+                                        name: 'availability_radio',
+                                        id: 'event_classes',
+                                        value: 'Event Classes',
+                                    },
+                                    {
+                                        display: 'Weekend Classes',
+                                        name: 'availability_radio',
+                                        id: 'weekend_classes',
+                                        value: 'Weekend Classes',
+                                    },
+                                    {
+                                        display: 'Flexibile',
+                                        name: 'availability_radio',
+                                        id: 'flexibile',
+                                        value: 'Flexibile',
+                                    },
+                                ],
+                            },
+                            {
+                                isPrice: false,
+                                title: 'Duration',
+                                items: [
+                                    {
+                                        display: 'Workshops',
+                                        name: 'duration_radio',
+                                        id: 'workshops',
+                                        value: 'Workshops',
+                                    },
+                                    {
+                                        display: '3 Months',
+                                        name: 'duration_radio',
+                                        id: 'three_months',
+                                        value: '3 Months',
+                                    },
+                                    {
+                                        display: '6 Months',
+                                        name: 'duration_radio',
+                                        id: 'six_months',
+                                        value: '6 Months',
+                                    },
+                                    {
+                                        display: '1 Year',
+                                        name: 'duration_radio',
+                                        id: 'one_year',
+                                        value: '1 Year',
+                                    },
+                                ],
+                            },
+                        ]}
+                        selectedValues={selectedValues}
+                        handleChange={handleChange}
+                        handleSearch={handleSearch}
+                        handleFilterToggle={handleFilterToggle}
+                    />
                     <CardsContainer
                         courses={courses.slice(0, visibleCourses)}
                         loadMoreCourses={loadMoreCourses}
                         allCoursesLoaded={allCoursesLoaded}
+                        isFilterOpen={isFilterOpen}
                     />
                 </div>
             </div>
@@ -337,4 +282,4 @@ const HomePage = () => {
     );
 };
 
-export default SectionWrapper(HomePage);
+export default SectionWrapper(TrainingsPage);
