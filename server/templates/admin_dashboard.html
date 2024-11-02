@@ -48,7 +48,7 @@
                     <h1 class="text-2xl font-bold">Admin Panel</h1>
                 </div>
                 <nav class="mt-10">
-                    <a
+                      <a 
                         id="manageUsersLink"
                         href="#"
                         class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-800"
@@ -59,7 +59,7 @@
                         <a href="#" id=" approveOrganizationsLink" class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-800"> Approve Organizations</a>
                         <a href="#" id="checkAndChangeAccountInfoLink" class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-800">Check and Change Account Info</a>
                         <a href="#" id="banDeleteUsersLink" class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-800">Ban/Delete users</a>
-                    </div>
+                    </div> 
                     <div>
                         <a
                             id="manageCardsLink"
@@ -102,15 +102,15 @@
             <p id="greetingDescription" class="text-gray-700 mb-6">This is your admin dashboard where you can manage Users, Cards, or Reviews.</p>
 
             <!-- Users Table -->
-            <div id="usersTableContainer" style="display: none;">
-                <h2 class="text-2xl font-bold mb-4" id="usersHeader">Manage Users</h2>
-                <table class="min-w-full bg-white" id="usersTable">
+            <div id="approveOrganizationsTableContainer" style="display: none;">
+                <h2 class="text-2xl font-bold mb-4" id="approveOrganizationsHeader">Approve Organizations</h2>
+                <table class="min-w-full bg-white" id="approveOrganizationsTable">
                     <thead>
-                        <tr id="usersTableHeader">
+                        <tr id="approveOrganizationsTableHeader">
                             <!-- Dynamic Header -->
                         </tr>
                     </thead>
-                    <tbody id="usersTableBody">
+                    <tbody id="approveOrganizationsTableBody">
                         <!-- Users will be dynamically inserted here -->
                     </tbody>
                 </table>
