@@ -22,6 +22,10 @@ import UserProfileORG from './pages/UserProfileORG.jsx';
 import PostingPage from './pages/PostingPage.jsx';
 import UserProfile from './pages/UserProfile.jsx';
 import UserEditProfile from './pages/UserEditProfile.jsx';
+import UserProfileMyapp from './pages/UserProfileMyapp.jsx';
+import UserProfileMyappRate from './pages/UserProfileMyappRate.jsx';
+import UserProfileMyappSaved from './pages/UserProfileMyappSaved.jsx';
+import NeedsLogin from './pages/auth/NeedsLogin.jsx';
 
 const router = createBrowserRouter([
     {
@@ -52,7 +56,7 @@ const router = createBrowserRouter([
             {
                 path: '/Volunteering',
                 element: <VolunteeringPage />,
-            },          
+            },
         ],
     },
     {
@@ -85,24 +89,63 @@ const router = createBrowserRouter([
         children: [
             {
                 path: '/profile/org',
-                element: <UserProfileORG />,
+                element: (
+                    <NeedsLogin>
+                        <UserProfileORG />
+                    </NeedsLogin>
+                ),
             },
             {
                 path: '/profile/org/post',
-                element: <PostingPage />,
+                element: (
+                    <NeedsLogin>
+                        <PostingPage />
+                    </NeedsLogin>
+                ),
             },
             {
                 path: '/profile',
-                element: <UserProfile />,
+                element: (
+                    <NeedsLogin>
+                        <UserProfile />
+                    </NeedsLogin>
+                ),
             },
             {
                 path: '/profile/edit',
-                element: <UserEditProfile />,
+                element: (
+                    <NeedsLogin>
+                        <UserEditProfile />
+                    </NeedsLogin>
+                ),
             },
-            
+            {
+                path: '/profile/myapp',
+                element: (
+                    <NeedsLogin>
+                        <UserProfileMyapp />
+                    </NeedsLogin>
+                ),
+            },
+            {
+                path: '/profile/rate',
+                element: (
+                    <NeedsLogin>
+                        <UserProfileMyappRate />
+                    </NeedsLogin>
+                ),
+            },
+            {
+                path: '/profile/saved',
+                element: (
+                    <NeedsLogin>
+                        <UserProfileMyappSaved />
+                    </NeedsLogin>
+                ),
+            },
         ],
     },
-    
+
     {
         path: '/login',
         element: <LoginPage />,
