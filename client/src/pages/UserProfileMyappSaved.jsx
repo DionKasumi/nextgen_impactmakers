@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import Card from '../components/Card';
 
-const UserProfile = () => {
+const UserProfileMyappSaved = () => {
     return (
         <div className="min-h-screen w-full bg-gradient-to-b from-[#4F1ABE] via-[#A78DDF] flex flex-col items-center py-20 relative">
             <img
@@ -25,7 +26,12 @@ const UserProfile = () => {
                         <nav className="hidden sm:flex space-x-10  text-white font-bold text-lg">
                             <Link to="/profile/edit">Edit Profile</Link>
                             <Link to="/profile/myapp">My applications</Link>
-                            <Link to="/profile/saved">Saved for Later</Link>
+                            <Link
+                                to="/profile/saved"
+                                className="text-[#FF9202]"
+                            >
+                                Saved for Later
+                            </Link>
                             <Link to="/profile/rate">Rate this Website</Link>
                         </nav>
                     </div>
@@ -39,38 +45,28 @@ const UserProfile = () => {
                     </button>
                 </div>
             </div>
-            {/* Group 704 Icon in the Red Circle Position */}
-            <div className="relative flex justify-center items-center mb-4">
-                <img
-                    src="assets/Group 704.png"
-                    alt="Group Icon"
-                    className="w-10 h-10 -mb-60 ml-64 md:-mb-60 md:ml-96 sm:w-12 sm:h-12 sm:-mb-60 sm:ml-96 md:w-14 md:h-14 lg:w-16 lg:h-16"
-                />
-            </div>
-            {/* Welcome */}
-            <div className="text-center mt-44 h-auto relative w-full max-w-md mb-96 px-4">
-                <div className="space-y-8">
-                    <div className="text-white text-2xl sm:text-3xl md:text-4xl font-semibold">
-                        Welcome, Username
-                        <hr className="absolute left-0 right-0 mx-auto top-12 h-1 bg-white" />
-                    </div>
-                    <div className="text-white text-2xl sm:text-3xl md:text-4xl font-semibold">
-                        Upcoming opportunities
-                        <hr className="absolute left-0 right-0 mx-auto top-full h-0.5 bg-white opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                    </div>
-                    <div className="relative group text-white text-lg sm:text-xl md:text-2xl font-semibold hover:text-3xl">
-                        Opportunity 1: Deadline
-                    </div>
-                    <div className="relative group text-white text-lg sm:text-xl md:text-xl font-semibold hover:text-2xl">
-                        Opportunity 2: Deadline
-                    </div>
-                    <div className="relative group text-white text-sm sm:text-lg md:text-lg font-semibold hover:text-xl">
-                        Opportunity 3: Deadline
-                    </div>
+
+            <div className="w-full h-full flex justify-center items-center">
+                <div className="w-2/4 h-full grid grid-cols-1 md:grid-cols-2 gap-8 justify-items-center">
+                    {Array(6)
+                        .fill(null)
+                        .map((_, index) => (
+                            <Card
+                                key={index}
+                                id={0}
+                                card_title={''}
+                                card_img={''}
+                                card_duration={''}
+                                card_description={''}
+                                card_price={''}
+                                card_source={''}
+                                card_type="events"
+                            />
+                        ))}
                 </div>
             </div>
         </div>
     );
 };
 
-export default UserProfile;
+export default UserProfileMyappSaved;

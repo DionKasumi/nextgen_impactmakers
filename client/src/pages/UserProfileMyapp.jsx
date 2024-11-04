@@ -1,7 +1,39 @@
 import React from 'react';
+import SwiperCarousel from '../components/SwiperCarousel';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
 
-const UserProfile = () => {
+const UserProfileMyapp = () => {
+    const [carouselData, setCarouselData] = useState([]);
+
+    useEffect(() => {
+        const fetchCarouselData = async () => {
+            try {
+                const endpoint = `http://localhost:8080/api/courses`;
+
+                const response = await axios.get(endpoint);
+
+                if (response.status === 200) {
+                    const result = response.data;
+                    let gatheredData = [];
+
+                    if (typeof result === 'object') {
+                        gatheredData = result
+                            .slice(0, 5)
+                            .map((item) => ({ ...item, type: 'courses' }));
+                    }
+                    setCarouselData(gatheredData);
+                } else {
+                    console.error('Failed to fetch cards');
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        fetchCarouselData();
+    }, []);
+
     return (
         <div className="min-h-screen w-full bg-gradient-to-b from-[#4F1ABE] via-[#A78DDF] flex flex-col items-center py-20 relative">
             <img
@@ -24,7 +56,12 @@ const UserProfile = () => {
                         </p>
                         <nav className="hidden sm:flex space-x-10  text-white font-bold text-lg">
                             <Link to="/profile/edit">Edit Profile</Link>
-                            <Link to="/profile/myapp">My applications</Link>
+                            <Link
+                                to="/profile/myapp"
+                                className="text-[#FF9202]"
+                            >
+                                My applications
+                            </Link>
                             <Link to="/profile/saved">Saved for Later</Link>
                             <Link to="/profile/rate">Rate this Website</Link>
                         </nav>
@@ -39,38 +76,13 @@ const UserProfile = () => {
                     </button>
                 </div>
             </div>
-            {/* Group 704 Icon in the Red Circle Position */}
-            <div className="relative flex justify-center items-center mb-4">
-                <img
-                    src="assets/Group 704.png"
-                    alt="Group Icon"
-                    className="w-10 h-10 -mb-60 ml-64 md:-mb-60 md:ml-96 sm:w-12 sm:h-12 sm:-mb-60 sm:ml-96 md:w-14 md:h-14 lg:w-16 lg:h-16"
-                />
-            </div>
-            {/* Welcome */}
-            <div className="text-center mt-44 h-auto relative w-full max-w-md mb-96 px-4">
-                <div className="space-y-8">
-                    <div className="text-white text-2xl sm:text-3xl md:text-4xl font-semibold">
-                        Welcome, Username
-                        <hr className="absolute left-0 right-0 mx-auto top-12 h-1 bg-white" />
-                    </div>
-                    <div className="text-white text-2xl sm:text-3xl md:text-4xl font-semibold">
-                        Upcoming opportunities
-                        <hr className="absolute left-0 right-0 mx-auto top-full h-0.5 bg-white opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                    </div>
-                    <div className="relative group text-white text-lg sm:text-xl md:text-2xl font-semibold hover:text-3xl">
-                        Opportunity 1: Deadline
-                    </div>
-                    <div className="relative group text-white text-lg sm:text-xl md:text-xl font-semibold hover:text-2xl">
-                        Opportunity 2: Deadline
-                    </div>
-                    <div className="relative group text-white text-sm sm:text-lg md:text-lg font-semibold hover:text-xl">
-                        Opportunity 3: Deadline
-                    </div>
-                </div>
+            {/* Swiper Carousel */}
+            <SwiperCarousel data={carouselData} />
+            <div className="w-1/2 rounded-lg mr-80 mb-44 z-10">
+                <div className="grid grid-cols-[3fr_1fr] gap-8"></div>
             </div>
         </div>
     );
 };
 
-export default UserProfile;
+export default UserProfileMyapp;
