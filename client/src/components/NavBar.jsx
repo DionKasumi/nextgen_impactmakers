@@ -245,27 +245,25 @@ const NavBar = ({ theme }) => {
 
     return (
         <>
-           <nav
-    className="w-full h-20 flex justify-center items-center fixed top-0 left-0 z-50"
-    style={
-        theme === 'primary'
-            ? {
-                  backgroundImage: 'url(/assets/nav.png)', // Replace with your image path
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  backgroundRepeat: 'no-repeat',
-                  color: 'white',
-              }
-            : theme === 'secondary'
-            ? {
-                  backgroundColor: '#ffffff', 
-                  color: 'black',
-              }
-            : { backgroundColor: '', color: 'white' }
-    }
->
-
-            
+            <nav
+                className="w-full h-20 flex justify-center items-center fixed top-0 left-0 z-50"
+                style={
+                    theme === 'primary' || theme === 'tertiary'
+                        ? {
+                              backgroundImage: 'url(/assets/nav.png)', // Replace with your image path
+                              backgroundSize: 'cover',
+                              backgroundPosition: 'center',
+                              backgroundRepeat: 'no-repeat',
+                              color: 'white',
+                          }
+                        : theme === 'secondary'
+                        ? {
+                              backgroundColor: '#ffffff',
+                              color: 'black',
+                          }
+                        : { backgroundColor: '', color: 'white' }
+                }
+            >
                 <div className="w-5/6 h-full flex justify-between items-center">
                     <div className="h-full flex items-center">
                         <Link to={'/'}>

@@ -22,6 +22,9 @@ import UserProfileORG from './pages/UserProfileORG.jsx';
 import PostingPage from './pages/PostingPage.jsx';
 import UserProfile from './pages/UserProfile.jsx';
 import UserEditProfile from './pages/UserEditProfile.jsx';
+import UserProfileMyapp from './pages/UserProfileMyapp.jsx';
+import UserProfileMyappRate from './pages/UserProfileMyappRate.jsx';
+import UserProfileMyappSaved from './pages/UserProfileMyappSaved.jsx';
 
 const router = createBrowserRouter([
     {
@@ -52,7 +55,7 @@ const router = createBrowserRouter([
             {
                 path: '/Volunteering',
                 element: <VolunteeringPage />,
-            },          
+            },
         ],
     },
     {
@@ -99,10 +102,21 @@ const router = createBrowserRouter([
                 path: '/profile/edit',
                 element: <UserEditProfile />,
             },
-            
+            {
+                path: '/profile/myapp',
+                element: <UserProfileMyapp />,
+            },
+            {
+                path: '/profile/rate',
+                element: <UserProfileMyappRate />,
+            },
+            {
+                path: '/profile/saved',
+                element: <UserProfileMyappSaved />,
+            },
         ],
     },
-    
+
     {
         path: '/login',
         element: <LoginPage />,
