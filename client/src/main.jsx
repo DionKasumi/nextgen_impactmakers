@@ -25,6 +25,7 @@ import UserEditProfile from './pages/UserEditProfile.jsx';
 import UserProfileMyapp from './pages/UserProfileMyapp.jsx';
 import UserProfileMyappRate from './pages/UserProfileMyappRate.jsx';
 import UserProfileMyappSaved from './pages/UserProfileMyappSaved.jsx';
+import NeedsLogin from './pages/auth/NeedsLogin.jsx';
 
 const router = createBrowserRouter([
     {
@@ -88,31 +89,59 @@ const router = createBrowserRouter([
         children: [
             {
                 path: '/profile/org',
-                element: <UserProfileORG />,
+                element: (
+                    <NeedsLogin>
+                        <UserProfileORG />
+                    </NeedsLogin>
+                ),
             },
             {
                 path: '/profile/org/post',
-                element: <PostingPage />,
+                element: (
+                    <NeedsLogin>
+                        <PostingPage />
+                    </NeedsLogin>
+                ),
             },
             {
                 path: '/profile',
-                element: <UserProfile />,
+                element: (
+                    <NeedsLogin>
+                        <UserProfile />
+                    </NeedsLogin>
+                ),
             },
             {
                 path: '/profile/edit',
-                element: <UserEditProfile />,
+                element: (
+                    <NeedsLogin>
+                        <UserEditProfile />
+                    </NeedsLogin>
+                ),
             },
             {
                 path: '/profile/myapp',
-                element: <UserProfileMyapp />,
+                element: (
+                    <NeedsLogin>
+                        <UserProfileMyapp />
+                    </NeedsLogin>
+                ),
             },
             {
                 path: '/profile/rate',
-                element: <UserProfileMyappRate />,
+                element: (
+                    <NeedsLogin>
+                        <UserProfileMyappRate />
+                    </NeedsLogin>
+                ),
             },
             {
                 path: '/profile/saved',
-                element: <UserProfileMyappSaved />,
+                element: (
+                    <NeedsLogin>
+                        <UserProfileMyappSaved />
+                    </NeedsLogin>
+                ),
             },
         ],
     },

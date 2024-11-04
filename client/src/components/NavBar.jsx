@@ -5,17 +5,14 @@ import { useState, useEffect } from 'react';
 import {
     Box,
     List,
-    ListItem,
     ListItemButton,
     ListItemText,
     Collapse,
-    Button,
-    Menu,
-    MenuItem,
 } from '@mui/material';
 import { MdExpandLess, MdExpandMore } from 'react-icons/md';
 import { FaUserCircle, FaCircle } from 'react-icons/fa';
 import axios from 'axios';
+import { ImExit } from 'react-icons/im';
 
 axios.defaults.withCredentials = true; // Ensure Axios sends session cookies with requests
 
@@ -33,6 +30,12 @@ const NavBar = ({ theme }) => {
     const [categoriesOpen, setCategoriesOpen] = useState(false);
     const handleCategoriesClick = () => {
         setCategoriesOpen(!categoriesOpen);
+        setProfileOpen(false);
+    };
+    const [profileOpen, setProfileOpen] = useState(false);
+    const handleProfileClick = () => {
+        setProfileOpen(!profileOpen);
+        setCategoriesOpen(false);
     };
 
     // Check session state when NavBar loads
@@ -110,6 +113,10 @@ const NavBar = ({ theme }) => {
                                 onClick={handleLogout}
                                 className="w-full h-full flex flex-row items-center"
                             >
+                                <ImExit
+                                    size={20}
+                                    style={{ marginRight: '0.75rem' }}
+                                />
                                 Log Out
                             </button>
                         </ListItemButton>
@@ -239,6 +246,112 @@ const NavBar = ({ theme }) => {
                         </ListItemButton>
                     </List>
                 </Collapse>
+
+                <ListItemButton
+                    onClick={handleProfileClick}
+                    sx={{
+                        height: '3.5rem',
+                        '&:hover': { bgcolor: '#A3A9FE80' },
+                        display: isLoggedIn ? 'flex' : 'none',
+                    }}
+                >
+                    <FaUserCircle
+                        size={25}
+                        className="profile-icon"
+                        style={{ marginRight: '0.5rem' }}
+                    />
+                    <ListItemText primary="Profile" />
+                    {profileOpen ? (
+                        <MdExpandLess className="scale-150" />
+                    ) : (
+                        <MdExpandMore className="scale-150" />
+                    )}
+                </ListItemButton>
+                <Collapse
+                    in={profileOpen}
+                    timeout="auto"
+                    unmountOnExit
+                    sx={{ display: isLoggedIn ? 'flex' : 'none' }}
+                >
+                    <List component="div" disablePadding>
+                        <ListItemButton
+                            sx={{
+                                height: '3.5rem',
+                                padding: '0px',
+                                '&:hover': { bgcolor: '#A3A9FE80' },
+                            }}
+                        >
+                            <Link
+                                to={'/profile/edit'}
+                                className="w-full h-full flex flex-row items-center"
+                                onClick={() => {
+                                    handleProfileClick();
+                                    toggleMenu(false);
+                                }}
+                            >
+                                <FaCircle className="scale-50 ml-8 mr-2" />
+                                Edit Profile
+                            </Link>
+                        </ListItemButton>
+                        <ListItemButton
+                            sx={{
+                                height: '3.5rem',
+                                padding: '0px',
+                                '&:hover': { bgcolor: '#A3A9FE80' },
+                            }}
+                        >
+                            <Link
+                                to={'/profile/myapp'}
+                                className="w-full h-full flex flex-row items-center"
+                                onClick={() => {
+                                    handleProfileClick();
+                                    toggleMenu(false);
+                                }}
+                            >
+                                <FaCircle className="scale-50 ml-8 mr-2" />
+                                My Applications
+                            </Link>
+                        </ListItemButton>
+                        <ListItemButton
+                            sx={{
+                                height: '3.5rem',
+                                padding: '0px',
+                                '&:hover': { bgcolor: '#A3A9FE80' },
+                            }}
+                        >
+                            <Link
+                                to={'/profile/saved'}
+                                className="w-full h-full flex flex-row items-center"
+                                onClick={() => {
+                                    handleProfileClick();
+                                    toggleMenu(false);
+                                }}
+                            >
+                                <FaCircle className="scale-50 ml-8 mr-2" />
+                                Saved For Later
+                            </Link>
+                        </ListItemButton>
+                        <ListItemButton
+                            sx={{
+                                height: '3.5rem',
+                                padding: '0px',
+                                '&:hover': { bgcolor: '#A3A9FE80' },
+                            }}
+                        >
+                            <Link
+                                to={'/profile/rate'}
+                                className="w-full h-full flex flex-row items-center"
+                                onClick={() => {
+                                    handleProfileClick();
+                                    toggleMenu(false);
+                                }}
+                            >
+                                <FaCircle className="scale-50 ml-8 mr-2" />
+                                Rate this Website
+                            </Link>
+                        </ListItemButton>
+                    </List>
+                </Collapse>
             </List>
         </Box>
     );
@@ -298,7 +411,7 @@ const NavBar = ({ theme }) => {
                         })}
 
                         <li className="relative dropdown-wrapper">
-                            <div className="flex flex-row justify-center items-center">
+                            <div className="flex flex-row justify-end items-center">
                                 <h1
                                     className="ml-8 focus:outline-none cursor-pointer"
                                     onClick={handleCategoriesClick}
@@ -310,73 +423,110 @@ const NavBar = ({ theme }) => {
                                 ) : (
                                     <MdExpandMore className="scale-150 ml-2" />
                                 )}
+                                <ul
+                                    className={`absolute top-full left-0 bg-white text-black shadow-lg rounded-md mt-2 py-2 transition-all duration-300 ease-in-out transform ${
+                                        categoriesOpen
+                                            ? 'opacity-100 translate-y-0'
+                                            : 'opacity-0 -translate-y-3 pointer-events-none'
+                                    }`}
+                                >
+                                    <li className="px-4 py-2 hover:bg-gray-200">
+                                        <Link
+                                            to={'/events'}
+                                            onClick={handleCategoriesClick}
+                                        >
+                                            Events
+                                        </Link>
+                                    </li>
+                                    <li className="px-4 py-2 hover:bg-gray-200">
+                                        <Link
+                                            to={'/internships'}
+                                            onClick={handleCategoriesClick}
+                                        >
+                                            Internships
+                                        </Link>
+                                    </li>
+                                    <li className="px-4 py-2 hover:bg-gray-200">
+                                        <Link
+                                            to={'/volunteering'}
+                                            onClick={handleCategoriesClick}
+                                        >
+                                            Volunteering
+                                        </Link>
+                                    </li>
+                                    <li className="px-4 py-2 hover:bg-gray-200">
+                                        <Link
+                                            to={'/trainings'}
+                                            onClick={handleCategoriesClick}
+                                        >
+                                            Trainings
+                                        </Link>
+                                    </li>
+                                </ul>
                             </div>
-                            <ul
-                                className={`absolute top-full left-0 bg-white text-black shadow-lg rounded-md mt-2 py-2 transition-all duration-300 ease-in-out transform ${
-                                    categoriesOpen
-                                        ? 'opacity-100 translate-y-0'
-                                        : 'opacity-0 -translate-y-3 pointer-events-none'
-                                }`}
-                            >
-                                <li className="px-4 py-2 hover:bg-gray-200">
-                                    <Link
-                                        to={'/events'}
-                                        onClick={handleCategoriesClick}
-                                    >
-                                        Events
-                                    </Link>
-                                </li>
-                                <li className="px-4 py-2 hover:bg-gray-200">
-                                    <Link
-                                        to={'/internships'}
-                                        onClick={handleCategoriesClick}
-                                    >
-                                        Internships
-                                    </Link>
-                                </li>
-                                <li className="px-4 py-2 hover:bg-gray-200">
-                                    <Link
-                                        to={'/volunteering'}
-                                        onClick={handleCategoriesClick}
-                                    >
-                                        Volunteering
-                                    </Link>
-                                </li>
-                                <li className="px-4 py-2 hover:bg-gray-200">
-                                    <Link
-                                        to={'/trainings'}
-                                        onClick={handleCategoriesClick}
-                                    >
-                                        Trainings
-                                    </Link>
-                                </li>
-                            </ul>
                         </li>
 
-                        {/* If the user is logged in, show the profile icon and logout */}
+                        {/* If the user is logged in, show the profile icon */}
                         {isLoggedIn ? (
                             <>
-                                <li>
-                                    <button
-                                        onClick={handleLogout}
-                                        className="ml-8 focus:outline-none"
-                                        style={{
-                                            background: 'none',
-                                            border: 'none',
-                                            cursor: 'pointer',
-                                            padding: 0,
-                                        }}
-                                    >
-                                        Logout
-                                    </button>
-                                </li>
-                                <li className="ml-8 flex items-center">
+                                <div
+                                    className="flex flex-row justify-end ml-6"
+                                    onClick={handleProfileClick}
+                                >
                                     <FaUserCircle
                                         size={30}
                                         className="profile-icon"
-                                        style={{ marginLeft: 'auto' }}
                                     />
-                                </li>
+                                    <ul
+                                        className={`absolute top-full bg-white text-black shadow-lg rounded-md -mt-5 py-2 transition-all duration-300 ease-in-out transform ${
+                                            profileOpen
+                                                ? 'opacity-100 translate-y-0'
+                                                : 'opacity-0 -translate-y-3 pointer-events-none'
+                                        }`}
+                                    >
+                                        <li className="px-4 py-2 hover:bg-gray-200">
+                                            <Link
+                                                to={'/profile/edit'}
+                                                onClick={handleCategoriesClick}
+                                            >
+                                                Edit Profile
+                                            </Link>
+                                        </li>
+                                        <li className="px-4 py-2 hover:bg-gray-200">
+                                            <Link
+                                                to={'/profile/myapp'}
+                                                onClick={handleCategoriesClick}
+                                            >
+                                                My applications
+                                            </Link>
+                                        </li>
+                                        <li className="px-4 py-2 hover:bg-gray-200">
+                                            <Link
+                                                to={'/profile/saved'}
+                                                onClick={handleCategoriesClick}
+                                            >
+                                                Saved for Later
+                                            </Link>
+                                        </li>
+                                        <li className="px-4 py-2 hover:bg-gray-200">
+                                            <Link
+                                                to={'/profile/rate'}
+                                                onClick={handleCategoriesClick}
+                                            >
+                                                Rate this Website
+                                            </Link>
+                                        </li>
+                                        <li className="px-4 py-2 hover:bg-gray-200">
+                                            <button
+                                                onClick={handleLogout}
+                                                className="flex flex-row items-center"
+                                            >
+                                                <ImExit className="mr-2" />
+                                                Log Out
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
                             </>
                         ) : (
                             <>

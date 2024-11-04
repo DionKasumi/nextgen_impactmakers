@@ -49,7 +49,7 @@ const Posting = () => {
   };
 
   return (
-    <div className="relative text-white h-full w-full bg-gradient-to-b from-[#4F1ABE] to-[#A78DDF] to-[#FFFFFF]  flex flex-col items-center px-4 md:px-6 py-8">
+    <div className="relative text-white h-full w-full bg-gradient-to-b from-[#4F1ABE] to-[#FFFFFF]  flex flex-col items-center px-4 md:px-6 py-8">
       <img src="/assets/Group 750.png" alt="Background" className="absolute inset-0 w-full h-full object-cover opacity-50" />
       <div className="relative w-full max-w-md mt-24 p-8 rounded-lg z-10">
         <h2 className="text-3xl font-bold mb-12 text-white text-center md:text-left">ORG logo ORG name</h2>
