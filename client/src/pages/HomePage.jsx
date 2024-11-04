@@ -36,7 +36,6 @@ const FirstPart = () => {
 
                     if (loggedIn && typeof result === 'object') {
                         for (const category in result) {
-                            console.log(category);
                             if (Array.isArray(result[category])) {
                                 const remainingSlots = 5 - gatheredData.length;
 
@@ -344,7 +343,6 @@ const FivethPart = () => {
 
                     if (loggedIn && typeof result === 'object') {
                         for (const category in result) {
-                            console.log(category);
                             if (Array.isArray(result[category])) {
                                 const remainingSlots = 5 - gatheredData.length;
 
