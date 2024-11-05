@@ -353,6 +353,12 @@ def signup():
         for field in required_fields:
             if field not in data:
                 return jsonify({"error": f"Missing field {field} for organization signup."}), 400
+            
+     # Check if the organization already exists and if it has been banned
+        if is_email_banned_org(data['email_of_org']):
+            return jsonify({"error": "This organization is banned and cannot sign up again."}), 403
+        
+
         return add_organization(
             data['name_of_org'], 
             data['email_of_org'], 
@@ -395,6 +401,25 @@ def is_email_banned(email):
         print(f"MySQL error during email ban check: {e}")
         return False
 
+# Helper function to check if organization email is banned
+def is_email_banned_org(email_of_org):
+    try:
+        # Connect to the database
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        
+        # Check if the organization is banned
+        query = "SELECT status FROM organizations WHERE email_of_org = %s"
+        cursor.execute(query, [email_of_org])
+        org = cursor.fetchone()
+        
+        cursor.close()
+        db.close()
+
+        return org and org['status'] == 'banned'
+    except MySQLdb.Error as e:
+        print(f"MySQL error during organization email ban check: {e}")
+        return False
 
 def check_participant(email, password):
     try:
@@ -429,28 +454,34 @@ def check_organization(email_of_org, password_of_org):
     try:
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
+
         query = "SELECT * FROM organizations WHERE email_of_org = %s"
         cursor.execute(query, [email_of_org])
-        user = cursor.fetchone()
+        org = cursor.fetchone()
         cursor.close()
         db.close()
 
-        if not user:
+        if not org:
             return {"success": False, "message": "Organization not found."}, 404
 
         # Check if the password matches
-        if bcrypt.checkpw(password_of_org.encode('utf-8'), user['password_of_org'].encode('utf-8')):
+        if bcrypt.checkpw(password_of_org.encode('utf-8'), org['password_of_org'].encode('utf-8')):
             # Check the organization's status
-            if user['status'] == 'pending':
+            if org['status'] == 'banned':
+                return {"success": False, "message": "Your organization account has been banned. Please contact support."}, 403
+            elif org['status'] == 'pending':
                 return {"success": False, "message": "Organization approval is pending."}, 403
-            elif user['status'] == 'rejected':
+            elif org['status'] == 'rejected':
                 return {"success": False, "message": "Organization has been rejected by the admin."}, 403
-            elif user['status'] == 'approved':
+            elif org['status'] == 'approved':
                 return {"success": True, "message": "Login successful."}, 200
+
         return {"success": False, "message": "Invalid credentials."}, 401
+
     except MySQLdb.Error as e:
         print(f"MySQL error during organization login: {e}")
         return {"success": False, "message": "Database error."}, 500
+
 
 
 # --- Login Route ---
@@ -464,16 +495,26 @@ def login():
     print(f"Login attempt for {'Organization' if is_org else 'Participant'} with email: {email}")
 
     if is_org:
+        # Check organization status and credentials
         response, status_code = check_organization(email, password)
+        
+        # Assuming check_organization returns a dictionary with the organization status
         if status_code == 200:
+            if response['status'] == 'banned':
+                return jsonify({"success": False, "message": "Your organization account has been banned. Please contact support."}), 403
+            
             session['user_type'] = 'organization'
             session['user_email'] = email
-        return jsonify(response), status_code
+            return jsonify(response), status_code
+        
+        return jsonify(response), status_code  # Handle invalid credentials
+
     else:
         user = check_participant(email, password)
         if user:
             if user['status'] == 'banned':
                 return jsonify({"success": False, "message": "Your account has been banned. Please contact support."}), 403
+            
             session['user_type'] = 'participant'
             session['user_email'] = email
             return jsonify({"success": True, "message": "Login successful"}), 200
@@ -1011,6 +1052,60 @@ def ban_user(user_id):
         if db:
             db.close()
 
+@app.route('/api/admin/organizations/all', methods=['GET'])
+def get_all_organizations():
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        query = "SELECT * FROM organizations"  # Fetch all organizations
+        cursor.execute(query)
+        organizations = cursor.fetchall()
+        cursor.close()
+        return jsonify(organizations), 200
+    except MySQLdb.Error as e:
+        print(f"MySQL error during fetching organizations: {e}")
+        return jsonify([]), 500
+    finally:
+        if db:
+            db.close()
+
+
+@app.route('/api/admin/organizations/delete/<int:org_id>', methods=['POST'])
+def admin_delete_organization(org_id):
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+        query = "DELETE FROM organizations WHERE id = %s"
+        cursor.execute(query, (org_id,))
+        db.commit()
+        return jsonify({'message': 'Organization deleted successfully'}), 200
+    except MySQLdb.Error as e:
+        print(f"MySQL error during deleting organization: {e}")
+        return jsonify({'error': 'Failed to delete organization'}), 500
+    finally:
+        cursor.close()
+        db.close()
+
+
+@app.route('/api/admin/organizations/ban/<int:org_id>', methods=['POST'])
+def ban_organization(org_id):
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+        query = "UPDATE organizations SET status = 'banned' WHERE id = %s"
+        cursor.execute(query, (org_id,))
+        
+        if cursor.rowcount == 0:
+            return jsonify({"message": "Organization not found."}), 404
+        
+        db.commit()
+        return jsonify({"message": "Organization banned successfully."}), 200
+    except MySQLdb.Error as e:
+        print(f"MySQL error during banning organization: {e}")
+        return jsonify({"message": "Failed to ban organization.", "error": str(e)}), 500
+    finally:
+        if db:
+            db.close()
 
 
 if __name__ == '__main__':
