@@ -439,38 +439,44 @@ const MainForm = () => {
     };
 
     const onSubmit = async (e) => {
-        e.preventDefault();
+    e.preventDefault();
 
-        // Validate form before submission
-        if (!validateForm()) return;
+    // Validate form before submission
+    if (!validateForm()) return;
 
-        try {
-            if (isOrg) {
+    try {
+        if (isOrg) {
+            const response = await axios.post(
+                'http://localhost:8080/signup',
+                {
+                    ...orgData,
+                    isOrg: true,
+                }
+            );
+
+            handleSuccessResponse(response);
+        } else {
+            if (isParticipantSecondForm) {
                 const response = await axios.post(
                     'http://localhost:8080/signup',
-                    {
-                        ...orgData,
-                        isOrg: true,
-                    }
+                    { ...participantData, preferences: preferencesData }
                 );
 
                 handleSuccessResponse(response);
             } else {
-                if (isParticipantSecondForm) {
-                    const response = await axios.post(
-                        'http://localhost:8080/signup',
-                        { ...participantData, preferences: preferencesData }
-                    );
-
-                    handleSuccessResponse(response);
-                } else {
-                    setParticipantSecondForm(true);
-                }
+                setParticipantSecondForm(true);
             }
-        } catch (error) {
-            handleFailedResponse(error);
         }
-    };
+    } catch (error) {
+        // Check for the specific banned email message
+        if (error.response && error.response.status === 403) {
+            alert("You cannot register with a banned email."); // Show banned message
+        } else {
+            handleFailedResponse(error); // Handle other errors
+        }
+    }
+};
+
 
     const handleSuccessResponse = (res) => {
         let count = 3;

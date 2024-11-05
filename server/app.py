@@ -28,7 +28,7 @@ app.config['SESSION_COOKIE_SECURE'] = False    # Disable secure cookies for deve
 # Database connection parameters
 db_params = {
     'user': 'root',
-    'passwd': '1234',
+    'passwd': '12345678',
     'host': 'localhost',
     'port': 3306,
     'db': 'pye_data'
@@ -340,6 +340,12 @@ def signup():
     data = request.get_json()
     print(f"Signup data received: {data}")  # Log the incoming data for debugging
 
+    email = data.get('email')  # Get the email for validation
+
+    # Check if the user is banned before proceeding with signup
+    if is_email_banned(email):
+        return jsonify({"error": "You cannot register with a banned email."}), 403
+
     # Check if the signup is for an organization
     if 'isOrg' in data and data['isOrg']:
         # Organization signup
@@ -368,6 +374,27 @@ def signup():
         data['password'],
         data.get('preferences', [])
     )
+
+# Helper function to check if email is banned
+def is_email_banned(email):
+    try:
+        # Connect to the database
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        
+        # Check if the user is banned
+        query = "SELECT status FROM participants WHERE email = %s"
+        cursor.execute(query, [email])
+        user = cursor.fetchone()
+        
+        cursor.close()
+        db.close()
+
+        return user and user['status'] == 'banned'
+    except MySQLdb.Error as e:
+        print(f"MySQL error during email ban check: {e}")
+        return False
+
 
 def check_participant(email, password):
     try:
@@ -443,12 +470,16 @@ def login():
             session['user_email'] = email
         return jsonify(response), status_code
     else:
-        if check_participant(email, password):
+        user = check_participant(email, password)
+        if user:
+            if user['status'] == 'banned':
+                return jsonify({"success": False, "message": "Your account has been banned. Please contact support."}), 403
             session['user_type'] = 'participant'
             session['user_email'] = email
             return jsonify({"success": True, "message": "Login successful"}), 200
         else:
             return jsonify({"success": False, "message": "Invalid participant credentials"}), 401
+
 
 # --- Session Check Route (For Debugging) ---
 @app.route('/api/session', methods=['GET'])
@@ -619,9 +650,9 @@ def get_events():
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
         query = "SELECT * FROM all_events"  # Adjust the query as needed
         cursor.execute(query)
-        internships = cursor.fetchall()
+        events = cursor.fetchall()
         cursor.close()
-        return internships
+        return events
     except MySQLdb.Error as e:
         print(f"MySQL error during fetching events: {e}")
         return []
@@ -917,6 +948,70 @@ def get_all_user_data():
     }
     
     return jsonify(response_data), 200
+
+# Function to get users from the database
+def get_users():
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        query = "SELECT * FROM participants"  # Adjust the status filter if needed
+        cursor.execute(query)
+        users = cursor.fetchall()
+        cursor.close()
+        return users
+    except MySQLdb.Error as e:
+        print(f"MySQL error during fetching users: {e}")
+        return []
+    finally:
+        db.close()
+
+# API to get users
+@app.route('/api/admin/users', methods=['GET'])
+def admin_get_users():
+    users = get_users()
+    return jsonify(users), 200
+
+
+@app.route('/api/admin/users/delete/<int:user_id>', methods=['POST'])
+def admin_delete_user(user_id):
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+        query = "DELETE FROM participants WHERE id = %s"
+        cursor.execute(query, (user_id,))
+        db.commit()
+        return jsonify({'message': 'User deleted successfully'}), 200
+    except MySQLdb.Error as e:
+        print(f"MySQL error during deleting user: {e}")
+        return jsonify({'error': 'Failed to delete user'}), 500
+    finally:
+        cursor.close()
+        db.close()
+
+
+@app.route('/api/admin/users/ban/<int:user_id>', methods=['POST'])
+def ban_user(user_id):
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+        query = "UPDATE participants SET status = 'banned' WHERE id = %s"
+        cursor.execute(query, (user_id,))
+        
+        # Check if any rows were updated
+        if cursor.rowcount == 0:
+            return jsonify({"message": "User not found."}), 404
+        
+        db.commit()
+        cursor.close()
+        return jsonify({"message": "User banned successfully."}), 200
+    except MySQLdb.Error as e:
+        print(f"MySQL error during banning user: {e}")  # Log error details
+        return jsonify({"message": "Failed to ban user.", "error": str(e)}), 500
+    finally:
+        if db:
+            db.close()
+
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8080)
