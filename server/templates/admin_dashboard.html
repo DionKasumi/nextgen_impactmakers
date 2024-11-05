@@ -58,7 +58,8 @@
                     <div id="usersSubMenu" class="submenu">
                         <a href="#" id=" approveOrganizationsLink" class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-800"> Approve Organizations</a>
                         <a href="#" id="checkAndChangeAccountInfoLink" class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-800">Check and Change Account Info</a>
-                        <a href="#" id="banDeleteUsersLink" class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-800">Ban/Delete users</a>
+                        <a href="#" id="banDeleteUsersLink" class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-800">Ban/Delete Participant</a>
+                        <a href="#" id="banDeleteOrgLink" class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-800">Ban/Delete Organization</a>
                     </div> 
                     <div>
                         <a
@@ -115,6 +116,47 @@
                     </tbody>
                 </table>
             </div>
+
+            <div id="banDeleteUsersTableContainer" style="display: none;">
+                <h2 class="text-2xl font-bold mb-4" id="banDeleteUsersHeader">Ban/Delete Participant</h2>
+                <table class="min-w-full bg-white" id="banDeleteUsersTable">
+                    <thead>
+                        <tr id="banDeleteUsersTableHeader">
+                            <!-- Dynamic Header -->
+                            <th class="py-2 px-4 border-b">Username</th>
+                            <th class="py-2 px-4 border-b">Email</th>
+                            <th class="py-2 px-4 border-b">Phone</th>
+                            <th class="py-2 px-4 border-b">Status</th>
+                            <th class="py-2 px-4 border-b">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="banDeleteUsersTableBody">
+                        <!-- Users will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="banDeleteOrgTableContainer" style="display: none;">
+                <h2 class="text-2xl font-bold mb-4" id="banDeleteOrgHeader">Ban/Delete Organization</h2>
+                <table class="min-w-full bg-white" id="banDeleteOrgTable">
+                    <thead>
+                        <tr id="banDeleteOrgTableHeader">
+                            <!-- Dynamic Header -->
+                            <th class="py-2 px-4 border-b">Organization Name</th>
+                            <th class="py-2 px-4 border-b">Email</th>
+                            <th class="py-2 px-4 border-b">Phone Number</th>
+                            <th class="py-2 px-4 border-b">Website URL</th>
+                            <th class="py-2 px-4 border-b">Description</th>
+                            <th class="py-2 px-4 border-b">Status</th>
+                            <th class="py-2 px-4 border-b">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="banDeleteOrgTableBody">
+                        <!-- Users will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            </div>
+
 
            <div id="approveOrganizationsTableContainer" style="display: none;">
     <h2 class="text-2xl font-bold mb-4">Approve Organizations</h2>
@@ -175,9 +217,6 @@
         </div>
     </div>
 </div>
-
-
-
         <script>
             // Function to highlight the active link
             function highlightActiveLink(activeLinkId) {
@@ -218,7 +257,177 @@
                     });
             });
 
-       
+            document.getElementById('banDeleteUsersLink').addEventListener('click', function() {
+    highlightActiveLink('banDeleteUsersLink');
+    document.getElementById('greeting').style.display = 'none';
+    document.getElementById('greetingDescription').style.display = 'none';
+    document.getElementById('approveOrganizationsTableContainer').style.display = 'none';
+    document.getElementById('cardsTableContainer').style.display = 'none';
+
+    // Show the container for the ban/delete users table
+    const banDeleteUsersTableContainer = document.getElementById('banDeleteUsersTableContainer');
+    banDeleteUsersTableContainer.style.display = 'block';
+
+    // Fetch users from the API endpoint
+    fetch('/api/admin/users')
+        .then(response => response.json())
+        .then(data => {
+            const tableBody = document.getElementById('banDeleteUsersTableBody');
+            tableBody.innerHTML = ''; // Clear existing rows
+
+            data.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="py-2 px-4 border-b">${user.username}</td>
+                    <td class="py-2 px-4 border-b">${user.email}</td>
+                    <td class="py-2 px-4 border-b">${user.phone}</td>
+                    <td class="py-2 px-4 border-b">${user.status || 'N/A'}</td>
+                    <td class="py-2 px-4 border-b">
+                        <button onclick="banUser(${user.id})" class="bg-yellow-500 text-white px-2 py-1 rounded">Ban</button>
+                        <button onclick="deleteUser(${user.id})" class="bg-red-500 text-white px-2 py-1 rounded">Delete</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        });
+});
+
+
+// Function to delete a user with confirmation
+function deleteUser(userId) {
+    if (confirm('Are you sure you want to delete this user?')) {
+        fetch(`/api/admin/users/delete/${userId}`, {
+            method: 'POST'
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert(data.message);
+            // Remove the row from the table
+            const tableBody = document.getElementById('usersTableBody');
+            const rowToDelete = document.querySelector(`tr[data-user-id="${userId}"]`);
+            if (rowToDelete) {
+                tableBody.removeChild(rowToDelete);
+            }
+            // Refresh the user list
+            document.getElementById('banDeleteUsersLink').click(); // Trigger fetching users again
+        })
+        .catch(error => {
+            console.error('There was a problem with the delete operation:', error);
+        });
+    }
+}
+function banUser(userId) {
+    console.log(`Attempting to ban user with ID: ${userId}`); // Log the user ID
+    if (confirm('Are you sure you want to ban this user?')) {
+        fetch(`/api/admin/users/ban/${userId}`, {
+            method: 'POST'
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert(data.message); // Show the success message
+            // Refresh the user list to reflect changes
+            document.getElementById('banDeleteUsersLink').click(); // Trigger fetching users again
+        })
+        .catch(error => {
+            console.error('Error banning user:', error);
+            alert('Failed to ban user. Please try again.');
+        });
+    }
+}
+
+document.getElementById('banDeleteOrgLink').addEventListener('click', function() {
+    highlightActiveLink('banDeleteOrgLink');
+    document.getElementById('greeting').style.display = 'none';
+    document.getElementById('greetingDescription').style.display = 'none';
+    document.getElementById('approveOrganizationsTableContainer').style.display = 'none';
+    document.getElementById('cardsTableContainer').style.display = 'none';
+
+    // Show the container for the ban/delete organizations table
+    const banDeleteOrgTableContainer = document.getElementById('banDeleteOrgTableContainer');
+    banDeleteOrgTableContainer.style.display = 'block';
+
+    // Fetch organizations from the API endpoint
+    fetch('/api/admin/organizations/all') // Ensure you have this endpoint to get all organizations
+        .then(response => response.json())
+        .then(data => {
+            const tableBody = document.getElementById('banDeleteOrgTableBody');
+            tableBody.innerHTML = ''; // Clear existing rows
+
+            data.forEach(org => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="py-2 px-4 border-b">${org.name_of_org}</td>
+                    <td class="py-2 px-4 border-b">${org.email_of_org}</td>
+                    <td class="py-2 px-4 border-b">${org.phone_number_of_org}</td>
+                    <td class="py-2 px-4 border-b">${org.url_of_org}</td>
+                    <td class="py-2 px-4 border-b">${org.description_of_org}</td>
+                    <td class="py-2 px-4 border-b">${org.status || 'N/A'}</td>
+                    <td class="py-2 px-4 border-b">
+                        <button onclick="banOrganization(${org.id})" class="bg-yellow-500 text-white px-2 py-1 rounded">Ban</button>
+                        <button onclick="deleteOrganization(${org.id})" class="bg-red-500 text-white px-2 py-1 rounded">Delete</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        });
+});
+
+// Function to delete an organization with confirmation
+function deleteOrganization(orgId) {
+    if (confirm('Are you sure you want to delete this organization?')) {
+        fetch(`/api/admin/organizations/delete/${orgId}`, {
+            method: 'POST'
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert(data.message);
+            // Refresh the organization list
+            document.getElementById('banDeleteOrgLink').click(); // Trigger fetching organizations again
+        })
+        .catch(error => {
+            console.error('There was a problem with the delete operation:', error);
+        });
+}
+
+}
+// Function to ban an organization
+function banOrganization(orgId) {
+    if (confirm('Are you sure you want to ban this organization?')) {
+        fetch(`/api/admin/organizations/ban/${orgId}`, {
+            method: 'POST'
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert(data.message); // Show the success message
+            // Refresh the organization list to reflect changes
+            document.getElementById('banDeleteOrgLink').click(); // Trigger fetching organizations again
+        })
+        .catch(error => {
+            console.error('Error banning organization:', error);
+            alert('Failed to ban organization. Please try again.');
+        });
+}}
+
 
             function fetchCards(apiUrl, title, columns) {
     currentApiUrl = apiUrl; // Update the global variable for API URL
