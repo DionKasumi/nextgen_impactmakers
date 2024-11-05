@@ -408,21 +408,21 @@ const SixthPart = () => {
     );
 };
 
-
 const SeventhPart = () => {
-    const [selectedCard, setSelectedCard] = useState(''); 
+    const [selectedCard, setSelectedCard] = useState('');
     const [reviews, setReviews] = useState([]);
 
     useEffect(() => {
         const fetchReviews = async () => {
             try {
-                const response = await axios.get('http://127.0.0.1:8080/api/retrieve_reviews');
-                setReviews(response.data); 
+                const response = await axios.get(
+                    'http://127.0.0.1:8080/api/retrieve_reviews'
+                );
+                setReviews(response.data);
 
                 // Set the default selected card to the second card if it exists
-                
-                setSelectedCard(response.data[1].username); 
-                
+
+                setSelectedCard(response.data[1].username);
             } catch (error) {
                 console.error('Error fetching reviews:', error);
             }
@@ -433,9 +433,27 @@ const SeventhPart = () => {
 
     // Ensure we always have 3 reviews to display
     const cards = [
-        { id: 1, review: reviews[0] || { username: "N/A", review: "No review available" } },
-        { id: 2, review: reviews[1] || { username: "N/A", review: "No review available" } },
-        { id: 3, review: reviews[2] || { username: "N/A", review: "No review available" } },
+        {
+            id: 1,
+            review: reviews[0] || {
+                username: 'N/A',
+                review: 'No review available',
+            },
+        },
+        {
+            id: 2,
+            review: reviews[1] || {
+                username: 'N/A',
+                review: 'No review available',
+            },
+        },
+        {
+            id: 3,
+            review: reviews[2] || {
+                username: 'N/A',
+                review: 'No review available',
+            },
+        },
     ];
 
     return (
@@ -448,11 +466,23 @@ const SeventhPart = () => {
                         key={card.id}
                         onClick={() => setSelectedCard(card.review.username)} // Click sets selected card
                         className={`relative flex flex-col justify-center items-center rounded-xl w-[44rem] h-56 p-6 shadow-lg transition-transform duration-500 ease-in-out 
-                        ${selectedCard === card.review.username ? 'z-50 mb-44 scale-110' : 'z-10 scale-100'} 
-                        ${index === 0 ? 'bg-[#4FEAC6]' : index === 1 ? 'bg-[#F6F49D]' : 'bg-[#B3B5FF]'}`}
+                        ${
+                            selectedCard === card.review.username
+                                ? 'z-40 mb-44 scale-110'
+                                : 'z-10 scale-100'
+                        } 
+                        ${
+                            index === 0
+                                ? 'bg-[#4FEAC6]'
+                                : index === 1
+                                ? 'bg-[#F6F49D]'
+                                : 'bg-[#B3B5FF]'
+                        }`}
                     >
                         <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full bg-white border-2 border-[#F6F49D]"></div>
-                        <h1 className="text-lg mb-8 self-start">{card.review.username}</h1>
+                        <h1 className="text-lg mb-8 self-start">
+                            {card.review.username}
+                        </h1>
                         <div className="text-sm md:text-base text-black">
                             {card.review.review}
                         </div>
@@ -462,7 +492,6 @@ const SeventhPart = () => {
         </div>
     );
 };
-
 
 const HomePage = () => {
     return (
