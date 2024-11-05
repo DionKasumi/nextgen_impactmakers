@@ -990,6 +990,61 @@ def get_all_user_data():
     
     return jsonify(response_data), 200
 
+
+## API for the REVIEWS
+@app.route('/api/submit_review', methods=['POST'])
+def submit_review():
+    if 'user_email' not in session:
+        return jsonify({"error": "Unauthorized. Please log in."}), 401
+
+    data = request.get_json()
+    review_text = data.get("review")
+    user_email = session['user_email']
+
+    if not review_text:
+        return jsonify({"error": "Review text is required."}), 400
+
+    try:
+        # Connect to the database
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+        
+        # Update the review field for the participant
+        query = """
+        UPDATE participants
+        SET review = %s
+        WHERE email = %s
+        """
+        cursor.execute(query, (review_text, user_email))
+        db.commit()
+        cursor.close()
+    except MySQLdb.Error as e:
+        print(f"MySQL error during review submission: {e}")
+        return jsonify({"error": f"MySQL error: {e}"}), 500
+    finally:
+        db.close()
+
+    return jsonify({"message": "Review submitted successfully."}), 201
+
+@app.route('/api/retrieve_reviews', methods=['GET'])
+def get_reviews():
+    try:
+        # Connect to the database
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+        
+        # Query to get usernames and reviews
+        query = "SELECT username, review FROM participants WHERE review IS NOT NULL;"
+        cursor.execute(query)
+        reviews = cursor.fetchall()
+        
+        # Format the reviews as a list of dictionaries
+        reviews_list = [{"username": row[0], "review": row[1]} for row in reviews]
+        return jsonify(reviews_list), 200
+    except MySQLdb.Error as e:
+        print(f"MySQL error during fetching reviews: {e}")
+        return jsonify({"error": f"MySQL error: {e}"}), 500
+
 # Function to get users from the database
 def get_users():
     try:
@@ -1106,6 +1161,7 @@ def ban_organization(org_id):
     finally:
         if db:
             db.close()
+
 
 
 if __name__ == '__main__':

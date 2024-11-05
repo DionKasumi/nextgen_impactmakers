@@ -408,78 +408,61 @@ const SixthPart = () => {
     );
 };
 
+
 const SeventhPart = () => {
-    // State to manage the order of the cards
-    const [selectedCard, setSelectedCard] = useState('yellow');
+    const [selectedCard, setSelectedCard] = useState(''); 
+    const [reviews, setReviews] = useState([]);
+
+    useEffect(() => {
+        const fetchReviews = async () => {
+            try {
+                const response = await axios.get('http://127.0.0.1:8080/api/retrieve_reviews');
+                setReviews(response.data); 
+
+                // Set the default selected card to the second card if it exists
+                
+                setSelectedCard(response.data[1].username); 
+                
+            } catch (error) {
+                console.error('Error fetching reviews:', error);
+            }
+        };
+
+        fetchReviews();
+    }, []);
+
+    // Ensure we always have 3 reviews to display
+    const cards = [
+        { id: 1, review: reviews[0] || { username: "N/A", review: "No review available" } },
+        { id: 2, review: reviews[1] || { username: "N/A", review: "No review available" } },
+        { id: 3, review: reviews[2] || { username: "N/A", review: "No review available" } },
+    ];
 
     return (
         <div className="w-full h-full flex flex-col bg-[url('../assets/background3.png')] justify-center items-center py-20">
             <div className="text-white text-5xl font-bold mb-48">Reviews</div>
 
             <div className="relative w-full flex justify-center items-center -space-x-80">
-                <div
-                    onClick={() => setSelectedCard('teal')}
-                    className={`relative flex flex-col justify-center items-center rounded-xl bg-[#4FEAC6] w-[44rem] h-56 p-6 shadow-lg transition-transform duration-500 ease-in-out 
-            ${
-                selectedCard === 'teal'
-                    ? 'z-50 mb-44 scale-110 relative left-96'
-                    : 'z-10  scale-100'
-            }
-        `}
-                >
-                    <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full bg-white border-2 border-[#F6F49D]"></div>
-                    <h1 className="text-lg mb-8 self-start">Username</h1>
-                    <div className="text-sm md:text-base text-black">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore
-                        magna aliqua. Ut enim ad minim veniam, quis nostrud
-                        exercitation ullamco laboris nisi{' '}
+                {cards.map((card, index) => (
+                    <div
+                        key={card.id}
+                        onClick={() => setSelectedCard(card.review.username)} // Click sets selected card
+                        className={`relative flex flex-col justify-center items-center rounded-xl w-[44rem] h-56 p-6 shadow-lg transition-transform duration-500 ease-in-out 
+                        ${selectedCard === card.review.username ? 'z-50 mb-44 scale-110' : 'z-10 scale-100'} 
+                        ${index === 0 ? 'bg-[#4FEAC6]' : index === 1 ? 'bg-[#F6F49D]' : 'bg-[#B3B5FF]'}`}
+                    >
+                        <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full bg-white border-2 border-[#F6F49D]"></div>
+                        <h1 className="text-lg mb-8 self-start">{card.review.username}</h1>
+                        <div className="text-sm md:text-base text-black">
+                            {card.review.review}
+                        </div>
                     </div>
-                </div>
-
-                <div
-                    onClick={() => setSelectedCard('yellow')}
-                    className={`relative flex flex-col justify-center items-center rounded-xl bg-[#F6F49D] w-[44rem] h-56 p-6 shadow-lg transition-transform duration-500 ease-in-out 
-            ${
-                selectedCard === 'yellow'
-                    ? 'z-50 mb-44 scale-110'
-                    : 'relative right-96  z-20 scale-100'
-            }
-            `}
-                >
-                    <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full bg-white border-2 border-[#F6F49D]"></div>
-                    <h1 className="text-lg mb-8 self-start">Username</h1>
-                    <div className="text-sm md:text-base text-black">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore
-                        magna aliqua. Ut enim ad minim veniam, quis nostrud
-                        exercitation ullamco laboris nisi
-                    </div>
-                </div>
-
-                <div
-                    onClick={() => setSelectedCard('lavender')}
-                    className={`relative flex flex-col justify-center items-center rounded-xl bg-[#B3B5FF] w-[44rem] h-56 p-6 shadow-lg transition-transform duration-500 ease-in-out 
-            ${
-                selectedCard === 'lavender'
-                    ? 'z-50 mb-44 relative right-80 scale-110'
-                    : 'z-30 scale-100'
-            }
-        `}
-                >
-                    <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full bg-white border-2 border-[#F6F49D]"></div>
-                    <h1 className="text-lg mb-8 self-start">Username</h1>
-                    <div className="text-sm md:text-base text-black">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore
-                        magna aliqua. Ut enim ad minim veniam, quis nostrud
-                        exercitation ullamco laboris nisi
-                    </div>
-                </div>
+                ))}
             </div>
         </div>
     );
 };
+
 
 const HomePage = () => {
     return (
