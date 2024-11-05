@@ -137,22 +137,24 @@ def create_database():
             'all_events': ['email', 'phone_number', 'office_address', 'company_logo', 'apply_link'],
             'all_internships': ['email', 'phone_number', 'office_address', 'company_logo', 'apply_link'],
             'all_volunteering': ['email', 'phone_number', 'office_address', 'company_logo', 'apply_link'],
-            'participants': ['preferences'],  
+            'participants': ['preferences', 'status', 'review'],  
         }
 
         for table, columns in tables_and_columns.items():
             for column in columns:
                 if not column_exists(table, column):
                     # Change column type based on the table if necessary
-                    column_type = "VARCHAR(255)" if column != "preferences" else "TEXT"
-                    cursor.execute(f"ALTER TABLE {table} ADD COLUMN {column} {column_type};")
-                    print(f"Added {column} to {table}.")
+                    if column == "status":
+                        cursor.execute(f"ALTER TABLE {table} ADD COLUMN {column} VARCHAR(255) DEFAULT 'active';")
+                        print(f"Added {column} to {table} with default value 'active'.")
+                    else:
+                        column_type = "VARCHAR(255)" if column != "preferences" and column != "review" else "TEXT"
+                        cursor.execute(f"ALTER TABLE {table} ADD COLUMN {column} {column_type};")
+                        print(f"Added {column} to {table}.")
                 else:
                     print(f"{column} already exists in {table}.")
 
-        print("Columns added successfully where needed!")
-
-        print("Database setup completed successfully!")
+                print("Database setup completed successfully!")
     
     except MySQLdb.Error as e:
         print(f"Error creating the database: {e}")
