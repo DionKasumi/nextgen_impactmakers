@@ -1163,7 +1163,99 @@ def ban_organization(org_id):
         if db:
             db.close()
 
+@app.route('/api/user/profile', methods=['GET'])
+def get_user_profile():
+    if 'user_email' not in session:
+        return jsonify({"error": "User not logged in"}), 401
 
+    user_email = session['user_email']
+    user_type = session['user_type']  # This could be 'participant' or 'organization'
+    
+    # Initialize an empty response dictionary
+    user_data = {}
+
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        
+        if user_type == 'participant':
+            query = "SELECT username, email, phone, preferences, status, review FROM participants WHERE email = %s"
+        else:
+            query = "SELECT name_of_org AS username, email_of_org AS email, phone_number_of_org AS phone, url_of_org, description_of_org, status FROM organizations WHERE email_of_org = %s"
+        
+        cursor.execute(query, [user_email])
+        user_data = cursor.fetchone() or {}
+
+        # Add session data if required
+        if 'preferences' in session:
+            user_data['preferences'] = session['preferences']
+        
+        cursor.close()
+    except MySQLdb.Error as e:
+        print(f"MySQL error during profile retrieval: {e}")
+        return jsonify({"error": "Failed to retrieve user data"}), 500
+    finally:
+        db.close()
+
+    return jsonify(user_data), 200
+
+# --- User Update Route ---
+@app.route('/api/user/update', methods=['PUT'])
+def update_user():
+    if 'user_id' not in session or 'user_type' not in session:
+        return jsonify({"error": "User not logged in"}), 401
+
+    user_id = session['user_id']
+    user_type = session['user_type']
+    data = request.json
+
+    # Define allowed fields based on user type
+    if user_type == 'participant':
+        allowed_fields = {
+            'email': 'email',
+            'phone': 'phone',
+            'preferences': 'preferences',
+            'review': 'review',
+            'username': 'username'
+        }
+        table_name = 'participants'
+    elif user_type == 'organization':
+        allowed_fields = {
+            'description_of_org': 'description_of_org',
+            'email': 'email_of_org',
+            'phone': 'phone_number_of_org',
+            'url_of_org': 'url_of_org',
+            'username': 'name_of_org'
+        }
+        table_name = 'organizations'
+    else:
+        return jsonify({"error": "Invalid user type"}), 400
+
+    # Filter data to only include allowed fields
+    update_data = {allowed_fields[k]: v for k, v in data.items() if k in allowed_fields}
+
+    if not update_data:
+        return jsonify({"error": "No valid fields to update"}), 400
+
+    # Prepare update query
+    placeholders = ', '.join(f"{key} = %s" for key in update_data.keys())
+    values = list(update_data.values())
+    values.append(user_id)  # Add user_id as the last parameter for WHERE clause
+
+    query = f"UPDATE {table_name} SET {placeholders} WHERE id = %s"
+
+    # Execute query
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+        cursor.execute(query, values)
+        db.commit()
+        cursor.close()
+        db.close()
+        return jsonify({"message": "Profile updated successfully"}), 200
+    except MySQLdb.Error as e:
+        print(f"MySQL error during profile update: {e}")
+        return jsonify({"error": "Failed to update profile"}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8080)

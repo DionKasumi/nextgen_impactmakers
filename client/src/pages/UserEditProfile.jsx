@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const UserEditProfile = () => {
     const [formData, setFormData] = useState({
@@ -13,8 +14,46 @@ const UserEditProfile = () => {
         skills: '',
         socialMedia: '',
         jobExperience: '',
+        username: '',
+        phone: '',
+        preferences: '',
     });
+    const [initialData, setInitialData] = useState({});
     const [errorMessage, setErrorMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
+
+    // Fetch user data when the component mounts to pre-fill the form
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/api/user/profile', {
+                    withCredentials: true,
+                });
+                
+                const data = {
+                    name: response.data.name || '',
+                    surname: response.data.surname || '',
+                    email: response.data.email || '', // Read-only field
+                    birthPlace: response.data.birthPlace || '',
+                    city: response.data.city || '',
+                    birthday: response.data.birthday || '',
+                    academicLevel: response.data.academicLevel || '',
+                    skills: response.data.skills || '',
+                    socialMedia: response.data.socialMedia || '',
+                    jobExperience: response.data.jobExperience || '',
+                    username: response.data.username || '',
+                    phone: response.data.phone || '',
+                    preferences: response.data.preferences ? response.data.preferences.join(', ') : '',
+                };
+
+                setFormData(data);
+                setInitialData(data); // Store the initial data for comparison
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+            }
+        };
+        fetchUserData();
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -27,26 +66,34 @@ const UserEditProfile = () => {
         }
     };
 
-    const handleSaveChanges = () => {
-        if (
-            !formData.name ||
-            !formData.surname ||
-            !formData.email ||
-            !formData.birthPlace ||
-            !formData.city ||
-            !formData.birthday ||
-            !formData.academicLevel ||
-            !formData.skills ||
-            !formData.socialMedia ||
-            !formData.jobExperience
-        ) {
-            setErrorMessage(
-                'Your profile needs a bit more sparkle. Fill in the blanks!'
-            ); // Set error message if fields are incomplete
-        } else {
-            console.log('Changes saved:', formData);
-            setErrorMessage('');
+    const handleSaveChanges = async () => {
+        // Check if there's a change in data
+        if (!isDataChanged()) {
+            setErrorMessage("No changes detected.");
+            return;
         }
+
+        // Send updated data to the server
+        try {
+            const response = await axios.put('http://localhost:8080/api/user/update', formData, {
+                withCredentials: true,
+            });
+            if (response.status === 200) {
+                setSuccessMessage("Profile updated successfully.");
+                setErrorMessage('');
+                setInitialData(formData); // Update initial data with new saved data
+            } else {
+                setErrorMessage("Failed to update profile.");
+            }
+        } catch (error) {
+            setErrorMessage("An error occurred while updating the profile.");
+            console.error("Update error:", error);
+        }
+    };
+
+    // Function to check if form data has changed
+    const isDataChanged = () => {
+        return JSON.stringify(formData) !== JSON.stringify(initialData);
     };
 
     return (
@@ -67,9 +114,9 @@ const UserEditProfile = () => {
                     />
                     <div className="text-center md:text-left">
                         <p className="text-white text-2xl sm:text-3xl md:text-4xl font-semibold mb-2 md:mb-4">
-                            Username
+                            {formData.username || 'Username'}
                         </p>
-                        <nav className="hidden sm:flex space-x-10  text-white font-bold text-lg">
+                        <nav className="hidden sm:flex space-x-10 text-white font-bold text-lg">
                             <Link to="/profile/edit" className="text-[#FF9202]">
                                 Edit Profile
                             </Link>
@@ -80,12 +127,8 @@ const UserEditProfile = () => {
                     </div>
                 </div>
                 <div className="flex space-x-2 w-24 h-auto md:mt-20">
-                    <button className="text-white text-3xl p-2 ">
-                        &#x1F56D;
-                    </button>
-                    <button className="text-white text-3xl p-2 ">
-                        &#9881;
-                    </button>
+                    <button className="text-white text-3xl p-2 ">&#x1F56D;</button>
+                    <button className="text-white text-3xl p-2 ">&#9881;</button>
                 </div>
             </div>
 
@@ -94,91 +137,56 @@ const UserEditProfile = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 p-4 md:p-6 lg:p-8 rounded-lg">
                     {/* Left Column */}
                     <div className="space-y-4 sm:space-y-6 px-4 md:px-6">
-                        {[
-                            'Name',
-                            'Surname',
-                            'Email',
-                            'Birth Place',
-                            'City',
-                            'Birthday',
-                            'Academic Level',
-                        ].map((label) => (
+                        {['Name', 'Surname', 'Email', 'Birth Place', 'City', 'Academic Level', 'Phone'].map((label) => (
                             <div key={label}>
                                 <label className="block text-white mb-1 sm:mb-2 text-lg sm:text-xl">
                                     {label}
                                 </label>
                                 <input
                                     type="text"
-                                    name={label
-                                        .toLowerCase()
-                                        .replace(/\s+/g, '')} // e.g., name -> name
+                                    name={label.toLowerCase().replace(/\s+/g, '')}
                                     className="w-full p-3 border rounded-2xl"
                                     placeholder="Lorem Ipsum"
-                                    value={
-                                        formData[
-                                            label
-                                                .toLowerCase()
-                                                .replace(/\s+/g, '')
-                                        ]
-                                    } // Bind value to state
-                                    onChange={handleChange} // Update state on change
+                                    value={formData[label.toLowerCase().replace(/\s+/g, '')]}
+                                    onChange={handleChange}
+                                    readOnly={label === 'Email'} // Make email field read-only
                                 />
                             </div>
                         ))}
-                        <div>
-                            <label className="block text-white mb-1 sm:mb-2 text-lg sm:text-xl">
-                                Birthday
-                            </label>
-                            <input
-                                type="date"
-                                name="birthday" // Specify the name for the birthday field
-                                className="w-full p-3 border rounded-2xl"
-                                value={formData.birthday} // Bind value to state
-                                onChange={handleChange} // Update state on change
-                            />
-                        </div>
                     </div>
 
                     {/* Right Column */}
                     <div className="space-y-4 sm:space-y-6 px-4 md:px-6">
-                        {['Skills', 'Social Media', 'Job Experience'].map(
-                            (label) => (
-                                <div key={label}>
-                                    <label className="block text-white mb-1 sm:mb-2 text-lg sm:text-xl">
-                                        {label}
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name={label
-                                            .toLowerCase()
-                                            .replace(/\s+/g, '')} // e.g., skills -> skills
-                                        className="w-full p-3 border rounded-2xl"
-                                        placeholder="Lorem Ipsum"
-                                        value={
-                                            formData[
-                                                label
-                                                    .toLowerCase()
-                                                    .replace(/\s+/g, '')
-                                            ]
-                                        } // Bind value to state
-                                        onChange={handleChange} // Update state on change
-                                    />
-                                </div>
-                            )
-                        )}
+                        {['Skills', 'Social Media', 'Job Experience', 'Preferences'].map((label) => (
+                            <div key={label}>
+                                <label className="block text-white mb-1 sm:mb-2 text-lg sm:text-xl">
+                                    {label}
+                                </label>
+                                <input
+                                    type="text"
+                                    name={label.toLowerCase().replace(/\s+/g, '')}
+                                    className="w-full p-3 border rounded-2xl"
+                                    placeholder="Lorem Ipsum"
+                                    value={formData[label.toLowerCase().replace(/\s+/g, '')]}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                        ))}
                         <div className="flex justify-center mt-6">
                             <button
                                 className="bg-[#50BACF] text-white px-8 sm:px-10 md:px-12 py-3 rounded-xl"
-                                onClick={handleSaveChanges} // Call save function on click
+                                onClick={handleSaveChanges}
+                                disabled={!isDataChanged()} // Disable button if no changes
                             >
                                 Save changes
                             </button>
                         </div>
-                        {/* Error Message */}
+                        {/* Error and Success Messages */}
                         {errorMessage && (
-                            <div className="text-red-500 text-center mt-4">
-                                {errorMessage}
-                            </div>
+                            <div className="text-red-500 text-center mt-4">{errorMessage}</div>
+                        )}
+                        {successMessage && (
+                            <div className="text-green-500 text-center mt-4">{successMessage}</div>
                         )}
                     </div>
                 </div>
