@@ -449,7 +449,6 @@ def check_participant(email, password):
     except MySQLdb.Error as e:
         print(f"MySQL error during participant login: {e}")
         return None
-
 def check_organization(email_of_org, password_of_org):
     try:
         db = MySQLdb.connect(**db_params)
@@ -462,25 +461,27 @@ def check_organization(email_of_org, password_of_org):
         db.close()
 
         if not org:
-            return {"success": False, "message": "Organization not found."}, 404
+            return {"success": False, "message": "Organization not found.", "status": "not_found"}, 404
 
         # Check if the password matches
         if bcrypt.checkpw(password_of_org.encode('utf-8'), org['password_of_org'].encode('utf-8')):
-            # Check the organization's status
+            # Check the organization's status and add a consistent response structure
             if org['status'] == 'banned':
-                return {"success": False, "message": "Your organization account has been banned. Please contact support."}, 403
+                return {"success": False, "message": "Your organization account has been banned. Please contact support.", "status": "banned"}, 403
             elif org['status'] == 'pending':
-                return {"success": False, "message": "Organization approval is pending."}, 403
+                return {"success": False, "message": "Organization approval is pending.", "status": "pending"}, 403
             elif org['status'] == 'rejected':
-                return {"success": False, "message": "Organization has been rejected by the admin."}, 403
+                return {"success": False, "message": "Organization has been rejected by the admin.", "status": "rejected"}, 403
             elif org['status'] == 'approved':
-                return {"success": True, "message": "Login successful."}, 200
+                return {"success": True, "message": "Login successful.", "status": "approved"}, 200
 
-        return {"success": False, "message": "Invalid credentials."}, 401
+        # If password does not match, return an error with a clear structure
+        return {"success": False, "message": "Invalid credentials.", "status": "invalid_credentials"}, 401
 
     except MySQLdb.Error as e:
         print(f"MySQL error during organization login: {e}")
-        return {"success": False, "message": "Database error."}, 500
+        return {"success": False, "message": "Database error.", "status": "error"}, 500
+
 
 
 
@@ -498,11 +499,11 @@ def login():
         # Check organization status and credentials
         response, status_code = check_organization(email, password)
         
-        # Assuming check_organization returns a dictionary with the organization status
-        if status_code == 200:
-            if response['status'] == 'banned':
-                return jsonify({"success": False, "message": "Your organization account has been banned. Please contact support."}), 403
-            
+        # Handle the response structure with a safer check
+        org_status = response.get('status')
+        if org_status == 'banned':
+            return jsonify({"success": False, "message": "Your organization account has been banned. Please contact support."}), 403
+        elif org_status == 'approved':
             session['user_type'] = 'organization'
             session['user_email'] = email
             return jsonify(response), status_code
@@ -512,7 +513,7 @@ def login():
     else:
         user = check_participant(email, password)
         if user:
-            if user['status'] == 'banned':
+            if user.get('status') == 'banned':
                 return jsonify({"success": False, "message": "Your account has been banned. Please contact support."}), 403
             
             session['user_type'] = 'participant'
