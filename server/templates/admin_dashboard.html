@@ -35,19 +35,26 @@
             max-height: 60vh; 
             overflow-y: auto;
         }
+        .search-bar {
+            width: 30%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
 
     </style>
 </head>
 <body class="bg-gray-100">
     <div class="flex">
-        <!-- Sidebar -->
         <div class="w-64 h-screen bg-blue-900 text-white flex flex-col justify-between">
             <div>
                 <div class="p-6">
                     <h1 class="text-2xl font-bold">Admin Panel</h1>
                 </div>
                 <nav class="mt-10">
-                      <a 
+                    <a 
                         id="manageUsersLink"
                         href="#"
                         class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-800"
@@ -87,7 +94,6 @@
                 </nav>
             </div>
 
-            <!-- Logout Button at the Bottom -->
             <div class="p-6">
                 <button
                     id="logoutButton"
@@ -98,13 +104,13 @@
             </div>
         </div>
 
-        <!-- Main Content -->
         <div class="flex-1 p-6">
             <h2 id="greeting" class="text-3xl font-semibold mb-6">Welcome, Admin!</h2>
             <p id="greetingDescription" class="text-gray-700 mb-6">This is your admin dashboard where you can manage Users, Cards, or Reviews.</p>
 
             <div id="approveOrganizationsTableContainer" style="display: none;">
                 <h2 class="text-2xl font-bold mb-4" id="approveOrganizationsHeader">Approve Organizations</h2>
+                <input type="text" id="approveOrganizationsSearch" placeholder="Search..." class="search-bar">
                 <table class="min-w-full bg-white" id="approveOrganizationsTable">
                     <thead>
                         <tr id="approveOrganizationsTableHeader">
@@ -117,6 +123,7 @@
 
             <div id="banDeleteUsersTableContainer" style="display: none;">
                 <h2 class="text-2xl font-bold mb-4" id="banDeleteUsersHeader">Ban/Delete Participant</h2>
+                <input type="text" id="banDeleteUsersSearch" placeholder="Search participants..." class="search-bar">
                 <table class="min-w-full bg-white" id="banDeleteUsersTable">
                     <thead>
                         <tr id="banDeleteUsersTableHeader">
@@ -134,6 +141,7 @@
             
             <div id="banDeleteOrgTableContainer" style="display: none;">
                 <h2 class="text-2xl font-bold mb-4" id="banDeleteOrgHeader">Ban/Delete Organization</h2>
+                <input type="text" id="banDeleteOrgSearch" placeholder="Search organization..." class="search-bar">
                 <table class="min-w-full bg-white" id="banDeleteOrgTable">
                     <thead>
                         <tr id="banDeleteOrgTableHeader">
@@ -177,18 +185,19 @@
                 }
             </script>
 
-            <div id="cardsTableContainer" style="display: none;">
-                <h2 class="text-2xl font-bold mb-4" id="cardsHeader">Manage Cards</h2>
-                <table class="min-w-full bg-white" id="cardsTable">
-                    <thead>
-                        <tr id="cardsTableHeader">
-                        </tr>
-                    </thead>
-                    <tbody id="cardsTableBody">
-                    </tbody>
-                </table>
-            </div>
+        <div id="cardsTableContainer" style="display: none;">
+            <h2 class="text-2xl font-bold mb-4" id="cardsHeader">Manage Cards</h2>
+            <input type="text" id="cardsSearch" placeholder="Search..." class="search-bar">
+            <table class="min-w-full bg-white" id="cardsTable">
+                <thead>
+                    <tr id="cardsTableHeader">
+                    </tr>
+                </thead>
+                <tbody id="cardsTableBody">
+                </tbody>
+            </table>
         </div>
+
 
         <div id="editModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 hidden flex items-center justify-center">
             <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
@@ -208,7 +217,104 @@
             </div>
         </div>
 
-        <script>
+    <script>
+
+            function filterTable(searchInputId, tableId) {
+                const searchInput = document.getElementById(searchInputId);
+                const table = document.getElementById(tableId);
+                const rows = table.getElementsByTagName('tr');
+
+                searchInput.addEventListener('input', function() {
+                    const query = searchInput.value.toLowerCase();
+                    
+                    for (let i = 0; i < rows.length; i++) {
+                        const row = rows[i];
+                        const cells = row.getElementsByTagName('td');
+                        let match = false;
+                        
+                        for (let j = 0; j < cells.length; j++) {
+                            const cell = cells[j];
+                            if (cell.textContent.toLowerCase().includes(query)) {
+                                match = true;
+                                break;
+                            }
+                        }
+                        
+                        if (match) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    }
+                });
+            }
+
+            function resetSearchInput() {
+                const searchInput = document.getElementById('cardsSearch');
+                if (searchInput) {
+                    searchInput.value = '';
+                }
+            }
+
+            function handleSubMenuClick() {
+                resetSearchInput();
+            }
+
+            function showTableAndSearch(tableId, searchInputId) {
+                const tableContainer = document.getElementById(tableId);
+                const searchInput = document.getElementById(searchInputId);
+
+                tableContainer.style.display = (tableContainer.style.display === "none" || tableContainer.style.display === "") ? "block" : "none";
+                searchInput.style.display = (tableContainer.style.display === "block") ? "block" : "none";
+            }
+
+            document.getElementById('internshipsLink').addEventListener('click', function(event) {
+                event.preventDefault();
+                handleSubMenuClick();
+                showTableAndSearch('internshipsTableContainer', 'internshipsSearch');
+            });
+
+            document.getElementById('trainingsLink').addEventListener('click', function(event) {
+                event.preventDefault();
+                handleSubMenuClick();
+                showTableAndSearch('trainingsTableContainer', 'trainingsSearch');
+            });
+
+            document.getElementById('volunteeringLink').addEventListener('click', function(event) {
+                event.preventDefault();
+                handleSubMenuClick();
+                showTableAndSearch('volunteeringTableContainer', 'volunteeringSearch');
+            });
+
+            document.getElementById('eventsLink').addEventListener('click', function(event) {
+                event.preventDefault();
+                handleSubMenuClick();
+                showTableAndSearch('eventsTableContainer', 'eventsSearch');
+            });
+
+            document.getElementById('banDeleteUsersLink').addEventListener('click', function(event) {
+                event.preventDefault();
+                handleSubMenuClick();
+                showTableAndSearch('banDeleteUsersTableContainer', 'banDeleteUsersSearch');
+            });
+
+            document.getElementById('banDeleteOrgLink').addEventListener('click', function(event) {
+                event.preventDefault();
+                handleSubMenuClick();
+                showTableAndSearch('banDeleteOrgTableContainer', 'banDeleteOrgSearch');
+            });
+
+            document.getElementById('approveOrganizationsLink').addEventListener('click', function(event) {
+                event.preventDefault();
+                handleSubMenuClick();
+                showTableAndSearch('approveOrganizationsTableContainer', 'approveOrganizationsSearch');
+            });
+
+            document.getElementById('banDeleteUsersSearch') && filterTable('banDeleteUsersSearch', 'banDeleteUsersTable');
+            document.getElementById('banDeleteOrgSearch') && filterTable('banDeleteOrgSearch', 'banDeleteOrgTable');
+            document.getElementById('cardsSearch') && filterTable('cardsSearch', 'cardsTable');
+            document.getElementById('approveOrganizationsSearch') && filterTable('approveOrganizationsSearch', 'approveOrganizationsTable');
+
 
             function highlightActiveLink(activeLinkId) {
                 const links = document.querySelectorAll('nav a');
