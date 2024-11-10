@@ -5,7 +5,7 @@ const SkeletonCard = ({ isSwiperCard = false }) => {
     const swiperSlide = isSwiperCard ? useSwiperSlide() : null;
     return (
         <div
-            className={`w-64 h-64 lg:w-80 lg:h-80 xl:w-96 xl:h-96 bg-white rounded-[16px] lg:rounded-[20px] xl:rounded-[24px] p-2 lg:p-3 xl:p-4 transition-all box-border select-none shadow-lg ${
+            className={`w-64 h-64 lg:w-80 lg:h-80 xl:w-96 xl:h-96 bg-white rounded-[16px] lg:rounded-[20px] xl:rounded-[24px] p-2 lg:p-3 xl:p-4 transition-all box-border select-none shadow-lg z-50 ${
                 swiperSlide != null && !swiperSlide.isActive
                     ? 'scale-75'
                     : 'scale-100'

@@ -26,10 +26,13 @@ const UserEditProfile = () => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/user/profile', {
-                    withCredentials: true,
-                });
-                
+                const response = await axios.get(
+                    'http://localhost:8080/api/user/profile',
+                    {
+                        withCredentials: true,
+                    }
+                );
+
                 const data = {
                     name: response.data.name || '',
                     surname: response.data.surname || '',
@@ -43,13 +46,15 @@ const UserEditProfile = () => {
                     jobExperience: response.data.jobExperience || '',
                     username: response.data.username || '',
                     phone: response.data.phone || '',
-                    preferences: response.data.preferences ? response.data.preferences.join(', ') : '',
+                    preferences: response.data.preferences
+                        ? response.data.preferences.join(', ')
+                        : '',
                 };
 
                 setFormData(data);
                 setInitialData(data); // Store the initial data for comparison
             } catch (error) {
-                console.error("Error fetching user data:", error);
+                console.error('Error fetching user data:', error);
             }
         };
         fetchUserData();
@@ -69,25 +74,29 @@ const UserEditProfile = () => {
     const handleSaveChanges = async () => {
         // Check if there's a change in data
         if (!isDataChanged()) {
-            setErrorMessage("No changes detected.");
+            setErrorMessage('No changes detected.');
             return;
         }
 
         // Send updated data to the server
         try {
-            const response = await axios.put('http://localhost:8080/api/user/update', formData, {
-                withCredentials: true,
-            });
+            const response = await axios.put(
+                'http://localhost:8080/api/user/update',
+                formData,
+                {
+                    withCredentials: true,
+                }
+            );
             if (response.status === 200) {
-                setSuccessMessage("Profile updated successfully.");
+                setSuccessMessage('Profile updated successfully.');
                 setErrorMessage('');
                 setInitialData(formData); // Update initial data with new saved data
             } else {
-                setErrorMessage("Failed to update profile.");
+                setErrorMessage('Failed to update profile.');
             }
         } catch (error) {
-            setErrorMessage("An error occurred while updating the profile.");
-            console.error("Update error:", error);
+            setErrorMessage('An error occurred while updating the profile.');
+            console.error('Update error:', error);
         }
     };
 
@@ -127,8 +136,12 @@ const UserEditProfile = () => {
                     </div>
                 </div>
                 <div className="flex space-x-2 w-24 h-auto md:mt-20">
-                    <button className="text-white text-3xl p-2 ">&#x1F56D;</button>
-                    <button className="text-white text-3xl p-2 ">&#9881;</button>
+                    <button className="text-white text-3xl p-2 ">
+                        &#x1F56D;
+                    </button>
+                    <button className="text-white text-3xl p-2 ">
+                        &#9881;
+                    </button>
                 </div>
             </div>
 
@@ -137,17 +150,33 @@ const UserEditProfile = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 p-4 md:p-6 lg:p-8 rounded-lg">
                     {/* Left Column */}
                     <div className="space-y-4 sm:space-y-6 px-4 md:px-6">
-                        {['Name', 'Surname', 'Email', 'Birth Place', 'City', 'Academic Level', 'Phone'].map((label) => (
+                        {[
+                            'Name',
+                            'Surname',
+                            'Email',
+                            'Birth Place',
+                            'City',
+                            'Academic Level',
+                            'Phone',
+                        ].map((label) => (
                             <div key={label}>
                                 <label className="block text-white mb-1 sm:mb-2 text-lg sm:text-xl">
                                     {label}
                                 </label>
                                 <input
                                     type="text"
-                                    name={label.toLowerCase().replace(/\s+/g, '')}
+                                    name={label
+                                        .toLowerCase()
+                                        .replace(/\s+/g, '')}
                                     className="w-full p-3 border rounded-2xl"
                                     placeholder="Lorem Ipsum"
-                                    value={formData[label.toLowerCase().replace(/\s+/g, '')]}
+                                    value={
+                                        formData[
+                                            label
+                                                .toLowerCase()
+                                                .replace(/\s+/g, '')
+                                        ]
+                                    }
                                     onChange={handleChange}
                                     readOnly={label === 'Email'} // Make email field read-only
                                 />
@@ -157,17 +186,30 @@ const UserEditProfile = () => {
 
                     {/* Right Column */}
                     <div className="space-y-4 sm:space-y-6 px-4 md:px-6">
-                        {['Skills', 'Social Media', 'Job Experience', 'Preferences'].map((label) => (
+                        {[
+                            'Skills',
+                            'Social Media',
+                            'Job Experience',
+                            'Preferences',
+                        ].map((label) => (
                             <div key={label}>
                                 <label className="block text-white mb-1 sm:mb-2 text-lg sm:text-xl">
                                     {label}
                                 </label>
                                 <input
                                     type="text"
-                                    name={label.toLowerCase().replace(/\s+/g, '')}
+                                    name={label
+                                        .toLowerCase()
+                                        .replace(/\s+/g, '')}
                                     className="w-full p-3 border rounded-2xl"
                                     placeholder="Lorem Ipsum"
-                                    value={formData[label.toLowerCase().replace(/\s+/g, '')]}
+                                    value={
+                                        formData[
+                                            label
+                                                .toLowerCase()
+                                                .replace(/\s+/g, '')
+                                        ]
+                                    }
                                     onChange={handleChange}
                                 />
                             </div>
@@ -183,10 +225,14 @@ const UserEditProfile = () => {
                         </div>
                         {/* Error and Success Messages */}
                         {errorMessage && (
-                            <div className="text-red-500 text-center mt-4">{errorMessage}</div>
+                            <div className="text-red-500 text-center mt-4">
+                                {errorMessage}
+                            </div>
                         )}
                         {successMessage && (
-                            <div className="text-green-500 text-center mt-4">{successMessage}</div>
+                            <div className="text-green-500 text-center mt-4">
+                                {successMessage}
+                            </div>
                         )}
                     </div>
                 </div>

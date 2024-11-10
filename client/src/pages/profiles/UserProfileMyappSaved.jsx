@@ -1,8 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import Card from '../components/Card';
+import Card from '../../components/Card';
+import axios from 'axios';
 
 const UserProfileMyappSaved = () => {
+    const [username, setUsername] = useState('Username');
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const response = await axios.get(
+                    'http://localhost:8080/api/user/profile',
+                    {
+                        withCredentials: true,
+                    }
+                );
+
+                setUsername(response.data.username);
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        };
+        fetchUserData();
+    }, []);
+
     return (
         <div className="min-h-screen w-full bg-gradient-to-b from-[#4F1ABE] via-[#A78DDF] flex flex-col items-center py-20 relative">
             <img
@@ -21,9 +42,9 @@ const UserProfileMyappSaved = () => {
                     />
                     <div className="text-center md:text-left">
                         <p className="text-white text-2xl sm:text-3xl md:text-4xl font-semibold mb-2 md:mb-4">
-                            Username
+                            {username || 'Username'}
                         </p>
-                        <nav className="hidden sm:flex space-x-10  text-white font-bold text-lg">
+                        <nav className="hidden sm:flex space-x-10 text-white font-bold text-lg">
                             <Link to="/profile/edit">Edit Profile</Link>
                             <Link to="/profile/myapp">My applications</Link>
                             <Link
@@ -36,7 +57,7 @@ const UserProfileMyappSaved = () => {
                         </nav>
                     </div>
                 </div>
-                <div className="flex space-x-2 w-24 h-24 md:mt-20">
+                <div className="flex space-x-2 w-24 h-auto md:mt-20">
                     <button className="text-white text-3xl p-2 ">
                         &#x1F56D;
                     </button>
@@ -47,7 +68,7 @@ const UserProfileMyappSaved = () => {
             </div>
 
             <div className="w-full h-full flex justify-center items-center">
-                <div className="w-2/4 h-full grid grid-cols-1 md:grid-cols-2 gap-8 justify-items-center">
+                <div className="w-3/4 h-full grid grid-cols-1 md:grid-cols-2 gap-8 justify-items-center">
                     {Array(6)
                         .fill(null)
                         .map((_, index) => (

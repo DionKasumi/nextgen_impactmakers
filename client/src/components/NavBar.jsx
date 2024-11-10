@@ -19,6 +19,7 @@ axios.defaults.withCredentials = true; // Ensure Axios sends session cookies wit
 const NavBar = ({ theme }) => {
     const [isMenuOpen, setMenuOpen] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isOrg, setIsOrg] = useState(false);
     const navigate = useNavigate();
     let location = useLocation();
 
@@ -32,23 +33,29 @@ const NavBar = ({ theme }) => {
         setCategoriesOpen(!categoriesOpen);
         setProfileOpen(false);
     };
+
     const [profileOpen, setProfileOpen] = useState(false);
     const handleProfileClick = () => {
         setProfileOpen(!profileOpen);
         setCategoriesOpen(false);
     };
 
-    // Check session state when NavBar loads
     const checkSession = async () => {
         try {
-            const response = await axios.get(
+            const { data: sessionData } = await axios.get(
                 'http://localhost:8080/api/session'
             );
-            if (response.data.isLoggedIn) {
-                setIsLoggedIn(true);
-            } else {
+            if (!sessionData.isLoggedIn) {
                 setIsLoggedIn(false);
+                return;
             }
+
+            setIsLoggedIn(true);
+
+            const { data: profileData } = await axios.get(
+                'http://localhost:8080/api/user/profile'
+            );
+            setIsOrg(Boolean(profileData.description_of_org)); // Set true if 'description_of_org' exists, otherwise false
         } catch (error) {
             console.error('Error checking session:', error);
         }
@@ -359,7 +366,7 @@ const NavBar = ({ theme }) => {
     return (
         <>
             <nav
-                className="w-full h-20 flex justify-center items-center fixed top-0 left-0 z-50"
+                className="w-full h-20 flex justify-center items-center fixed top-0 left-0 z-[99]"
                 style={
                     theme === 'primary' || theme === 'tertiary'
                         ? {
@@ -484,7 +491,74 @@ const NavBar = ({ theme }) => {
                                                 : 'opacity-0 -translate-y-3 pointer-events-none'
                                         }`}
                                     >
-                                        <li className="px-4 py-2 hover:bg-gray-200">
+                                        {isOrg ? (
+                                            <>
+                                                <li className="px-4 py-2 hover:bg-gray-200">
+                                                    <Link
+                                                        to={'/profile/org'}
+                                                        onClick={
+                                                            handleCategoriesClick
+                                                        }
+                                                    >
+                                                        View Profile
+                                                    </Link>
+                                                </li>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <li className="px-4 py-2 hover:bg-gray-200">
+                                                    <Link
+                                                        to={'/profile'}
+                                                        onClick={
+                                                            handleCategoriesClick
+                                                        }
+                                                    >
+                                                        View Profile
+                                                    </Link>
+                                                </li>
+                                                <li className="px-4 py-2 hover:bg-gray-200">
+                                                    <Link
+                                                        to={'/profile/edit'}
+                                                        onClick={
+                                                            handleCategoriesClick
+                                                        }
+                                                    >
+                                                        Edit Profile
+                                                    </Link>
+                                                </li>
+                                                <li className="px-4 py-2 hover:bg-gray-200">
+                                                    <Link
+                                                        to={'/profile/myapp'}
+                                                        onClick={
+                                                            handleCategoriesClick
+                                                        }
+                                                    >
+                                                        My applications
+                                                    </Link>
+                                                </li>
+                                                <li className="px-4 py-2 hover:bg-gray-200">
+                                                    <Link
+                                                        to={'/profile/saved'}
+                                                        onClick={
+                                                            handleCategoriesClick
+                                                        }
+                                                    >
+                                                        Saved for Later
+                                                    </Link>
+                                                </li>
+                                                <li className="px-4 py-2 hover:bg-gray-200">
+                                                    <Link
+                                                        to={'/profile/rate'}
+                                                        onClick={
+                                                            handleCategoriesClick
+                                                        }
+                                                    >
+                                                        Rate this Website
+                                                    </Link>
+                                                </li>
+                                            </>
+                                        )}
+                                        {/* <li className="px-4 py-2 hover:bg-gray-200">
                                             <Link
                                                 to={'/profile/edit'}
                                                 onClick={handleCategoriesClick}
@@ -515,7 +589,7 @@ const NavBar = ({ theme }) => {
                                             >
                                                 Rate this Website
                                             </Link>
-                                        </li>
+                                        </li> */}
                                         <li className="px-4 py-2 hover:bg-gray-200">
                                             <button
                                                 onClick={handleLogout}

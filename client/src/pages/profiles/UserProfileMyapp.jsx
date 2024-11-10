@@ -1,37 +1,28 @@
 import React from 'react';
-import SwiperCarousel from '../components/SwiperCarousel';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import RateCard from '../../components/RateCard';
 
 const UserProfileMyapp = () => {
-    const [carouselData, setCarouselData] = useState([]);
+    const [username, setUsername] = useState('Username');
 
     useEffect(() => {
-        const fetchCarouselData = async () => {
+        const fetchUserData = async () => {
             try {
-                const endpoint = `http://localhost:8080/api/courses`;
-
-                const response = await axios.get(endpoint);
-
-                if (response.status === 200) {
-                    const result = response.data;
-                    let gatheredData = [];
-
-                    if (typeof result === 'object') {
-                        gatheredData = result
-                            .slice(0, 5)
-                            .map((item) => ({ ...item, type: 'courses' }));
+                const response = await axios.get(
+                    'http://localhost:8080/api/user/profile',
+                    {
+                        withCredentials: true,
                     }
-                    setCarouselData(gatheredData);
-                } else {
-                    console.error('Failed to fetch cards');
-                }
+                );
+
+                setUsername(response.data.username);
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.error('Error fetching user data:', error);
             }
         };
-        fetchCarouselData();
+        fetchUserData();
     }, []);
 
     return (
@@ -52,9 +43,9 @@ const UserProfileMyapp = () => {
                     />
                     <div className="text-center md:text-left">
                         <p className="text-white text-2xl sm:text-3xl md:text-4xl font-semibold mb-2 md:mb-4">
-                            Username
+                            {username || 'Username'}
                         </p>
-                        <nav className="hidden sm:flex space-x-10  text-white font-bold text-lg">
+                        <nav className="hidden sm:flex space-x-10 text-white font-bold text-lg">
                             <Link to="/profile/edit">Edit Profile</Link>
                             <Link
                                 to="/profile/myapp"
@@ -67,7 +58,7 @@ const UserProfileMyapp = () => {
                         </nav>
                     </div>
                 </div>
-                <div className="flex space-x-2 w-24 h-24 md:mt-20">
+                <div className="flex space-x-2 w-24 h-auto md:mt-20">
                     <button className="text-white text-3xl p-2 ">
                         &#x1F56D;
                     </button>
@@ -76,10 +67,25 @@ const UserProfileMyapp = () => {
                     </button>
                 </div>
             </div>
-            {/* Swiper Carousel */}
-            <SwiperCarousel data={carouselData} />
-            <div className="w-1/2 rounded-lg mr-80 mb-44 z-10">
-                <div className="grid grid-cols-[3fr_1fr] gap-8"></div>
+
+            <div className="w-full h-full flex justify-center items-center">
+                <div className="w-3/4 h-full grid grid-cols-1 md:grid-cols-2 gap-8 justify-items-center">
+                    {Array(6)
+                        .fill(null)
+                        .map((_, index) => (
+                            <RateCard
+                                key={index}
+                                id={0}
+                                card_title={''}
+                                card_img={''}
+                                card_duration={''}
+                                card_description={''}
+                                card_price={''}
+                                card_source={''}
+                                card_type="events"
+                            />
+                        ))}
+                </div>
             </div>
         </div>
     );

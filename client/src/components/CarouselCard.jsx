@@ -38,7 +38,7 @@ const CarouselCard = ({
                 !swiperSlide.isActive
                     ? 'scale-75 hover:scale-[0.77]'
                     : 'scale-100 hover:scale-[102%]'
-            } transition-all box-border select-none shadow-lg`}
+            } transition-all box-border select-none shadow-lg z-50`}
             onClick={handleClick}
         >
             <div className="w-full h-4/6 bg-gray-400 flex flex-col justify-center items-center rounded-[8px] relative">
