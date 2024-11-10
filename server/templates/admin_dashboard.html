@@ -43,7 +43,34 @@
             border-radius: 5px;
             font-size: 16px;
         }
+       
+        .table-container {
+            max-height: 680px;
+            overflow-y: auto;
+            overflow-x: auto;
+            width: 100%; 
+        }
 
+        table {
+            table-layout: fixed; 
+            width: 100%;  
+        }
+
+        td {
+            word-wrap: break-word; 
+            padding: 8px;
+        }
+
+        th {
+            word-wrap: break-word;
+            padding: 8px;
+            position: sticky;
+            top: 0;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -121,7 +148,7 @@
                 </table>
             </div>
 
-            <div id="banDeleteUsersTableContainer" style="display: none;">
+            <div id="banDeleteUsersTableContainer" class="table-container" style="display: none;">
                 <h2 class="text-2xl font-bold mb-4" id="banDeleteUsersHeader">Ban/Delete Participant</h2>
                 <input type="text" id="banDeleteUsersSearch" placeholder="Search participants..." class="search-bar">
                 <table class="min-w-full bg-white" id="banDeleteUsersTable">
@@ -139,7 +166,7 @@
                 </table>
             </div>
             
-            <div id="banDeleteOrgTableContainer" style="display: none;">
+            <div id="banDeleteOrgTableContainer" class="table-container" style="display: none;">
                 <h2 class="text-2xl font-bold mb-4" id="banDeleteOrgHeader">Ban/Delete Organization</h2>
                 <input type="text" id="banDeleteOrgSearch" placeholder="Search organization..." class="search-bar">
                 <table class="min-w-full bg-white" id="banDeleteOrgTable">
@@ -160,7 +187,7 @@
             </div>
 
 
-           <div id="approveOrganizationsTableContainer" style="display: none;">
+           <div id="approveOrganizationsTableContainer" class="table-container" style="display: none;">
                 <h2 class="text-2xl font-bold mb-4">Approve Organizations</h2>
                 <table class="min-w-full bg-white">
                     <thead>
@@ -185,7 +212,7 @@
                 }
             </script>
 
-        <div id="cardsTableContainer" style="display: none;">
+        <div id="cardsTableContainer" class="table-container"  style="display: none;">
             <h2 class="text-2xl font-bold mb-4" id="cardsHeader">Manage Cards</h2>
             <input type="text" id="cardsSearch" placeholder="Search..." class="search-bar">
             <table class="min-w-full bg-white" id="cardsTable">
@@ -218,7 +245,7 @@
         </div>
 
     <script>
-
+        
             function filterTable(searchInputId, tableId) {
                 const searchInput = document.getElementById(searchInputId);
                 const table = document.getElementById(tableId);
@@ -227,27 +254,34 @@
                 searchInput.addEventListener('input', function() {
                     const query = searchInput.value.toLowerCase();
                     
-                    for (let i = 0; i < rows.length; i++) {
-                        const row = rows[i];
-                        const cells = row.getElementsByTagName('td');
-                        let match = false;
-                        
-                        for (let j = 0; j < cells.length; j++) {
-                            const cell = cells[j];
-                            if (cell.textContent.toLowerCase().includes(query)) {
-                                match = true;
-                                break;
-                            }
+                    if (query === "") {
+                        for (let i = 0; i < rows.length; i++) {
+                            rows[i].style.display = '';
                         }
-                        
-                        if (match) {
-                            row.style.display = '';
-                        } else {
-                            row.style.display = 'none';
+                    } else {
+                        for (let i = 0; i < rows.length; i++) {
+                            const row = rows[i];
+                            const cells = row.getElementsByTagName('td');
+                            let match = false;
+                            
+                            for (let j = 0; j < cells.length; j++) {
+                                const cell = cells[j];
+                                if (cell.textContent.toLowerCase().includes(query)) {
+                                    match = true;
+                                    break;
+                                }
+                            }
+                            
+                            if (match) {
+                                row.style.display = '';
+                            } else {
+                                row.style.display = 'none';
+                            }
                         }
                     }
                 });
             }
+
 
             function resetSearchInput() {
                 const searchInput = document.getElementById('cardsSearch');
@@ -852,6 +886,24 @@
             });
 
             document.getElementById('internshipsLink').addEventListener('click', function() {
+                resetSections(); 
+
+                document.getElementById('cardsTableContainer').style.display = 'block';
+            });
+
+            document.getElementById('eventsLink').addEventListener('click', function() {
+                resetSections(); 
+
+                document.getElementById('cardsTableContainer').style.display = 'block';
+            });
+
+            document.getElementById('trainingsLink').addEventListener('click', function() {
+                resetSections(); 
+
+                document.getElementById('cardsTableContainer').style.display = 'block';
+            });
+
+            document.getElementById('volunteeringLink').addEventListener('click', function() {
                 resetSections(); 
 
                 document.getElementById('cardsTableContainer').style.display = 'block';
