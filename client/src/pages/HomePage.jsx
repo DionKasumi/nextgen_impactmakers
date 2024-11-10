@@ -33,8 +33,14 @@ const FirstPart = () => {
                 if (response.status === 200) {
                     const result = response.data;
                     let gatheredData = [];
-
-                    if (loggedIn && typeof result === 'object') {
+                    if (
+                        loggedIn &&
+                        typeof result === 'object' &&
+                        result[0] != [] &&
+                        result[1] != [] &&
+                        result[2] != [] &&
+                        result[3] != []
+                    ) {
                         for (const category in result) {
                             if (Array.isArray(result[category])) {
                                 const remainingSlots = 5 - gatheredData.length;
@@ -341,7 +347,14 @@ const FivethPart = () => {
                     const result = response.data;
                     let gatheredData = [];
 
-                    if (loggedIn && typeof result === 'object') {
+                    if (
+                        loggedIn &&
+                        typeof result === 'object' &&
+                        result[0] != [] &&
+                        result[1] != [] &&
+                        result[2] != [] &&
+                        result[3] != []
+                    ) {
                         for (const category in result) {
                             if (Array.isArray(result[category])) {
                                 const remainingSlots = 5 - gatheredData.length;
@@ -421,7 +434,6 @@ const SeventhPart = () => {
                 setReviews(response.data);
 
                 // Set the default selected card to the second card if it exists
-
                 setSelectedCard(response.data[1].username);
             } catch (error) {
                 console.error('Error fetching reviews:', error);

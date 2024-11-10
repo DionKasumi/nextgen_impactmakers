@@ -18,14 +18,14 @@ import InternshipsPage from './pages/InternshipPage.jsx';
 import InternshipDetailsPage from './pages/InternshipDetailsPage.jsx';
 import VolunteeringPage from './pages/VolunteeringPage.jsx';
 import VolunteeringDetailsPage from './pages/VolunteeringDetailsPage.jsx';
-import UserProfileORG from './pages/UserProfileORG.jsx';
-import PostingPage from './pages/PostingPage.jsx';
-import UserProfile from './pages/UserProfile.jsx';
-import UserEditProfile from './pages/UserEditProfile.jsx';
-import UserProfileMyapp from './pages/UserProfileMyapp.jsx';
-import UserProfileMyappRate from './pages/UserProfileMyappRate.jsx';
-import UserProfileMyappSaved from './pages/UserProfileMyappSaved.jsx';
-import NeedsLogin from './pages/auth/NeedsLogin.jsx';
+import UserProfileORG from './pages/profiles/UserProfileORG.jsx';
+import PostingPage from './pages/profiles/PostingPage.jsx';
+import UserProfile from './pages/profiles/UserProfile.jsx';
+import UserEditProfile from './pages/profiles/UserEditProfile.jsx';
+import UserProfileMyapp from './pages/profiles/UserProfileMyapp.jsx';
+import UserProfileMyappRate from './pages/profiles/UserProfileMyappRate.jsx';
+import UserProfileMyappSaved from './pages/profiles/UserProfileMyappSaved.jsx';
+import UserProfileAuth from './pages/auth/UserProfileAuth.jsx';
 
 const router = createBrowserRouter([
     {
@@ -90,57 +90,57 @@ const router = createBrowserRouter([
             {
                 path: '/profile/org',
                 element: (
-                    <NeedsLogin>
+                    <UserProfileAuth type="org">
                         <UserProfileORG />
-                    </NeedsLogin>
+                    </UserProfileAuth>
                 ),
             },
             {
                 path: '/profile/org/post',
                 element: (
-                    <NeedsLogin>
+                    <UserProfileAuth type="org">
                         <PostingPage />
-                    </NeedsLogin>
+                    </UserProfileAuth>
                 ),
             },
             {
                 path: '/profile',
                 element: (
-                    <NeedsLogin>
+                    <UserProfileAuth>
                         <UserProfile />
-                    </NeedsLogin>
+                    </UserProfileAuth>
                 ),
             },
             {
                 path: '/profile/edit',
                 element: (
-                    <NeedsLogin>
+                    <UserProfileAuth>
                         <UserEditProfile />
-                    </NeedsLogin>
+                    </UserProfileAuth>
                 ),
             },
             {
                 path: '/profile/myapp',
                 element: (
-                    <NeedsLogin>
+                    <UserProfileAuth>
                         <UserProfileMyapp />
-                    </NeedsLogin>
+                    </UserProfileAuth>
                 ),
             },
             {
                 path: '/profile/rate',
                 element: (
-                    <NeedsLogin>
+                    <UserProfileAuth>
                         <UserProfileMyappRate />
-                    </NeedsLogin>
+                    </UserProfileAuth>
                 ),
             },
             {
                 path: '/profile/saved',
                 element: (
-                    <NeedsLogin>
+                    <UserProfileAuth>
                         <UserProfileMyappSaved />
-                    </NeedsLogin>
+                    </UserProfileAuth>
                 ),
             },
         ],
