@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import SectionWrapper from '../hoc/SectionWrapper';
 import SwiperCarousel from '../components/SwiperCarousel';
 import { useState, useEffect, useRef } from 'react';
@@ -8,6 +9,8 @@ axios.defaults.withCredentials = true;
 
 const FirstPart = () => {
     const [carouselData, setCarouselData] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const navigate = useNavigate();
     const checkSession = async () => {
         try {
             const response = await axios.get(
@@ -74,65 +77,86 @@ const FirstPart = () => {
         };
         fetchCarouselData();
     }, []);
+    const handleSearch = () => {
+        // Determine the route based on the selected category
+        switch (selectedCategory) {
+            case '1':
+                navigate('/events');
+                break;
+            case '2':
+                navigate('/internships');
+                break;
+            case '3':
+                navigate('/volunteering');
+                break;
+            case '4':
+                navigate('/trainings');
+                break;
+            default:
+                alert('Please select a category');
+        }
+    };
 
     return (
         <div className="w-full h-full pt-20 sm:pt-32 md:pt-40 flex flex-col justify-center items-center bg-[url('../assets/back1.png')] bg-no-repeat bg-cover">
-            <div className="w-full min-h-svh items-center flex flex-col relative top-[15%] md:top-[20%] px-4 sm:px-8 lg:px-12">
-                <div className="flex flex-col md:flex-row items-center md:justify-center space-x-4 md:space-x-8">
-                    {/* Image Container */}
-                    <div className="flex-shrink-0">
-                        <img
-                            src="../assets/Group 703.png"
-                            alt="Decorative Image"
-                            className="w-25 h-20 mb-4 mr-24 md:mb-10 md:w-25 md:h-20 object-cover opacity-100"
-                        />
-                    </div>
-                    {/* Title */}
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl text-white mb-6 pr-10 md:mb-8 font-bold text-center md:text-left whitespace-nowrap">
-                        Opportunities in One!
-                    </h1>
+        <div className="w-full min-h-svh items-center flex flex-col relative top-[15%] md:top-[20%] px-4 sm:px-8 lg:px-12">
+            <div className="flex flex-col md:flex-row items-center md:justify-center space-x-4 md:space-x-8">
+                                    {/* Image Container */}
+                <div className="flex-shrink-0">
+                    <img
+                        src="../assets/Group 703.png"
+                        alt="Decorative Image"
+                        className="w-25 h-20 mb-4 mr-24 md:mb-10 md:w-25 md:h-20 object-cover opacity-100"
+                    />
                 </div>
-                {/* Dropdown and Button */}
-                <div className="mb-12 md:mb-20 flex flex-col md:flex-row items-center justify-center">
-                    <select
-                        className="w-full md:w-auto mb-4 md:mb-0 md:mr-5 border border-gray-300 rounded px-8 md:px-20 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        name="select-category"
-                        id="select-category"
-                        defaultValue="" // Sets default value for the select
-                    >
-                        <option value="" disabled>
-                            Select category
-                        </option>
-                        <option value="1">Events</option>
-                        <option value="2">Internships</option>
-                        <option value="3">Volunteering</option>
-                        <option value="4">Trainings</option>
-                    </select>
-                    <button
-                        type="submit"
-                        className="w-full md:w-auto py-2 px-10 md:px-20 bg-[#44FFD1] text-black font-semibold rounded"
-                    >
-                        Search
-                    </button>
-                </div>
-                {/* Swiper Carousel */}
-                <SwiperCarousel data={carouselData} />
+                                    {/* Title */}
+                <h1 className="text-2xl sm:text-3xl md:text-4xl text-white mb-6 pr-10 md:mb-8 font-bold text-center md:text-left whitespace-nowrap">
+                    Opportunities in One!
+                </h1>
             </div>
-            {/* Chatbot Image */}
-            <div className="fixed bottom-5 right-5 m-5">
-                <img
-                    src="../assets/image 1.png"
-                    alt="chatbot"
-                    className="w-16 h-16 sm:w-20 sm:h-20 lg:w-25 lg:h-25 object-cover"
-                />
+                            {/* Dropdown and Button */}
+            <div className="mb-12 md:mb-20 flex flex-col md:flex-row items-center justify-center">
+                <select
+                    className="w-full md:w-auto mb-4 md:mb-0 md:mr-5 border border-gray-300 rounded px-8 md:px-20 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    name="select-category"
+                    id="select-category"
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                >
+                    <option value="" disabled>
+                        Select category
+                    </option>
+                    <option value="1">Events</option>
+                    <option value="2">Internships</option>
+                    <option value="3">Volunteering</option>
+                    <option value="4">Trainings</option>
+                </select>
+                <button
+                    type="button"
+                    className="w-full md:w-auto py-2 px-10 md:px-20 bg-[#44FFD1] text-black font-semibold rounded"
+                    onClick={handleSearch}
+                >
+                    Search
+                </button>
             </div>
+                            {/* Swiper Carousel */}
+            <SwiperCarousel data={carouselData} />
         </div>
+                    {/* Chatbot Image */}
+                            <div className="fixed bottom-5 right-5 m-5">
+            <img
+                src="../assets/image 1.png"
+                alt="chatbot"
+                className="w-16 h-16 sm:w-20 sm:h-20 lg:w-25 lg:h-25 object-cover"
+            />
+        </div>
+    </div>
     );
 };
 
 const SecondPart = () => {
     return (
-        <div className="bg-[#4F1ABE] text-white py-12 sm:py-16 md:py-24 lg:py-32 min-h-[300px] md:min-h-[500px] w-full">
+        <div className="bg-[#C4C8FE] text-white py-12 sm:py-16 md:py-24 lg:py-32 min-h-[300px] md:min-h-[500px] w-full">
             <div className="container mx-auto text-center px-4 sm:px-8 lg:px-0">
                 <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[48px] font-bold mb-4 sm:mb-6 lg:mb-16">
                     About PYE
@@ -390,7 +414,7 @@ const FivethPart = () => {
     }, []);
 
     return (
-        <div className="w-full min-h-screen flex flex-col justify-center items-center bg-[url('../assets/group1.png')] bg-no-repeat bg-cover px-4 md:px-8 lg:px-0 py-20 md:py-32">
+        <div className="w-full min-h-screen flex flex-col justify-center items-center bg-[#A3A9FE80] bg-[url('../assets/group1.png')] bg-no-repeat bg-cover px-4 md:px-8 lg:px-0 py-20 md:py-32">
             <div>
                 <h1 className="text-2xl md:text-4xl lg:text-5xl text-white text-center font-bold mb-4 md:mb-8">
                     Upcoming Opportunities
