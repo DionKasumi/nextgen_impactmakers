@@ -20,6 +20,7 @@
         table {
             border-collapse: collapse; 
             width: 100%; 
+            table-layout: fixed;
         }
         tr:nth-child(even) {
             background-color: #f3f4f6; 
@@ -42,34 +43,36 @@
             border: 1px solid #ccc;
             border-radius: 5px;
             font-size: 16px;
-        }
-       
+        }   
         .table-container {
-            max-height: 680px;
+            max-height: 600px;
             overflow-y: auto;
             overflow-x: auto;
             width: 100%; 
         }
-
-        table {
-            table-layout: fixed; 
-            width: 100%;  
-        }
-
         td {
-            word-wrap: break-word; 
-            padding: 8px;
+            max-width: 150px;         
+            overflow: hidden;               
+            text-overflow: ellipsis;
         }
-
         th {
             word-wrap: break-word;
             padding: 8px;
             position: sticky;
             top: 0;
         }
-
-        .table-container {
-            overflow-x: auto;
+        .pagination-controls button {
+        display: inline-block;
+        margin: 5px;
+        padding: 5px 10px;
+        cursor: pointer;
+        }
+        .pagination-controls button:hover {
+        background-color: #f0f0f0;
+        }
+        .pagination-controls button:disabled {
+        background-color: #e0e0e0;
+        cursor: not-allowed;
         }
     </style>
 </head>
@@ -223,6 +226,8 @@
                 <tbody id="cardsTableBody">
                 </tbody>
             </table>
+        </div>
+        <div id="paginationControls" class="pagination-controls">
         </div>
 
 
@@ -547,12 +552,29 @@
                 }
             }
 
+            function addTooltipToTruncatedCells() {
+                const cells = document.querySelectorAll("td");
 
-            function fetchCards(apiUrl, title, columns) {
+                cells.forEach(cell => {
+                    if (cell.offsetWidth < cell.scrollWidth) { // Check if text is overflowing
+                        cell.title = cell.textContent;        // Set tooltip to show full text
+                    } else {
+                        cell.title = "";                    
+                    }
+                });
+            }
+
+
+            let currentPage = 1; 
+            const limit = 10; 
+
+            function fetchCards(apiUrl, title, columns, page = 1) {
                 currentApiUrl = apiUrl; 
                 currentTitle = title; 
                 currentColumns = columns; 
-                fetch(apiUrl)
+                currentPage = page;
+
+                fetch(`${apiUrl}?page=${page}&limit=${limit}`)
                     .then(response => {
                         if (!response.ok) throw new Error('Network response was not ok');
                         return response.json();
@@ -590,11 +612,22 @@
                         });
 
                         document.getElementById('cardsTableContainer').style.display = 'block';
+                        addTooltipToTruncatedCells();
+                        displayPaginationControls();
                     })
                     .catch(error => {
                         console.error('Error fetching data:', error);
                         alert('There was an error fetching data. Please try again later.');
                     });
+            }
+
+            function displayPaginationControls() {
+                const paginationContainer = document.getElementById('paginationControls');
+                paginationContainer.innerHTML = `
+                    <button onclick="fetchCards(currentApiUrl, currentTitle, currentColumns, ${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>Previous</button>
+                    <span>Page ${currentPage}</span>
+                    <button onclick="fetchCards(currentApiUrl, currentTitle, currentColumns, ${currentPage + 1})">Next</button>
+                `;
             }
 
             function getTypeFromContext() {
