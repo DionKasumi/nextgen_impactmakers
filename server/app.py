@@ -34,16 +34,18 @@ db_params = {
     'db': 'pye_data'
 }
 
-def fetch_courses_from_database():
+def fetch_courses_from_database(page=1, limit=10):
     courses = []
+    offset = (page - 1) * limit
     try:
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
         query = """
         SELECT id, source, title, trainer, description, price, students, rating, image_url, duration , email, phone_number, office_address, company_logo, apply_link 
         FROM all_courses
+        LIMIT %s OFFSET %s
         """
-        cursor.execute(query)
+        cursor.execute(query, (limit, offset))
         courses = cursor.fetchall()
     except MySQLdb.Error as e:
         print(f"MySQL error: {e}")
@@ -89,16 +91,18 @@ def get_course(course_id):
         abort(404, description="Course not found")
     return jsonify(course)
 
-def fetch_internships_from_database():
+def fetch_internships_from_database(page=1, limit=10):
     internships = []
+    offset = (page - 1) * limit
     try:
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
         query = """
         SELECT id, source, title, description, posted_date, salary, duration, location, image_url, email, phone_number, office_address, company_logo, apply_link
         FROM all_internships
+        LIMIT %s OFFSET %s
         """
-        cursor.execute(query)
+        cursor.execute(query, (limit, offset))
         internships = cursor.fetchall()
     except MySQLdb.Error as e:
         print(f"MySQL error: {e}")
@@ -109,6 +113,7 @@ def fetch_internships_from_database():
         except MySQLdb.Error as e:
             print(f"Error closing connection: {e}")
     return internships
+
 
 def fetch_internship_by_id(internship_id):
     internship = None
@@ -144,16 +149,18 @@ def get_internship(internship_id):
         abort(404, description="Internship not found")
     return jsonify(internship)
 
-def fetch_events_from_database():
+def fetch_events_from_database(page=1, limit=10):
     events = []
+    offset = (page - 1) * limit
     try:
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
         query = """
         SELECT id, source, organizer, title, duration, location, image_url, email, phone_number, office_address, company_logo, apply_link
         FROM all_events
+        LIMIT %s OFFSET %s
         """
-        cursor.execute(query)
+        cursor.execute(query, (limit, offset))
         events = cursor.fetchall()
     except MySQLdb.Error as e:
         print(f"MySQL error: {e}")
@@ -186,6 +193,7 @@ def fetch_event_by_id(event_id):
         except MySQLdb.Error as e:
             print(f"Error closing connection: {e}")
     return event
+
 @app.route('/api/events', methods=['GET'])
 def get_events():
     events = fetch_events_from_database()
@@ -198,16 +206,18 @@ def get_event(event_id):
         abort(404, description="Event not found")
     return jsonify(event)
 
-def fetch_volunteering_from_database():
+def fetch_volunteering_from_database(page=1, limit=10):
     volunteering_opportunities = []
+    offset = (page - 1) * limit
     try:
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
         query = """
         SELECT id, source, title, duration, cause, age_group, image_url, email, phone_number, office_address, company_logo, apply_link
         FROM all_volunteering
+        LIMIT %s OFFSET %s
         """
-        cursor.execute(query)
+        cursor.execute(query, (limit, offset))
         volunteering_opportunities = cursor.fetchall()
     except MySQLdb.Error as e:
         print(f"MySQL error: {e}")
@@ -704,7 +714,9 @@ def get_events():
 # API to get events
 @app.route('/api/admin/managecards/events', methods=['GET'])
 def admin_get_events():
-    events = get_events()
+    page = int(request.args.get('page', 1))
+    limit = int(request.args.get('limit', 10))
+    events = fetch_events_from_database(page, limit)
     return jsonify(events), 200
 
 # Function to get internships from the database
@@ -726,8 +738,11 @@ def get_internships():
 # API to get internships
 @app.route('/api/admin/managecards/internships', methods=['GET'])
 def admin_get_internships():
-    internships = get_internships()
+    page = int(request.args.get('page', 1))
+    limit = int(request.args.get('limit', 10))
+    internships = fetch_internships_from_database(page, limit)
     return jsonify(internships), 200
+
 
 
 # Function to get training events from the database
@@ -749,7 +764,9 @@ def get_trainings():
 # API to get training events
 @app.route('/api/admin/managecards/training', methods=['GET'])
 def admin_get_trainings():
-    training_events = get_trainings()
+    page = int(request.args.get('page', 1))
+    limit = int(request.args.get('limit', 10))
+    training_events = fetch_courses_from_database(page, limit)
     return jsonify(training_events), 200
 
 
@@ -772,7 +789,9 @@ def get_volunteering():
 # API to get volunteering opportunities
 @app.route('/api/admin/managecards/volunteering', methods=['GET'])
 def admin_get_volunteering():
-    volunteering = get_volunteering()
+    page = int(request.args.get('page', 1))
+    limit = int(request.args.get('limit', 10))
+    volunteering = fetch_volunteering_from_database(page,limit)
     return jsonify(volunteering), 200
 
 # Example function to update an event in the database
