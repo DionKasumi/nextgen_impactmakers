@@ -28,7 +28,7 @@ app.config['SESSION_COOKIE_SECURE'] = False    # Disable secure cookies for deve
 # Database connection parameters
 db_params = {
     'user': 'root',
-    'passwd': '12345678',
+    'passwd': '1234',
     'host': 'localhost',
     'port': 3306,
     'db': 'pye_data'
@@ -1276,5 +1276,121 @@ def update_user():
         print(f"MySQL error during profile update: {e}")
         return jsonify({"error": "Failed to update profile"}), 500
 
+@app.route('/api/favorites/add', methods=['POST'])
+def add_favorite():
+
+    if 'user_id' not in session:
+        print("User ID not found in session.")  # Debug statement
+        return jsonify({"error": "User not logged in"}), 401
+
+    data = request.get_json()
+    card_id = data.get('card_id')
+    card_type = data.get('card_type')
+    user_id = session['user_id']
+    
+    print(f"Attempting to add favorite - User ID: {user_id}, Card ID: {card_id}, Card Type: {card_type}")  # Debug statement
+
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+
+        # Check if the favorite already exists
+        check_query = """
+        SELECT COUNT(*) FROM favorites WHERE participant_id = %s AND card_id = %s AND card_type = %s
+        """
+        cursor.execute(check_query, (user_id, card_id, card_type))
+        (count,) = cursor.fetchone()
+
+        if count > 0:
+            print("Favorite already exists in the database")  # Debug statement
+            return jsonify({"message": "Already in favorites"}), 200
+
+        # Insert if it doesn't already exist
+        query = """
+        INSERT INTO favorites (participant_id, card_id, card_type) VALUES (%s, %s, %s)
+        """
+        cursor.execute(query, (user_id, card_id, card_type))
+        db.commit()
+        cursor.close()
+        db.close()
+        return jsonify({"message": "Added to favorites"}), 201
+    except MySQLdb.Error as e:
+        print(f"MySQL error: {e}")
+        return jsonify({"error": "Failed to add favorite"}), 500
+
+
+
+@app.route('/api/favorites/remove', methods=['DELETE'])
+def remove_favorite():
+    if 'user_id' not in session:
+        return jsonify({"error": "User not logged in"}), 401
+
+    data = request.get_json()
+    card_id = data.get('card_id')
+    user_id = session['user_id']
+
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+        query = "DELETE FROM favorites WHERE participant_id = %s AND card_id = %s"
+        cursor.execute(query, (user_id, card_id))
+        db.commit()
+        cursor.close()
+        db.close()
+        return jsonify({"message": "Removed from favorites"}), 200
+    except MySQLdb.Error as e:
+        print(f"MySQL error: {e}")
+        return jsonify({"error": "Failed to remove favorite"}), 500
+
+@app.route('/api/favorites', methods=['GET'])
+def get_favorites():
+    if 'user_id' not in session:
+        return jsonify({"error": "User not logged in"}), 401
+
+    user_id = session['user_id']
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+
+        # Get the favorites for the user
+        cursor.execute("SELECT card_id, card_type FROM favorites WHERE participant_id = %s", (user_id,))
+        favorites = cursor.fetchall()
+
+        detailed_favorites = []
+
+        for fav in favorites:
+            card_id = fav['card_id']
+            card_type = fav['card_type']
+            print(f"Fetching details for card_id {card_id} of type {card_type}")  # Debug print
+
+            query = None
+            if card_type == 'courses':
+                query = "SELECT id AS card_id, title AS card_title, image_url AS card_img, duration AS card_duration, description AS card_description, price AS card_price, source AS card_source FROM all_courses WHERE id = %s"
+            elif card_type == 'internships':
+                query = "SELECT id AS card_id, title AS card_title, image_url AS card_img, duration AS card_duration, description AS card_description, salary AS card_price, source AS card_source FROM all_internships WHERE id = %s"
+            elif card_type == 'events':
+                query = "SELECT id AS card_id, title AS card_title, image_url AS card_img, duration AS card_duration, '' AS card_description, '' AS card_price, source AS card_source FROM all_events WHERE id = %s"
+            elif card_type == 'volunteering':
+                query = "SELECT id AS card_id, title AS card_title, image_url AS card_img, duration AS card_duration, cause AS card_description, '' AS card_price, source AS card_source FROM all_volunteering WHERE id = %s"
+
+            if query:
+                cursor.execute(query, (card_id,))
+                result = cursor.fetchone()
+                print("Result for current favorite:", result)  # Debug print
+                if result:
+                    detailed_favorites.append(result)
+
+        cursor.close()
+        db.close()
+        print("Detailed Favorites List:", detailed_favorites)
+        response = jsonify(detailed_favorites)
+        print("JSON Response after jsonify:", response)
+        return response, 200
+
+
+    except MySQLdb.Error as e:
+        print(f"MySQL error: {e}")
+        return jsonify({"error": "Failed to fetch favorites"}), 500
+   
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8080)

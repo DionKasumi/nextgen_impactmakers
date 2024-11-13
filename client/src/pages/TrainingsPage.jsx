@@ -15,12 +15,26 @@ const fetchCourses = async () => {
         return [];
     }
 };
+const fetchFavorites = async () => {
+    try {
+        const response = await axios.get(
+            'http://localhost:8080/api/favorites',
+            { withCredentials: true }
+        );
+        return response.data.map((fav) => fav.card_id);
+    } catch (error) {
+        console.error('Error fetching favorites:', error);
+        return [];
+    }
+};
 
 const CardsContainer = ({
     courses,
     loadMoreCourses,
     allCoursesLoaded,
     isFilterOpen,
+    favoriteIds,
+    toggleFavorite,
 }) => {
     return (
         <div
@@ -45,6 +59,8 @@ const CardsContainer = ({
                               card_price={course.price}
                               card_source={course.source}
                               card_type="courses"
+                              isFavorite={favoriteIds.includes(course.id)}
+                              onToggleFavorite={() => toggleFavorite(course.id)}
                           />
                       ))
                     : Array(6)
@@ -75,11 +91,15 @@ const TrainingsPage = () => {
         minPrice: '',
         maxPrice: '',
     });
+    const [favoriteIds, setFavoriteIds] = useState([]);
 
     useEffect(() => {
         const fetchData = async () => {
-            const data = await fetchCourses();
-            setCourses(data);
+            const coursesData = await fetchCourses();
+            setCourses(coursesData);
+
+            const favoritesData = await fetchFavorites();
+            setFavoriteIds(favoritesData);
         };
         fetchData();
     }, []);
@@ -105,6 +125,28 @@ const TrainingsPage = () => {
     const [isFilterOpen, setIsFilterOpen] = useState(true);
     const handleFilterToggle = (val) => {
         setIsFilterOpen(!val);
+    };
+    const toggleFavorite = async (id) => {
+        try {
+            const isFavorite = favoriteIds.includes(id);
+            const method = isFavorite ? 'DELETE' : 'POST';
+            await axios({
+                method,
+                url: `http://localhost:8080/api/favorites/${
+                    method === 'POST' ? 'add' : 'remove'
+                }`,
+                data: { card_id: id, card_type: 'courses' },
+                withCredentials: true,
+                headers: { 'Content-Type': 'application/json' },
+            });
+
+            // Update UI immediately
+            setFavoriteIds((prev) =>
+                isFavorite ? prev.filter((fid) => fid !== id) : [...prev, id]
+            );
+        } catch (error) {
+            console.error('Failed to update favorite status:', error);
+        }
     };
 
     return (
@@ -275,6 +317,8 @@ const TrainingsPage = () => {
                         loadMoreCourses={loadMoreCourses}
                         allCoursesLoaded={allCoursesLoaded}
                         isFilterOpen={isFilterOpen}
+                        favoriteIds={favoriteIds}
+                        toggleFavorite={toggleFavorite}
                     />
                 </div>
             </div>

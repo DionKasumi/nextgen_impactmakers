@@ -3,7 +3,7 @@ import MySQLdb
 # Database connection parameters
 db_params = {
     'user': 'root', 
-    'passwd': '12345678',  
+    'passwd': '1234',  
     'host': 'localhost',
     'port': 3306
 }
@@ -115,6 +115,15 @@ def create_database():
             url_of_org VARCHAR(255),
             description_of_org TEXT,
             status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending'
+        );
+        """)
+        cursor.execute(""" 
+        CREATE TABLE IF NOT EXISTS favorites (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            participant_id INT NOT NULL,
+            card_id INT NOT NULL,
+            card_type VARCHAR(50) NOT NULL,
+            FOREIGN KEY (participant_id) REFERENCES participants(id) ON DELETE CASCADE
         );
         """)
 

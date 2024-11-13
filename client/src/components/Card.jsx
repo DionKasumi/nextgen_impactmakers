@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { useState } from 'react';
 import { GoHeart, GoHeartFill } from 'react-icons/go';
 import { useNavigate } from 'react-router-dom';
@@ -12,21 +11,20 @@ const Card = ({
     card_price,
     card_img,
     card_type,
+    isFavorite,
+    onToggleFavorite,
 }) => {
-    const [heart, setHeart] = useState(false);
-
     const navigate = useNavigate();
+    const [favorite, setFavorite] = useState(isFavorite);
 
-    const handleClick = () => {
-        if (card_type == undefined) {
-            return;
-        }
-        navigate(`/${card_type}/${id}`);
+    const toggleHeart = () => {
+        setFavorite(!favorite);
+        onToggleFavorite(id);
     };
 
-    const handleHeartClick = (event) => {
-        event.stopPropagation(); // Prevents event from bubbling to the parent
-        setHeart(!heart);
+    const handleClick = () => {
+        if (!card_type) return;
+        navigate(`/${card_type}/${id}`);
     };
 
     return (
@@ -70,14 +68,20 @@ const Card = ({
                             </>
                         )}
                     </p>
-                    {!heart ? (
-                        <GoHeart
-                            onClick={handleHeartClick} // Handles heart click
+                    {isFavorite ? (
+                        <GoHeartFill
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                toggleHeart();
+                            }}
                             className="scale-125 lg:scale-[2] text-[#EA2727] origin-center hover:scale-[1.45] lg:hover:scale-[2.2] transition-all hover:cursor-pointer"
                         />
                     ) : (
-                        <GoHeartFill
-                            onClick={handleHeartClick} // Handles heart click
+                        <GoHeart
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                toggleHeart();
+                            }}
                             className="scale-125 lg:scale-[2] text-[#EA2727] origin-center hover:scale-[1.45] lg:hover:scale-[2.2] transition-all hover:cursor-pointer"
                         />
                     )}

@@ -16,11 +16,27 @@ const fetchEvents = async () => {
     }
 };
 
+const fetchFavorites = async () => {
+    try {
+        const response = await axios.get(
+            'http://localhost:8080/api/favorites',
+            {
+                withCredentials: true,
+            }
+        );
+        return response.data.map((fav) => fav.card_id);
+    } catch (error) {
+        console.error('Error fetching favorites:', error);
+        return [];
+    }
+};
 const CardsContainer = ({
     events,
     loadMoreEvents,
     allEventsLoaded,
     isFilterOpen,
+    favoriteIds,
+    toggleFavorite,
 }) => {
     return (
         <div
@@ -45,6 +61,8 @@ const CardsContainer = ({
                               card_price={event.price}
                               card_source={event.source}
                               card_type="events"
+                              isFavorite={favoriteIds.includes(event.id)}
+                              onToggleFavorite={() => toggleFavorite(event.id)}
                           />
                       ))
                     : Array(6)
@@ -75,11 +93,14 @@ const EventsPage = () => {
         minPrice: '',
         maxPrice: '',
     });
-
+    const [favoriteIds, setFavoriteIds] = useState([]);
     useEffect(() => {
         const fetchData = async () => {
-            const data = await fetchEvents();
-            setEvents(data);
+            const eventsData = await fetchEvents();
+            setEvents(eventsData);
+
+            const favoritesData = await fetchFavorites();
+            setFavoriteIds(favoritesData);
         };
         fetchData();
     }, []);
@@ -105,6 +126,27 @@ const EventsPage = () => {
     const [isFilterOpen, setIsFilterOpen] = useState(true);
     const handleFilterToggle = (val) => {
         setIsFilterOpen(!val);
+    };
+    const toggleFavorite = async (id) => {
+        try {
+            const isFavorite = favoriteIds.includes(id);
+            const method = isFavorite ? 'DELETE' : 'POST';
+            await axios({
+                method,
+                url: `http://localhost:8080/api/favorites/${
+                    method === 'POST' ? 'add' : 'remove'
+                }`,
+                data: { card_id: id, card_type: 'events' },
+                withCredentials: true,
+                headers: { 'Content-Type': 'application/json' },
+            });
+
+            setFavoriteIds((prev) =>
+                isFavorite ? prev.filter((fid) => fid !== id) : [...prev, id]
+            );
+        } catch (error) {
+            console.error('Failed to update favorite status:', error);
+        }
     };
 
     return (
@@ -266,6 +308,8 @@ const EventsPage = () => {
                         loadMoreEvents={loadMoreEvents}
                         allEventsLoaded={allEventsLoaded}
                         isFilterOpen={isFilterOpen}
+                        favoriteIds={favoriteIds}
+                        toggleFavorite={toggleFavorite}
                     />
                 </div>
             </div>

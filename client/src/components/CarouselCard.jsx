@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { GoHeart, GoHeartFill } from 'react-icons/go';
 import { useNavigate } from 'react-router-dom';
 import { useSwiperSlide } from 'swiper/react';
@@ -13,25 +13,56 @@ const CarouselCard = ({
     card_price,
     card_img,
     card_type,
+    isFavorite,
+    onToggleFavorite,
 }) => {
     const swiperSlide = useSwiperSlide();
-
-    const [heart, setHeart] = useState(false);
-
+    const [heart, setHeart] = useState(isFavorite);
     const navigate = useNavigate();
 
+    useEffect(() => {
+        setHeart(isFavorite);
+    }, [isFavorite]);
+
     const handleClick = () => {
-        if (card_type == undefined) {
-            return;
-        }
+        if (!card_type) return;
         navigate(`/${card_type}/${id}`);
     };
 
-    const handleHeartClick = (event) => {
-        event.stopPropagation(); // Prevents event from bubbling to the parent
-        setHeart(!heart);
-    };
+    const handleHeartClick = async (event) => {
+        event.stopPropagation();
 
+        try {
+            const response = await fetch(
+                `http://localhost:8080/api/favorites/${
+                    heart ? 'remove' : 'add'
+                }`,
+                {
+                    method: heart ? 'DELETE' : 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        card_id: id,
+                        card_type,
+                    }),
+                }
+            );
+
+            if (response.ok) {
+                setHeart(!heart);
+                onToggleFavorite(id);
+                const result = await response.json();
+                console.log('API response:', result);
+            } else {
+                const errorText = await response.text();
+                console.error('Error response:', errorText);
+            }
+        } catch (error) {
+            console.error('Network error:', error);
+        }
+    };
     return (
         <div
             className={`w-80 xl:w-96 h-80 xl:h-96 bg-white rounded-[24px] p-4 ${
@@ -77,14 +108,14 @@ const CarouselCard = ({
                             </>
                         )}
                     </p>
-                    {!heart ? (
-                        <GoHeart
-                            onClick={handleHeartClick} // Handles heart click
+                    {heart ? (
+                        <GoHeartFill
+                            onClick={handleHeartClick}
                             className="scale-[2] text-[#EA2727] origin-center hover:scale-[2.2] transition-all hover:cursor-pointer"
                         />
                     ) : (
-                        <GoHeartFill
-                            onClick={handleHeartClick} // Handles heart click
+                        <GoHeart
+                            onClick={handleHeartClick}
                             className="scale-[2] text-[#EA2727] origin-center hover:scale-[2.2] transition-all hover:cursor-pointer"
                         />
                     )}
