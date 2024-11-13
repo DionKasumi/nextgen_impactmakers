@@ -46,10 +46,8 @@ const TestimonialCard = () => {
 
 const EventDetailsPage = () => {
     const { id } = useParams();
-
+    const [favoriteIds, setFavoriteIds] = useState([]);
     const [course, setCourse] = useState([]);
-
-    // State to manage ticket count
     const [ticketCount, setTicketCount] = useState(0);
 
     useEffect(() => {
@@ -59,6 +57,23 @@ const EventDetailsPage = () => {
         };
         fetchData();
     }, [id]);
+    useEffect(() => {
+        const fetchFavoriteIds = async () => {
+            try {
+                const response = await axios.get(
+                    'http://localhost:8080/api/favorites'
+                );
+                if (response.status === 200) {
+                    setFavoriteIds(
+                        response.data.map((fav) => Number(fav.card_id))
+                    );
+                }
+            } catch (error) {
+                console.error('Error fetching favorite IDs:', error);
+            }
+        };
+        fetchFavoriteIds();
+    }, []);
 
     // Function to handle increment
     const handleIncrement = () => {
@@ -228,7 +243,10 @@ const EventDetailsPage = () => {
                         </div>
                         <div className="w-full h-full">
                             {/* Carousel */}
-                            <SwiperCarousel data={carouselData} />
+                            <SwiperCarousel
+                                data={carouselData}
+                                favoriteIds={favoriteIds}
+                            />
                         </div>
                         <a href="/events" className="font-light text-lg pl-96">
                             ← Go back to all events

@@ -18,11 +18,28 @@ const fetchVolunteerings = async () => {
     }
 };
 
+const fetchFavorites = async () => {
+    try {
+        const response = await axios.get(
+            'http://localhost:8080/api/favorites',
+            {
+                withCredentials: true,
+            }
+        );
+        return response.data.map((fav) => fav.card_id);
+    } catch (error) {
+        console.error('Error fetching favorites:', error);
+        return [];
+    }
+};
+
 const CardsContainer = ({
     volunteerings,
     loadMoreVolunteerings,
     allVolunteeringsLoaded,
     isFilterOpen,
+    favoriteIds,
+    toggleFavorite,
 }) => {
     return (
         <div
@@ -47,6 +64,10 @@ const CardsContainer = ({
                               card_price={volunteer.price}
                               card_source={volunteer.source}
                               card_type="volunteering"
+                              isFavorite={favoriteIds.includes(volunteer.id)}
+                              onToggleFavorite={() =>
+                                  toggleFavorite(volunteer.id)
+                              }
                           />
                       ))
                     : Array(6)
@@ -77,11 +98,15 @@ const VolunteeringPage = () => {
         minPrice: '',
         maxPrice: '',
     });
+    const [favoriteIds, setFavoriteIds] = useState([]);
 
     useEffect(() => {
         const fetchData = async () => {
-            const data = await fetchVolunteerings();
-            setVolunteerings(data);
+            const volunteeringsData = await fetchVolunteerings();
+            setVolunteerings(volunteeringsData);
+
+            const favoritesData = await fetchFavorites();
+            setFavoriteIds(favoritesData);
         };
         fetchData();
     }, []);
@@ -109,6 +134,27 @@ const VolunteeringPage = () => {
     const [isFilterOpen, setIsFilterOpen] = useState(true);
     const handleFilterToggle = (val) => {
         setIsFilterOpen(!val);
+    };
+    const toggleFavorite = async (id) => {
+        try {
+            const isFavorite = favoriteIds.includes(id);
+            const method = isFavorite ? 'DELETE' : 'POST';
+            await axios({
+                method,
+                url: `http://localhost:8080/api/favorites/${
+                    method === 'POST' ? 'add' : 'remove'
+                }`,
+                data: { card_id: id, card_type: 'volunteering' },
+                withCredentials: true,
+                headers: { 'Content-Type': 'application/json' },
+            });
+
+            setFavoriteIds((prev) =>
+                isFavorite ? prev.filter((fid) => fid !== id) : [...prev, id]
+            );
+        } catch (error) {
+            console.error('Failed to update favorite status:', error);
+        }
     };
 
     return (
@@ -276,6 +322,8 @@ const VolunteeringPage = () => {
                         loadMoreVolunteerings={loadMoreVolunteerings}
                         allVolunteeringsLoaded={allVolunteeringsLoaded}
                         isFilterOpen={isFilterOpen}
+                        favoriteIds={favoriteIds}
+                        toggleFavorite={toggleFavorite}
                     />
                 </div>
             </div>

@@ -7,7 +7,7 @@ import axios from 'axios';
 
 axios.defaults.withCredentials = true;
 
-const FirstPart = () => {
+const FirstPart = ({ favoriteIds }) => {
     const [carouselData, setCarouselData] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('');
     const navigate = useNavigate();
@@ -99,58 +99,58 @@ const FirstPart = () => {
 
     return (
         <div className="w-full h-full pt-20 sm:pt-32 md:pt-40 flex flex-col justify-center items-center bg-[url('../assets/back1.png')] bg-no-repeat bg-cover">
-        <div className="w-full min-h-svh items-center flex flex-col relative top-[15%] md:top-[20%] px-4 sm:px-8 lg:px-12">
-            <div className="flex flex-col md:flex-row items-center md:justify-center space-x-4 md:space-x-8">
-                                    {/* Image Container */}
-                <div className="flex-shrink-0">
-                    <img
-                        src="../assets/Group 703.png"
-                        alt="Decorative Image"
-                        className="w-25 h-20 mb-4 mr-24 md:mb-10 md:w-25 md:h-20 object-cover opacity-100"
-                    />
+            <div className="w-full min-h-svh items-center flex flex-col relative top-[15%] md:top-[20%] px-4 sm:px-8 lg:px-12">
+                <div className="flex flex-col md:flex-row items-center md:justify-center space-x-4 md:space-x-8">
+                    {/* Image Container */}
+                    <div className="flex-shrink-0">
+                        <img
+                            src="../assets/Group 703.png"
+                            alt="Decorative Image"
+                            className="w-25 h-20 mb-4 mr-24 md:mb-10 md:w-25 md:h-20 object-cover opacity-100"
+                        />
+                    </div>
+                    {/* Title */}
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl text-white mb-6 pr-10 md:mb-8 font-bold text-center md:text-left whitespace-nowrap">
+                        Opportunities in One!
+                    </h1>
                 </div>
-                                    {/* Title */}
-                <h1 className="text-2xl sm:text-3xl md:text-4xl text-white mb-6 pr-10 md:mb-8 font-bold text-center md:text-left whitespace-nowrap">
-                    Opportunities in One!
-                </h1>
+                {/* Dropdown and Button */}
+                <div className="mb-12 md:mb-20 flex flex-col md:flex-row items-center justify-center">
+                    <select
+                        className="w-full md:w-auto mb-4 md:mb-0 md:mr-5 border border-gray-300 rounded px-8 md:px-20 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        name="select-category"
+                        id="select-category"
+                        value={selectedCategory}
+                        onChange={(e) => setSelectedCategory(e.target.value)}
+                    >
+                        <option value="" disabled>
+                            Select category
+                        </option>
+                        <option value="1">Events</option>
+                        <option value="2">Internships</option>
+                        <option value="3">Volunteering</option>
+                        <option value="4">Trainings</option>
+                    </select>
+                    <button
+                        type="button"
+                        className="w-full md:w-auto py-2 px-10 md:px-20 bg-[#44FFD1] text-black font-semibold rounded"
+                        onClick={handleSearch}
+                    >
+                        Search
+                    </button>
+                </div>
+                {/* Swiper Carousel */}
+                <SwiperCarousel data={carouselData} favoriteIds={favoriteIds} />
             </div>
-                            {/* Dropdown and Button */}
-            <div className="mb-12 md:mb-20 flex flex-col md:flex-row items-center justify-center">
-                <select
-                    className="w-full md:w-auto mb-4 md:mb-0 md:mr-5 border border-gray-300 rounded px-8 md:px-20 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    name="select-category"
-                    id="select-category"
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                >
-                    <option value="" disabled>
-                        Select category
-                    </option>
-                    <option value="1">Events</option>
-                    <option value="2">Internships</option>
-                    <option value="3">Volunteering</option>
-                    <option value="4">Trainings</option>
-                </select>
-                <button
-                    type="button"
-                    className="w-full md:w-auto py-2 px-10 md:px-20 bg-[#44FFD1] text-black font-semibold rounded"
-                    onClick={handleSearch}
-                >
-                    Search
-                </button>
+            {/* Chatbot Image */}
+            <div className="fixed bottom-5 right-5 m-5">
+                <img
+                    src="../assets/image 1.png"
+                    alt="chatbot"
+                    className="w-16 h-16 sm:w-20 sm:h-20 lg:w-25 lg:h-25 object-cover"
+                />
             </div>
-                            {/* Swiper Carousel */}
-            <SwiperCarousel data={carouselData} />
         </div>
-                    {/* Chatbot Image */}
-                            <div className="fixed bottom-5 right-5 m-5">
-            <img
-                src="../assets/image 1.png"
-                alt="chatbot"
-                className="w-16 h-16 sm:w-20 sm:h-20 lg:w-25 lg:h-25 object-cover"
-            />
-        </div>
-    </div>
     );
 };
 
@@ -343,7 +343,7 @@ const FourthPart = () => {
     );
 };
 
-const FivethPart = () => {
+const FivethPart = ({ favoriteIds }) => {
     const [carouselData, setCarouselData] = useState([]);
     const checkSession = async () => {
         try {
@@ -423,7 +423,7 @@ const FivethPart = () => {
                     Find your next opportunity
                 </h2>
             </div>
-            <SwiperCarousel data={carouselData} />
+            <SwiperCarousel data={carouselData} favoriteIds={favoriteIds} />
         </div>
     );
 };
@@ -530,13 +530,31 @@ const SeventhPart = () => {
 };
 
 const HomePage = () => {
+    const [favoriteIds, setFavoriteIds] = useState([]);
+
+    useEffect(() => {
+        const fetchFavoriteIds = async () => {
+            try {
+                const response = await axios.get(
+                    'http://localhost:8080/api/favorites'
+                );
+                if (response.status === 200) {
+                    setFavoriteIds(response.data.map((fav) => fav.card_id));
+                }
+            } catch (error) {
+                console.error('Error fetching favorite IDs:', error);
+            }
+        };
+
+        fetchFavoriteIds();
+    }, []);
     return (
         <div className="w-full h-full flex flex-col">
-            <FirstPart />
+            <FirstPart favoriteIds={favoriteIds} />
             <SecondPart />
             <ThirdPart />
             <FourthPart />
-            <FivethPart />
+            <FivethPart favoriteIds={favoriteIds} />
             <SixthPart />
             <SeventhPart />
         </div>

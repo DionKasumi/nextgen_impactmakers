@@ -18,7 +18,7 @@ import SkeletonCard from './SkeletonCard';
 
 axios.defaults.withCredentials = true;
 
-const SwiperCarousel = ({ data = [] }) => {
+const SwiperCarousel = ({ data = [], favoriteIds = [] }) => {
     return (
         <Swiper
             modules={[Navigation, Pagination, A11y, Autoplay, EffectCoverflow]}
@@ -65,6 +65,7 @@ const SwiperCarousel = ({ data = [] }) => {
                               card_duration={item.duration}
                               card_source={item.source}
                               card_type={item.type}
+                              isFavorite={favoriteIds.includes(item.id)}
                           />
                       </SwiperSlide>
                   ))}

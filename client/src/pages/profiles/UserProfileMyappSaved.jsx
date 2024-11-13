@@ -4,26 +4,53 @@ import Card from '../../components/Card';
 import axios from 'axios';
 
 const UserProfileMyappSaved = () => {
+    const [favorites, setFavorites] = useState([]);
+    const [removingId, setRemovingId] = useState(null);
+    const [notification, setNotification] = useState('');
     const [username, setUsername] = useState('Username');
-
     useEffect(() => {
-        const fetchUserData = async () => {
+        const fetchFavorites = async () => {
             try {
-                const response = await axios.get(
-                    'http://localhost:8080/api/user/profile',
+                const response = await fetch(
+                    'http://localhost:8080/api/favorites',
                     {
-                        withCredentials: true,
+                        credentials: 'include',
                     }
                 );
-
-                setUsername(response.data.username);
+                const result = await response.json();
+                if (response.ok) {
+                    setFavorites(result);
+                } else {
+                    console.error(result.error || 'Failed to fetch favorites');
+                }
             } catch (error) {
-                console.error('Error fetching user data:', error);
+                console.error('Network error:', error);
             }
         };
-        fetchUserData();
-    }, []);
 
+        fetchFavorites();
+    }, []);
+    const handleRemoveFavorite = async (cardId) => {
+        setRemovingId(cardId);
+        setTimeout(async () => {
+            try {
+                await fetch(`http://localhost:8080/api/favorites/remove`, {
+                    method: 'DELETE',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ card_id: cardId }),
+                });
+
+                setFavorites((prevFavorites) =>
+                    prevFavorites.filter((fav) => fav.card_id !== cardId)
+                );
+                setNotification('Favorite removed successfully!');
+                setTimeout(() => setNotification(''), 2000);
+            } catch (error) {
+                console.error('Failed to remove favorite:', error);
+            }
+        }, 500);
+    };
     return (
         <div className="min-h-screen w-full bg-gradient-to-b from-[#4F1ABE] via-[#A78DDF] flex flex-col items-center py-20 relative">
             <img
@@ -57,7 +84,7 @@ const UserProfileMyappSaved = () => {
                         </nav>
                     </div>
                 </div>
-                <div className="flex space-x-2 w-24 h-auto md:mt-20">
+                <div className="flex space-x-2 w-24 h-24 md:mt-20">
                     <button className="text-white text-3xl p-2 ">
                         &#x1F56D;
                     </button>
@@ -68,22 +95,30 @@ const UserProfileMyappSaved = () => {
             </div>
 
             <div className="w-full h-full flex justify-center items-center">
-                <div className="w-3/4 h-full grid grid-cols-1 md:grid-cols-2 gap-8 justify-items-center">
-                    {Array(6)
-                        .fill(null)
-                        .map((_, index) => (
+                <div className="w-2/4 h-full grid grid-cols-1 md:grid-cols-2 gap-8 justify-items-center">
+                    {favorites.map((fav) => (
+                        <div
+                            key={fav.card_id}
+                            className={`${
+                                removingId === fav.card_id
+                                    ? 'opacity-0'
+                                    : 'opacity-100'
+                            } transition-opacity duration-500 ease-out`}
+                        >
                             <Card
-                                key={index}
-                                id={0}
-                                card_title={''}
-                                card_img={''}
-                                card_duration={''}
-                                card_description={''}
-                                card_price={''}
-                                card_source={''}
-                                card_type="events"
+                                id={fav.card_id}
+                                card_title={fav.card_title}
+                                card_img={fav.card_img}
+                                card_duration={fav.card_duration}
+                                card_description={fav.card_description}
+                                card_price={fav.card_price}
+                                card_source={fav.card_source}
+                                card_type={fav.card_type}
+                                isFavorite={true}
+                                onToggleFavorite={handleRemoveFavorite}
                             />
-                        ))}
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>
