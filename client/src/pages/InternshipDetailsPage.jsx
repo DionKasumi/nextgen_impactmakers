@@ -122,7 +122,7 @@ const InternshipDetailsPage = () => {
                 <div className="w-full min-h-svh items-center flex flex-col relative top-16 mb-10">
                     <div className="w-full h-full py-12 flex justify-center bg-[url('../assets/img5.png')] items-center flex-col">
                         {/* Main Content Div */}
-                        <div className="w-5/6 aspect-[16/5] bg-gray-400 flex justify-center items-center rounded-md relative mb-16">
+                        <div className={`w-5/6 aspect-[16/5] flex justify-center items-center rounded-md relative mb-16 ${course.image_url == null ? 'bg-gray-400' : ''}`}>
                             {course.image_url == null ? (
                                 <img
                                     src="../assets/no_image.svg"
@@ -133,72 +133,105 @@ const InternshipDetailsPage = () => {
                                 <img
                                     src={course.image_url}
                                     alt="Course Image"
-                                    className="w-full h-full object-cover rounded-md select-none"
+                                    className=" h-full w-auto max-w-full max-h-full object-cover lg:object-contain"
                                 />
                             )}
                         </div>
 
                         <div className="flex flex-col justify-center items-center w-5/6 h-auto mb-12">
-                            <h1 className="font-bold text-2xl mb-4">
-                                About The Internship
-                            </h1>
+                            <h1 className="font-bold text-2xl mb-4">Position</h1>
+                            {course.title ? (
+                                <p className="text-center w-full md:w-1/2">{course.title}</p>
+                            ) : (
+                                <p className="text-center w-full md:w-1/2">
+                                Visit{" "}
+                                <span
+                                    className="cursor-pointer text-blue-600 underline hover:scale-105 transition-all"
+                                    onClick={() => (window.location.href = course.apply_link)}
+                                >
+                                    Source
+                                </span>{" "}
+                                for more information.
+                                </p>
+                            )}
+                        </div>
+
+                        <div className="flex flex-col justify-center items-center w-5/6 h-auto mb-12">
+                            <h1 className="font-bold text-2xl mb-4">About The Internship</h1>
+                            {course.description ? (
                             <p className="text-center w-full md:w-1/2">
                                 {course.description}
                             </p>
+                            ) : (
+                                <p className="text-center w-full md:w-1/2">
+                                Visit{" "}
+                                <span
+                                    className="cursor-pointer text-blue-600 underline hover:scale-105 transition-all"
+                                    onClick={() => (window.location.href = course.apply_link)}
+                                >
+                                    Source
+                                </span>{" "}
+                                for more information.
+                                </p>
+                            )}
                         </div>
+
                         <div className="flex flex-col justify-center items-center w-5/6 h-auto mb-12">
-                            <h1 className="font-bold text-2xl mb-4">
-                                Key Responsibilities
-                            </h1>
-                            <p className="text-center w-full md:w-1/2">
-                                Lorem ipsum dolor sit amet consectetur
-                                adipisicing elit. Sint amet qui mollitia
-                                temporibus, perspiciatis ex eos doloribus,
-                                distinctio recusandae repellat iste error
-                                quisquam! Reprehenderit illum ipsa iusto, minima
-                                mollitia similique.
-                            </p>
-                        </div>
-                        <div className="flex flex-col justify-center items-center w-5/6 h-auto mb-12">
-                            <h1 className="font-bold text-2xl mb-4">
-                                Skills and Experience
-                            </h1>
-                            <ol className="list-disc text-2xl">
-                                <li></li>
-                                <li></li>
-                            </ol>
+                            <h1 className="font-bold text-2xl mb-4">Type of The Internship</h1>
+                            {course.label ? (
+                                <p className="text-center w-full md:w-1/2">{course.label}</p>
+                            ) : (
+                                <p className="text-center w-full md:w-1/2">
+                                Visit{" "}
+                                <span
+                                    className="cursor-pointer text-blue-600 underline hover:scale-105 transition-all"
+                                    onClick={() => (window.location.href = course.apply_link)}
+                                >
+                                    Source
+                                </span>{" "}
+                                for more information.
+                                </p>
+                            )}
                         </div>
                     </div>
 
                     {/* Internship Details Section */}
-                    <div className="w-full h-full py-24 flex justify-center items-center flex-col bg-[#4F1ABE] bg-[url('../assets/image12.png')]">
-                        <div className="w-5/6 text-white flex flex-col items-center mb-6">
-                            <h1 className="text-3xl font-bold">Date & Time</h1>
-                            <p>01/10/2024</p>
+                    <div className="w-full h-full py-24 flex justify-center items-center flex-col bg-[#4F1ABE] relative">
+                    <div
+                        className="absolute  inset-0 hidden sm:block bg-no-repeat bg-left bg-contain"
+                        style={{ backgroundImage: "url('../assets/image12.png')" }}
+                    ></div>
+                    
+                    {course.posted_date && course.posted_date !== "Unknown" && (
+                    <div className="w-5/6 text-white flex flex-col items-center mb-6">
+                            <h1 className="text-3xl font-bold">Last Day to Apply</h1>
+                            <p>{course.posted_date}</p>
                         </div>
+                        )}
+                        {course.location && course.location !== "Unknown" && (
                         <div className="w-5/6 text-white flex flex-col items-center mb-6">
                             <h1 className="text-3xl font-bold">Location</h1>
-                            <p>Example Text</p>
+                            <p>{course.location}</p>
                         </div>
+                    )}
+                    {course.salary && course.salary !== "Unknown" && (
                         <div className="w-5/6 text-white flex flex-col items-center mb-6">
-                            <h1 className="text-3xl font-bold">Price</h1>
-                            <p>Example Text</p>
+                            <h1 className="text-3xl font-bold">Salary</h1>
+                            <p>{course.salary}</p>
                         </div>
+                    )}
+                    {course.source && course.source !== "Unknown" && (
                         <div className="w-5/6 text-white flex flex-col items-center mb-6">
-                            <h1 className="text-3xl font-bold">Duration</h1>
-                            <p>{course.duration ? course.duration : 'N/A'}</p>
+                            <h1 className="text-3xl font-bold">Company Name</h1>
+                            <p>{course.source}</p>
                         </div>
-                        <div className="w-5/6 text-white flex flex-col items-center mb-6">
-                            <h1 className="text-3xl font-bold">Part Time</h1>
-                            <p>Example Text</p>
-                        </div>
-                        <div className="w-5/6 text-white flex flex-col items-center mb-6">
-                            <h1 className="text-3xl font-bold">
-                                Last day to Apply
-                            </h1>
-                            <p>Example Text</p>
-                        </div>
-                        <button className="px-16 py-6 -mb-6 bg-white text-black font-bold text-xl rounded-lg hover:scale-105 transition-all">
+                    )}
+                        <button
+                            className="px-16 py-6 bg-white text-black font-bold text-xl rounded-lg hover:scale-105 transition-all z-10"
+                            onClick={() =>
+                                (window.location.href = course.apply_link)
+                            }
+                        >
                             Apply Here
                         </button>
                     </div>
@@ -222,13 +255,13 @@ const InternshipDetailsPage = () => {
                                 </h3>
                                 <div className="flex flex-col mt-10">
                                     <button className="py-2 px-16 bg-white rounded-md my-4 hover:scale-[1.02] transition-all">
-                                        Contact
+                                        {course.email}
                                     </button>
                                     <button className="py-2 px-16 bg-white rounded-md my-4 hover:scale-[1.02] transition-all">
-                                        Follow
+                                        {course.phone_number}
                                     </button>
                                     <button className="py-2 px-16 bg-white rounded-md my-4 hover:scale-[1.02] transition-all">
-                                        Phone Number
+                                        {course.office_address}
                                     </button>
                                 </div>
                             </div>
@@ -237,7 +270,7 @@ const InternshipDetailsPage = () => {
                         <h1 className="font-bold text-2xl mb-12 mt-20">
                             Testimonials
                         </h1>
-                        <div className="w-5/6 h-auto pl-32 pr-32 flex flex-col xl:flex-row justify-between items-center gap-5 mb-16">
+                        <div className="h-auto pl-32 pr-32 flex flex-col xl:flex-row justify-between items-center gap-5 mb-16">
                             <TestimonialCard />
                             <TestimonialCard />
                             <TestimonialCard />
