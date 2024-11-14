@@ -122,7 +122,7 @@ const EventDetailsPage = () => {
                 <div className="w-full min-h-svh items-center flex flex-col relative top-16 mb-10">
                     <div className="w-full h-full py-12 flex justify-center bg-[url('../assets/image10.png')] bg-no-repeat items-center flex-col">
                         {/* Main Content Div */}
-                        <div className="w-5/6 aspect-[16/5] bg-gray-400 flex justify-center items-center rounded-md relative mb-16">
+                        <div className={`w-5/6 aspect-[16/5] flex justify-center items-center rounded-md relative mb-16 ${course.image_url == null ? 'bg-gray-400' : ''}`}>
                             {course.image_url == null ? (
                                 <img
                                     src="../assets/no_image.svg"
@@ -133,60 +133,124 @@ const EventDetailsPage = () => {
                                 <img
                                     src={course.image_url}
                                     alt="Course Image"
-                                    className="w-full h-full object-cover rounded-md select-none"
+                                    className=" h-full w-auto max-w-full max-h-full object-cover lg:object-contain"
                                 />
                             )}
                         </div>
-
+                        <div className="flex flex-col justify-center items-center w-5/6 h-auto mb-12">
+                            <h1 className="font-bold text-2xl mb-4">Title of Event</h1>
+                            {course.title ? (
+                                <p className="text-center w-full md:w-1/2">{course.title}</p>
+                            ) : (
+                                <p className="text-center w-full md:w-1/2">
+                                Visit{" "}
+                                <span
+                                    className="cursor-pointer text-blue-600 underline hover:scale-105 transition-all"
+                                    onClick={() => (window.location.href = course.apply_link)}
+                                >
+                                    Source
+                                </span>{" "}
+                                for more information.
+                                </p>
+                            )}
+                        </div>
                         <div className="flex flex-col justify-center items-center w-5/6 h-auto mb-12">
                             <h1 className="font-bold text-2xl mb-4">
                                 About The Event
                             </h1>
+                            {course.description ? (
                             <p className="text-center w-full md:w-1/2">
                                 {course.description}
                             </p>
+                        ) : (
+                                <p className="text-center w-full md:w-1/2">
+                                Visit{" "}
+                                <span
+                                    className="cursor-pointer text-blue-600 underline hover:scale-105 transition-all"
+                                    onClick={() => (window.location.href = course.apply_link)}
+                                >
+                                    Source
+                                </span>{" "}
+                                for more information.
+                                </p>
+                            )}
                         </div>
+                        <div className="flex flex-col justify-center items-center w-5/6 h-auto mb-12">
+                            <h1 className="font-bold text-2xl mb-4">Type of The Training</h1>
+                            {course.label ? (
+                                <p className="text-center w-full md:w-1/2">{course.label}</p>
+                            ) : (
+                                <p className="text-center w-full md:w-1/2">
+                                Visit{" "}
+                                <span
+                                    className="cursor-pointer text-blue-600 underline hover:scale-105 transition-all"
+                                    onClick={() => (window.location.href = course.apply_link)}
+                                >
+                                    Source
+                                </span>{" "}
+                                for more information.
+                                </p>
+                            )}
+                        </div> 
                     </div>
 
                     {/* Event Details Section */}
-                    <div className="w-full h-full py-24 flex justify-center items-center flex-col bg-[#4F1ABE] bg-[url('../assets/image9.png')]">
+                    <div className="w-full h-full py-24 flex justify-center items-center flex-col bg-[#4F1ABE] relative">
+                    <div
+                        className="absolute inset-0 hidden sm:block bg-no-repeat bg-left bg-contain"
+                        style={{ backgroundImage: "url('../assets/image9.png')" }}
+                    ></div>
+
+                    {course.source && course.source !== "Unknown" && (
                         <div className="w-5/6 text-white flex flex-col items-center mb-6">
                             <h1 className="text-3xl font-bold">Date & Time</h1>
                             <p>01/10/2024</p>
                         </div>
+                    )}
+                    {course.location && course.location !== "Unknown" && (
                         <div className="w-5/6 text-white flex flex-col items-center mb-6">
                             <h1 className="text-3xl font-bold">Location</h1>
                             <p>Example Text</p>
                         </div>
+                    )}
+                    {course.price && course.price !== "Unknown" && (
                         <div className="w-5/6 text-white flex flex-col items-center mb-6">
                             <h1 className="text-3xl font-bold">Price</h1>
                             <p>Example Text</p>
                         </div>
+                    )}
+                    {course.price && course.price !== "Unknown" && (
                         <div className="w-5/6 text-white flex flex-col items-center mb-6">
                             <h1 className="text-3xl font-bold">Duration</h1>
                             <p>{course.duration ? course.duration : 'N/A'}</p>
                         </div>
+                    )}
 
                         {/* Ticket Count Section */}
                         <div className="w-5/6 text-white flex flex-col items-center mb-12">
                             <h1 className="text-3xl font-bold">Tickets</h1>
                             <div className="flex items-center space-x-4">
                                 <button
-                                    className="px-4 py-2 bg-gray-300 text-black font-bold text-lg rounded-md"
+                                    className="px-4 py-2 z-10 bg-gray-300 text-black font-bold text-lg rounded-md"
                                     onClick={handleDecrement}
                                 >
                                     -
                                 </button>
                                 <span className="text-2xl">{ticketCount}</span>
                                 <button
-                                    className="px-4 py-2 bg-gray-300 text-black font-bold text-lg rounded-md"
+                                    className="px-4 py-2 z-10 bg-gray-300 text-black font-bold text-lg rounded-md"
                                     onClick={handleIncrement}
                                 >
                                     +
                                 </button>
                             </div>
                         </div>
-                        <button className="px-16 py-6 -mb-6 bg-white text-black font-bold text-xl rounded-lg hover:scale-105 transition-all">
+                        <button
+                            className="px-16 py-6 z-10 bg-white text-black font-bold text-xl rounded-lg hover:scale-105 transition-all"
+                            onClick={() =>
+                                (window.location.href = course.apply_link)
+                            }
+                        >
                             Apply Here
                         </button>
                     </div>
@@ -210,13 +274,13 @@ const EventDetailsPage = () => {
                                 </h3>
                                 <div className="flex flex-col mt-10">
                                     <button className="py-2 px-16 bg-white rounded-md my-4 hover:scale-[1.02] transition-all">
-                                        Contact
+                                        {course.email}
                                     </button>
                                     <button className="py-2 px-16 bg-white rounded-md my-4 hover:scale-[1.02] transition-all">
-                                        Follow
+                                        {course.phone_number}
                                     </button>
                                     <button className="py-2 px-16 bg-white rounded-md my-4 hover:scale-[1.02] transition-all">
-                                        Phone Number
+                                        {course.office_address}
                                     </button>
                                 </div>
                             </div>
@@ -225,7 +289,7 @@ const EventDetailsPage = () => {
                         <h1 className="font-bold text-2xl mb-12 mt-20">
                             Testimonials
                         </h1>
-                        <div className="w-5/6 h-auto pl-32 pr-32 flex flex-col xl:flex-row justify-between items-center gap-5 mb-16">
+                        <div className="h-auto pl-32 pr-32 flex flex-col xl:flex-row justify-between items-center gap-5 mb-16">
                             <TestimonialCard />
                             <TestimonialCard />
                             <TestimonialCard />

@@ -107,7 +107,7 @@ const TrainingDetailsPage = () => {
                 <div className="w-full min-h-svh items-center flex flex-col relative top-16 mb-10">
                     <div className="w-full h-full py-12 flex justify-center bg-[url('../assets/img5.png')] items-center flex-col">
                         {/* Main Content Div */}
-                        <div className="w-5/6 aspect-[16/5] bg-gray-400 flex justify-center items-center rounded-md relative mb-16">
+                        <div className={`w-5/6 aspect-[16/5] flex justify-center items-center rounded-md relative mb-16 ${course.image_url == null ? 'bg-gray-400' : ''}`}>
                             {course.image_url == null ? (
                                 <img
                                     src="../assets/no_image.svg"
@@ -118,64 +118,103 @@ const TrainingDetailsPage = () => {
                                 <img
                                     src={course.image_url}
                                     alt="Course Image"
-                                    className="w-full h-full object-cover rounded-md select-none"
+                                    className=" h-full w-auto max-w-full max-h-full object-cover lg:object-contain"
                                 />
                             )}
                         </div>
-
+                        <div className="flex flex-col justify-center items-center w-5/6 h-auto mb-12">
+                            <h1 className="font-bold text-2xl mb-4">Title of Training</h1>
+                            {course.title ? (
+                                <p className="text-center w-full md:w-1/2">{course.title}</p>
+                            ) : (
+                                <p className="text-center w-full md:w-1/2">
+                                Visit{" "}
+                                <span
+                                    className="cursor-pointer text-blue-600 underline hover:scale-105 transition-all"
+                                    onClick={() => (window.location.href = course.apply_link)}
+                                >
+                                    Source
+                                </span>{" "}
+                                for more information.
+                                </p>
+                            )}
+                            </div>
                         <div className="flex flex-col justify-center items-center w-5/6 h-auto mb-12">
                             <h1 className="font-bold text-2xl mb-4">
                                 About The Training
-                            </h1>
+                            </h1> 
+                            {course.description ? (
                             <p className="text-center w-full md:w-1/2">
                                 {course.description}
                             </p>
+                            ) : (
+                                <p className="text-center w-full md:w-1/2">
+                                Visit{" "}
+                                <span
+                                    className="cursor-pointer text-blue-600 underline hover:scale-105 transition-all"
+                                    onClick={() => (window.location.href = course.apply_link)}
+                                >
+                                    Source
+                                </span>{" "}
+                                for more information.
+                                </p>
+                            )}
                         </div>
                         <div className="flex flex-col justify-center items-center w-5/6 h-auto mb-12">
-                            <h1 className="font-bold text-2xl mb-4">
-                                Key Responsibilities
-                            </h1>
-                            <p className="text-center w-full md:w-1/2">
-                                Visit Source for more information.
-                            </p>
-                        </div>
-                        <div className="flex flex-col justify-center items-center w-5/6 h-auto mb-12">
-                            <h1 className="font-bold text-2xl mb-4">
-                                Skills and Experience
-                            </h1>
-                            <ol className="list-disc text-2xl">
-                                <li></li>
-                                <li></li>
-                                <li></li>
-                                <li></li>
-                                <li></li>
-                            </ol>
-                        </div>
+                            <h1 className="font-bold text-2xl mb-4">Type of The Training</h1>
+                            {course.label ? (
+                                <p className="text-center w-full md:w-1/2">{course.label}</p>
+                            ) : (
+                                <p className="text-center w-full md:w-1/2">
+                                Visit{" "}
+                                <span
+                                    className="cursor-pointer text-blue-600 underline hover:scale-105 transition-all"
+                                    onClick={() => (window.location.href = course.apply_link)}
+                                >
+                                    Source
+                                </span>{" "}
+                                for more information.
+                                </p>
+                            )}
+                        </div> 
                     </div>
-                    <div className="w-full h-full py-24 flex justify-center items-center flex-col bg-[#4F1ABE] bg-[url('../assets/image6.png')]">
-                        {/* Secondary Content Div */}
+                    <div className="w-full h-full py-24 flex justify-center items-center flex-col bg-[#4F1ABE] relative">
+                    <div
+                        className="absolute inset-0 hidden sm:block bg-no-repeat bg-left bg-contain"
+                        style={{ backgroundImage: "url('../assets/image6.png')" }}
+                    ></div>
+                              {course.trainer && course.trainer !== "Unknown" && (
                         <div className="w-5/6 text-white flex flex-col items-center mb-6">
-                            <h1 className="text-3xl font-bold">Skill Level</h1>
-                            <p>{course.rating}</p>
+                            <h1 className="text-3xl font-bold">Instructor</h1>
+                            <p>{course.trainer}</p>
                         </div>
+                        )}
+                        {course.trainer && course.price !== "Unknown" && (
                         <div className="w-5/6 text-white flex flex-col items-center mb-6">
-                            <h1 className="text-3xl font-bold">Age Group</h1>
-                            <p>Example Text</p>
+                            <h1 className="text-3xl font-bold">Price</h1>
+                            <p>{course.price}</p>
                         </div>
+                        )}
+                        {course.location && course.location !== "Unknown" && (
                         <div className="w-5/6 text-white flex flex-col items-center mb-6">
                             <h1 className="text-3xl font-bold">Location</h1>
-                            <p>Example Text</p>
+                            <p>{course.location}</p>
                         </div>
+                        )}
+                        {course.duration && course.duration !== "Unknown" && (
                         <div className="w-5/6 text-white flex flex-col items-center mb-6">
                             <h1 className="text-3xl font-bold">Duration</h1>
-                            <p>{course.duration ? course.duration : 'N/A'}</p>
+                            <p>{course.duration}</p>
                         </div>
+                        )}
+                        {course.source && course.source !== "Unknown" && (
                         <div className="w-5/6 text-white flex flex-col items-center mb-12">
                             <h1 className="text-3xl font-bold">Organization</h1>
-                            <p>{course.source ? course.source : 'No Source'}</p>
+                            <p>{course.source }</p>
                         </div>
+                        )}
                         <button
-                            className="px-16 py-6 bg-white text-black font-bold text-xl rounded-lg hover:scale-105 transition-all"
+                            className="px-16 py-6 z-10 bg-white text-black font-bold text-xl rounded-lg hover:scale-105 transition-all"
                             onClick={() =>
                                 (window.location.href = course.apply_link)
                             }
@@ -217,7 +256,7 @@ const TrainingDetailsPage = () => {
                         <h1 className="font-bold text-2xl mb-12 mt-20">
                             Testimonials
                         </h1>
-                        <div className="w-5/6 h-auto pl-32 pr-32 flex flex-col xl:flex-row justify-between items-center gap-5 mb-16">
+                        <div className="h-auto pl-32 pr-32 flex flex-col xl:flex-row justify-between items-center gap-5 mb-16">
                             <TestimonialCard />
                             <TestimonialCard />
                             <TestimonialCard />
