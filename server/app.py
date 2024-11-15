@@ -28,7 +28,7 @@ app.config['SESSION_COOKIE_SECURE'] = False    # Disable secure cookies for deve
 # Database connection parameters
 db_params = {
     'user': 'root',
-    'passwd': '',
+    'passwd': '1234',
     'host': 'localhost',
     'port': 3306,
     'db': 'pye_data'
