@@ -1,10 +1,12 @@
 /* eslint-disable react-refresh/only-export-components */
 import SectionWrapper from '../hoc/SectionWrapper';
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams,useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { IoMdStar, IoMdStarHalf, IoMdStarOutline } from 'react-icons/io';
 import SwiperCarousel from '../components/SwiperCarousel';
+import Modal from '@mui/material/Modal';
+import Fade from '@mui/material/Fade';
 
 // Function to fetch course data from the API
 const fetchCourse = async (id) => {
@@ -48,7 +50,46 @@ const TrainingDetailsPage = () => {
     const { id } = useParams();
     const [favoriteIds, setFavoriteIds] = useState([]);
     const [course, setCourse] = useState([]);
+    const [applyModalOpen, setApplyModalOpen] = useState(false);
+    const [applied, setApplied] = useState(null);
+    const navigate = useNavigate();
+    const [errorMessage, setErrorMessage] = useState('');
 
+    const handleApplyModalToggle = () => {
+    setApplyModalOpen(!applyModalOpen);
+};
+
+const handleApplyClick = () => {
+    const width = 800; 
+    const height = 600; 
+    const left = (window.screen.width / 1) - (width /2); 
+    const top = (window.screen.height / 2) - (height / 2);
+
+    window.open(
+        course.apply_link,
+        '_blank',
+        `width=${width},height=${height},left=${left},top=${top},resizable,scrollbars`
+    );
+    setApplyModalOpen(true);
+};
+
+const handleButtonChange = (value) => {
+    setApplied(value);
+};
+
+
+const handleSubmit = () => {
+    if (applied === null) {
+        setErrorMessage('Let us know if you have applied!');
+    } else {
+        setErrorMessage('');
+        if (applied === true) {
+            navigate('/profile/myapp');
+        } else {
+            handleApplyModalToggle();
+        }
+    }
+};
     useEffect(() => {
         const fetchData = async () => {
             const data = await fetchCourse(id);
@@ -213,11 +254,9 @@ const TrainingDetailsPage = () => {
                             <p>{course.source }</p>
                         </div>
                         )}
-                        <button
+                         <button
                             className="px-16 py-6 z-10 bg-white text-black font-bold text-xl rounded-lg hover:scale-105 transition-all"
-                            onClick={() =>
-                                (window.location.href = course.apply_link)
-                            }
+                            onClick={handleApplyClick}
                         >
                             Apply Here
                         </button>
@@ -288,6 +327,62 @@ const TrainingDetailsPage = () => {
                     </div>
                 </div>
             </div>
+            <Modal open={applyModalOpen} onClose={handleApplyModalToggle}>
+                <div>
+                    <Fade in={applyModalOpen}>
+                    <div className="fixed inset-0 flex items-center justify-center p-4 bg-black bg-opacity-50">
+                        <div className="relative w-full max-w-lg bg-white shadow-lg rounded-3xl flex flex-col justify-center p-8">
+                            <h1 className="font-bold text-violet-800 text-xl mb-6 text-center">Did you apply?</h1>
+                            <div className="flex flex-col items-center space-y-4 mb-6">
+                            <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                                <button
+                                onClick={() => handleButtonChange(true)}
+                                className={`relative uppercase px-6 py-2 rounded-full  transition-all duration-300 border-2 border-transparent ${
+                                    applied === true
+                                    ? 'bg-gradient-to-r from-purple-500 to-pink-500'
+                                    : 'bg-transparent border-violet-700 text-violet-800'
+                                } hover:bg-gradient-to-r hover:from-pink-500 hover:to-purple-500`}
+                                >
+                                yes
+                                </button>
+                                <button
+                                onClick={() => handleButtonChange(false)}
+                                className={`relative uppercase px-6 py-2 rounded-full transition-all duration-300 border-2 border-transparent ${
+                                    applied === false
+                                    ? 'bg-gradient-to-r from-purple-500 to-pink-500'
+                                    : 'bg-transparent border-violet-700 text-violet-800'
+                                } hover:bg-gradient-to-r hover:from-pink-500 hover:to-purple-500`}
+                                >
+                                no
+                                </button>
+                            </div>
+                            </div>
+                    {errorMessage && (
+                        <p className="text-red-500 text-center mb-4">{errorMessage}</p>
+                    )}
+                            <div className="flex justify-center sm:justify-end">
+                            <button
+                                onClick={handleSubmit}
+                                className="flex items-center justify-center space-x-2 px-8 py-2 text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-pink-500 rounded-full shadow-lg border border-transparent hover:from-purple-500 hover:to-pink-400 hover:scale-105 transition-transform duration-300 ease-in-out"
+                            >
+                                <span>Submit</span>
+                                <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth={2}
+                                stroke="currentColor"
+                                className="w-4 h-4"
+                                >
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M13 5l7 7-7 7M5 12h14" />
+                                </svg>
+                            </button>
+                            </div>
+                        </div>
+                    </div>
+                    </Fade>
+                </div>
+            </Modal>
         </>
     );
 };
