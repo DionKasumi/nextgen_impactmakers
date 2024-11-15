@@ -1046,6 +1046,7 @@ def submit_review():
 
     return jsonify({"message": "Review submitted successfully."}), 201
 
+## Retrieve Reviews
 @app.route('/api/retrieve_reviews', methods=['GET'])
 def get_reviews():
     try:
@@ -1064,6 +1065,34 @@ def get_reviews():
     except MySQLdb.Error as e:
         print(f"MySQL error during fetching reviews: {e}")
         return jsonify({"error": f"MySQL error: {e}"}), 500
+    
+## Delete Reviews
+@app.route('/api/delete_review', methods=['DELETE'])
+def delete_review():
+    data = request.get_json()
+    username = data.get("username")
+
+    if not username:
+        return jsonify({"error": "Username is required to delete review."}), 400
+
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+
+        # Delete query
+        delete_query = "UPDATE participants SET review = NULL WHERE username = %s"
+        cursor.execute(delete_query, (username,))
+        db.commit()
+
+        cursor.close()
+    except MySQLdb.Error as e:
+        print(f"MySQL error during review deletion: {e}")
+        return jsonify({"error": f"MySQL error: {e}"}), 500
+    finally:
+        db.close()
+
+    return jsonify({"message": "Review deleted successfully."}), 200
+
 
 # Function to get users from the database
 def get_users():
