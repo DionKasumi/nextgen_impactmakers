@@ -114,13 +114,19 @@
                             <a href="#" id="eventsLink" class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-800">Events</a>
                         </div>
                     </div>
-                    <a
-                        id="manageReviewsLink"
-                        href="#"
+
+                    <a 
+                        id="manageFeedbackLink" 
+                        href="#" 
                         class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-800"
                     >
-                        Manage Reviews/Feedback
+                        Manage Feedback
                     </a>
+                    <div id="feedbackSubMenu" class="submenu">
+                        <a href="#" id="manageReviewsLink" class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-800">Manage Reviews</a>
+                        <a href="#" id="manageTestimonialsLink" class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-800">Manage Testimonials</a>
+                    </div>
+                    
                 </nav>
             </div>
 
@@ -248,6 +254,39 @@
                 </div>
             </div>
         </div>
+
+        <!-- Manage Reviews Table -->
+        <div id="manageReviewsTableContainer" class="table-container" style="display: none;">
+            <h2 class="text-2xl font-bold mb-4" id="manageReviewsHeader">Manage Reviews</h2>
+            <table class="min-w-full bg-white" id="reviewsTable">
+                <thead>
+                    <tr>
+                        <th class="py-2 px-4 border-b">Username</th>
+                        <th class="py-2 px-4 border-b">Review</th>
+                        <th class="py-2 px-4 border-b">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="reviewsTableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Manage Testimonials Table -->
+        <div id="manageTestimonialsTableContainer" class="table-container" style="display: none;">
+            <h2 class="text-2xl font-bold mb-4" id="manageTestimonialsHeader">Manage Testimonials</h2>
+            <table class="min-w-full bg-white" id="testimonialsTable">
+                <thead>
+                    <tr>
+                        <th class="py-2 px-4 border-b">Username</th>
+                        <th class="py-2 px-4 border-b">Testimonial</th>
+                        <th class="py-2 px-4 border-b">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="testimonialsTableBody">
+                </tbody>
+            </table>
+        </div>
+
 
     <script>
         
@@ -798,6 +837,16 @@
                 document.getElementById('cardsTableContainer').style.display = 'none';
             });
 
+            document.getElementById('manageFeedbackLink').addEventListener('click', function() {
+                highlightActiveLink('manageFeedbackLink');  // Corrected to manageFeedbackLink
+                const submenu = document.getElementById('feedbackSubMenu');
+                submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+                
+                document.getElementById('greeting').style.display = 'none'; 
+                document.getElementById('greetingDescription').style.display = 'none'; 
+                document.getElementById('organizationsTableContainer').style.display = 'none';
+            });
+
             document.getElementById('internshipsLink').addEventListener('click', function(event) {
                 event.stopPropagation();
                 fetchCards('/api/admin/managecards/internships', 'Manage Internships', ['source', 'title', 'description', 'posted_date', 'salary', 'duration', 'location', 'image_url', 'email', 'phone_number', 'office_address', 'company_logo']);
@@ -830,12 +879,6 @@
                 document.getElementById('greetingDescription').style.display = 'none'; 
             });
 
-            document.getElementById('manageReviewsLink').addEventListener('click', function() {
-                highlightActiveLink('manageReviewsLink');
-                document.getElementById('greeting').style.display = 'block'; 
-                document.getElementById('greetingDescription').style.display = 'block'; 
-                document.getElementById('organizationsTableContainer').style.display = 'none'; 
-            });
 
             document.getElementById('approveOrganizationsLink').addEventListener('click', function(event) {
                 event.stopPropagation();
@@ -893,12 +936,77 @@
                 });
             }
 
+
+            // Function to populate the Manage Reviews table
+            function loadReviewsTable() {
+                fetch('http://localhost:8080/api/retrieve_reviews')
+                    .then(response => response.json())
+                    .then(data => {
+                        const reviewsTableBody = document.getElementById('reviewsTableBody');
+                        reviewsTableBody.innerHTML = ''; 
+                        
+                        data.forEach(review => {
+                            const row = document.createElement('tr');
+                            
+                            const usernameCell = document.createElement('td');
+                            usernameCell.textContent = review.username;
+                            usernameCell.className = "py-2 px-4 border-b";
+                            row.appendChild(usernameCell);
+                            
+                            const reviewCell = document.createElement('td');
+                            reviewCell.textContent = review.review;
+                            reviewCell.className = "py-2 px-4 border-b";
+                            row.appendChild(reviewCell);
+                            
+                            const actionsCell = document.createElement('td');
+                            actionsCell.className = "py-2 px-4 border-b";
+                            const deleteButton = document.createElement('button');
+                            deleteButton.className = "bg-red-500 text-white px-3 py-1 rounded hover:bg-red-700";
+                            deleteButton.textContent = "Delete";
+                            
+                            // Event listener for delete button
+                            deleteButton.addEventListener('click', function() {
+                                if (confirm(`Are you sure you want to delete the review from ${review.username}?`)) {
+                                    deleteReview(review.username);
+                                }
+                            });
+                            
+                            actionsCell.appendChild(deleteButton);
+                            row.appendChild(actionsCell);
+                            
+                            reviewsTableBody.appendChild(row);
+                        });
+                    })
+                    .catch(error => console.error('Error loading reviews:', error));
+            }
+
+            // Function to delete review by username
+            function deleteReview(username) {
+                fetch('http://localhost:8080/api/delete_review', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    loadReviewsTable(); // Refresh the table after deletion
+                })
+                .catch(error => console.error('Error deleting review:', error));
+            }
+
+
+
             function resetSections() {
                 const sections = [
                     'banDeleteUsersTableContainer', 
                     'banDeleteOrgTableContainer', 
                     'cardsTableContainer', 
                     'approveOrganizationsTableContainer',
+                    'manageReviewsTableContainer', // Added Manage Reviews section
+                    'manageTestimonialsTableContainer' // Added Manage Testimonials section
                 ];
 
                 sections.forEach(sectionId => {
@@ -906,57 +1014,58 @@
                 });
             }
 
+            // Add event listeners for all menu links, calling resetSections() before showing each section
             document.getElementById('banDeleteUsersLink').addEventListener('click', function() {
                 resetSections(); 
-
                 document.getElementById('banDeleteUsersTableContainer').style.display = 'block';
             });
 
             document.getElementById('banDeleteOrgLink').addEventListener('click', function() {
                 resetSections(); 
-
                 document.getElementById('banDeleteOrgTableContainer').style.display = 'block';
             });
 
             document.getElementById('internshipsLink').addEventListener('click', function() {
                 resetSections(); 
-
                 document.getElementById('cardsTableContainer').style.display = 'block';
             });
 
             document.getElementById('eventsLink').addEventListener('click', function() {
                 resetSections(); 
-
                 document.getElementById('cardsTableContainer').style.display = 'block';
             });
 
             document.getElementById('trainingsLink').addEventListener('click', function() {
                 resetSections(); 
-
                 document.getElementById('cardsTableContainer').style.display = 'block';
             });
 
             document.getElementById('volunteeringLink').addEventListener('click', function() {
                 resetSections(); 
-
                 document.getElementById('cardsTableContainer').style.display = 'block';
             });
 
             document.getElementById('approveOrganizationsLink').addEventListener('click', function() {
                 resetSections(); 
-
                 document.getElementById('approveOrganizationsTableContainer').style.display = 'block';  
             });
 
             document.getElementById('manageReviewsLink').addEventListener('click', function() {
+                highlightActiveLink('manageReviewsLink');
+                loadReviewsTable();
                 resetSections(); 
+                document.getElementById('manageReviewsTableContainer').style.display = 'block';
+            });
 
-                document.getElementById('manageReviewsLink').style.display = 'block';
+            document.getElementById('manageTestimonialsLink').addEventListener('click', function() {
+                highlightActiveLink('manageTestimonialsLink');
+                resetSections(); 
+                document.getElementById('manageTestimonialsTableContainer').style.display = 'block';
             });
     
         </script>
 
-            <script>
+        <script>
                 document
                 .getElementById("logoutButton")
                 .addEventListener("click", function () {
