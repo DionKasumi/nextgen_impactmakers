@@ -7,16 +7,8 @@ const UserEditProfile = () => {
         name: '',
         surname: '',
         email: '',
-        birthPlace: '',
-        city: '',
-        birthday: '',
-        academicLevel: '',
-        skills: '',
-        socialMedia: '',
-        jobExperience: '',
         username: '',
         phone: '',
-        preferences: '',
     });
     const [initialData, setInitialData] = useState({});
     const [errorMessage, setErrorMessage] = useState('');
@@ -37,19 +29,8 @@ const UserEditProfile = () => {
                     name: response.data.name || '',
                     surname: response.data.surname || '',
                     email: response.data.email || '', // Read-only field
-                    birthPlace: response.data.birthPlace || '',
-                    city: response.data.city || '',
-                    birthday: response.data.birthday || '',
-                    academicLevel: response.data.academicLevel || '',
-                    skills: response.data.skills || '',
-                    socialMedia: response.data.socialMedia || '',
-                    jobExperience: response.data.jobExperience || '',
                     username: response.data.username || '',
-                    phone: response.data.phone || '',
-                    preferences: response.data.preferences
-                        ? response.data.preferences.join(', ')
-                        : '',
-                };
+                };                
 
                 setFormData(data);
                 setInitialData(data); // Store the initial data for comparison
@@ -153,11 +134,6 @@ const UserEditProfile = () => {
                         {[
                             'Name',
                             'Surname',
-                            'Email',
-                            'Birth Place',
-                            'City',
-                            'Academic Level',
-                            'Phone',
                         ].map((label) => (
                             <div key={label}>
                                 <label className="block text-white mb-1 sm:mb-2 text-lg sm:text-xl">
@@ -187,10 +163,8 @@ const UserEditProfile = () => {
                     {/* Right Column */}
                     <div className="space-y-4 sm:space-y-6 px-4 md:px-6">
                         {[
-                            'Skills',
-                            'Social Media',
-                            'Job Experience',
-                            'Preferences',
+                            'Email',
+                            'Phone',
                         ].map((label) => (
                             <div key={label}>
                                 <label className="block text-white mb-1 sm:mb-2 text-lg sm:text-xl">
