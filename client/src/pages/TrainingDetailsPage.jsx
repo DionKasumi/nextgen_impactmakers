@@ -59,19 +59,6 @@ const TrainingDetailsPage = () => {
     setApplyModalOpen(!applyModalOpen);
 };
 
-const handleApplyClick = () => {
-    const width = 800; 
-    const height = 600; 
-    const left = (window.screen.width / 1) - (width /2); 
-    const top = (window.screen.height / 2) - (height / 2);
-
-    window.open(
-        course.apply_link,
-        '_blank',
-        `width=${width},height=${height},left=${left},top=${top},resizable,scrollbars`
-    );
-    setApplyModalOpen(true);
-};
 
 const handleButtonChange = (value) => {
     setApplied(value);
@@ -254,12 +241,15 @@ const handleSubmit = () => {
                             <p>{course.source }</p>
                         </div>
                         )}
-                         <button
-                            className="px-16 py-6 z-10 bg-white text-black font-bold text-xl rounded-lg hover:scale-105 transition-all"
-                            onClick={handleApplyClick}
+                         <a 
+                            className="px-16 py-6 z-10 bg-white text-black font-bold text-xl rounded-lg hover:scale-105 transition-all" 
+                            href={course.apply_link} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            onClick={() => setApplyModalOpen(true)}
                         >
                             Apply Here
-                        </button>
+                        </a>
                     </div>
                     <div className="w-full h-full py-24 bg-[url('../assets/image8.png')] flex justify-center items-center flex-col">
                         {/* Organized By Content Div */}
@@ -332,26 +322,27 @@ const handleSubmit = () => {
                     <Fade in={applyModalOpen}>
                     <div className="fixed inset-0 flex items-center justify-center p-4 bg-black bg-opacity-50">
                         <div className="relative w-full max-w-lg bg-white shadow-lg rounded-3xl flex flex-col justify-center p-8">
-                            <h1 className="font-bold text-violet-800 text-xl mb-6 text-center">Did you apply?</h1>
+                            <h1 className="font-bold text-[#4F1ABE] text-xl mb-6 text-center">Did you apply?</h1>
                             <div className="flex flex-col items-center space-y-4 mb-6">
                             <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
                                 <button
                                 onClick={() => handleButtonChange(true)}
                                 className={`relative uppercase px-6 py-2 rounded-full  transition-all duration-300 border-2 border-transparent ${
                                     applied === true
-                                    ? 'bg-gradient-to-r from-purple-500 to-pink-500'
-                                    : 'bg-transparent border-violet-700 text-violet-800'
-                                } hover:bg-gradient-to-r hover:from-pink-500 hover:to-purple-500`}
+                                    ? 'bg-[#4F1ABE] text-white'
+                                    : 'bg-transparent border-violet-700'
+                                } `}
                                 >
                                 yes
                                 </button>
+                                <p>or</p>
                                 <button
                                 onClick={() => handleButtonChange(false)}
                                 className={`relative uppercase px-6 py-2 rounded-full transition-all duration-300 border-2 border-transparent ${
                                     applied === false
-                                    ? 'bg-gradient-to-r from-purple-500 to-pink-500'
-                                    : 'bg-transparent border-violet-700 text-violet-800'
-                                } hover:bg-gradient-to-r hover:from-pink-500 hover:to-purple-500`}
+                                    ? 'bg-[#4F1ABE]  text-white'
+                                    : 'bg-transparent border-violet-700'
+                                } `}
                                 >
                                 no
                                 </button>
@@ -363,7 +354,7 @@ const handleSubmit = () => {
                             <div className="flex justify-center sm:justify-end">
                             <button
                                 onClick={handleSubmit}
-                                className="flex items-center justify-center space-x-2 px-8 py-2 text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-pink-500 rounded-full shadow-lg border border-transparent hover:from-purple-500 hover:to-pink-400 hover:scale-105 transition-transform duration-300 ease-in-out"
+                                className="flex items-center justify-center space-x-2 px-8 py-2 text-sm font-medium text-white bg-gradient-to-r from-[#4F1ABE] to-[#A3A9FE] rounded-full shadow-lg border border-transparent hover:from-[#4F1ABE] hover:to-[#A3A9FE] hover:scale-105 transition-transform duration-300 ease-in-out"
                             >
                                 <span>Submit</span>
                                 <svg
