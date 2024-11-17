@@ -62,30 +62,28 @@
             top: 0;
         }
         .pagination-controls {
-    position: sticky;
-    bottom: 0;
-    background-color: white; /* Ensure it doesn’t overlap visually */
-    padding: 20px; /* Optional, for better appearance */
-    text-align: right; /* Center align the buttons */
-    border-top: 1px solid #bbcff5; /* Optional, for separation */
-}
-
-.pagination-controls button {
-    background-color: #3b82f6;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-.pagination-controls button:hover {
-    background-color: #2962be;
-}
-
-.pagination-controls button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
+        position: sticky;
+        bottom: 0;
+        background-color: white;
+        padding: 20px;
+        text-align: right;
+        border-top: 1px solid #bbcff5;
+        }
+        .pagination-controls button {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .pagination-controls button:hover {
+            background-color: #2962be;
+        }
+        .pagination-controls button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -606,87 +604,83 @@
                 const cells = document.querySelectorAll("td");
 
                 cells.forEach(cell => {
-                    if (cell.offsetWidth < cell.scrollWidth) { // Check if text is overflowing
-                        cell.title = cell.textContent;        // Set tooltip to show full text
+                    if (cell.offsetWidth < cell.scrollWidth) {
+                        cell.title = cell.textContent;
                     } else {
                         cell.title = "";                    
                     }
                 });
             }
 
-
             let currentPage = 1; 
             const limit = 10; 
             let totalPage =0;
 
 
-function fetchCards(apiUrl, title, columns, page = 1) {
-    currentApiUrl = apiUrl; 
-    currentTitle = title; 
-    currentColumns = columns; 
-    currentPage = page;
+            function fetchCards(apiUrl, title, columns, page = 1) {
+                currentApiUrl = apiUrl; 
+                currentTitle = title; 
+                currentColumns = columns; 
+                currentPage = page;
 
-    fetch(`${apiUrl}?page=${page}&limit=${limit}`)
-        .then(response => {
-            if (!response.ok) throw new Error('Network response was not ok');
-            return response.json();
-        })
-        .then(data => {
-            // Extract total and calculate totalPage
-            const { data: items, total } = data;
-            totalPage = Math.ceil(total / limit);
+                fetch(`${apiUrl}?page=${page}&limit=${limit}`)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
+                    .then(data => {
+                        const { data: items, total } = data;
+                        totalPage = Math.ceil(total / limit);
 
-            const tableBody = document.getElementById('cardsTableBody');
-            const cardsHeader = document.getElementById('cardsTableHeader');
+                        const tableBody = document.getElementById('cardsTableBody');
+                        const cardsHeader = document.getElementById('cardsTableHeader');
 
-            tableBody.innerHTML = '';
-            cardsHeader.innerHTML = '';
+                        tableBody.innerHTML = '';
+                        cardsHeader.innerHTML = '';
 
-            document.getElementById('cardsHeader').textContent = title;
+                        document.getElementById('cardsHeader').textContent = title;
 
-            // Create table headers
-            columns.forEach(col => {
-                const th = document.createElement('th');
-                th.innerHTML = `<b>${col}</b>`;
-                th.className = 'border-b';
-                cardsHeader.appendChild(th);
-            });
+                        columns.forEach(col => {
+                            const th = document.createElement('th');
+                            th.innerHTML = `<b>${col}</b>`;
+                            th.className = 'border-b';
+                            cardsHeader.appendChild(th);
+                        });
 
-            const actionHeader = document.createElement('th');
-            actionHeader.textContent = 'Actions';
-            actionHeader.className = 'border-b';
-            cardsHeader.appendChild(actionHeader);
+                        const actionHeader = document.createElement('th');
+                        actionHeader.textContent = 'Actions';
+                        actionHeader.className = 'border-b';
+                        cardsHeader.appendChild(actionHeader);
 
-            // Populate table rows
-            items.forEach(item => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    ${columns.map(col => `<td class="py-2 px-4 border-b">${item[col.toLowerCase().replace(/ /g, "_")] || 'N/A'}</td>`).join('')}
-                    <td class="py-2 px-4 border-b">
-                        <button onclick="editRow(${item.id}, this)" class="bg-blue-500 text-white px-2 py-1 rounded">Edit</button>
-                    </td>
+                        items.forEach(item => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                ${columns.map(col => `<td class="py-2 px-4 border-b">${item[col.toLowerCase().replace(/ /g, "_")] || 'N/A'}</td>`).join('')}
+                                <td class="py-2 px-4 border-b">
+                                    <button onclick="editRow(${item.id}, this)" class="bg-blue-500 text-white px-2 py-1 rounded">Edit</button>
+                                </td>
+                            `;
+                            tableBody.appendChild(row);
+                        });
+
+                        document.getElementById('cardsTableContainer').style.display = 'block';
+                        addTooltipToTruncatedCells();
+                        displayPaginationControls();
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data:', error);
+                        alert('There was an error fetching data. Please try again later.');
+                    });
+            }
+
+            function displayPaginationControls() {
+                const paginationContainer = document.getElementById('paginationControls');
+                paginationContainer.innerHTML = `
+                    <button onclick="fetchCards(currentApiUrl, currentTitle, currentColumns, ${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>Previous</button>
+                    <span>Page ${currentPage} of ${totalPage}</span>
+                    <button onclick="fetchCards(currentApiUrl, currentTitle, currentColumns, ${currentPage + 1})" ${currentPage >= totalPage ? 'disabled' : ''}>Next</button>
                 `;
-                tableBody.appendChild(row);
-            });
-
-            document.getElementById('cardsTableContainer').style.display = 'block';
-            addTooltipToTruncatedCells();
-            displayPaginationControls();
-        })
-        .catch(error => {
-            console.error('Error fetching data:', error);
-            alert('There was an error fetching data. Please try again later.');
-        });
-}
-
-function displayPaginationControls() {
-    const paginationContainer = document.getElementById('paginationControls');
-    paginationContainer.innerHTML = `
-        <button onclick="fetchCards(currentApiUrl, currentTitle, currentColumns, ${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>Previous</button>
-        <span>Page ${currentPage} of ${totalPage}</span>
-        <button onclick="fetchCards(currentApiUrl, currentTitle, currentColumns, ${currentPage + 1})" ${currentPage >= totalPage ? 'disabled' : ''}>Next</button>
-    `;
-}
+            }
 
             function getTypeFromContext() {
                 if (document.getElementById('internshipsLink').classList.contains('active')) {
