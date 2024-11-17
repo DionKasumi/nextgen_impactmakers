@@ -267,6 +267,7 @@
         <!-- Manage Reviews Table -->
         <div id="manageReviewsTableContainer" class="table-container" style="display: none;">
             <h2 class="text-2xl font-bold mb-4" id="manageReviewsHeader">Manage Reviews</h2>
+            <input type="text" id="reviewsSearch" placeholder="Search reviews..." class="search-bar">
             <table class="min-w-full bg-white" id="reviewsTable">
                 <thead>
                     <tr>
@@ -283,6 +284,7 @@
         <!-- Manage Testimonials Table -->
         <div id="manageTestimonialsTableContainer" class="table-container" style="display: none;">
             <h2 class="text-2xl font-bold mb-4" id="manageTestimonialsHeader">Manage Testimonials</h2>
+            <input type="text" id="testimonialsSearch" placeholder="Search testimonials..." class="search-bar">
             <table class="min-w-full bg-white" id="testimonialsTable">
                 <thead>
                     <tr>
@@ -397,11 +399,24 @@
                 showTableAndSearch('approveOrganizationsTableContainer', 'approveOrganizationsSearch');
             });
 
+            document.getElementById('manageReviewsLink').addEventListener('click', function(event) {
+                event.preventDefault();
+                handleSubMenuClick();
+                showTableAndSearch('manageReviewsTableContainer', 'reviewsSearch');
+            });
+
+            document.getElementById('manageTestimonialsLink').addEventListener('click', function(event) {
+                event.preventDefault();
+                handleSubMenuClick();
+                showTableAndSearch('manageTestimonialsTableContainer', 'testimonialsSearch');
+            });
+
             document.getElementById('banDeleteUsersSearch') && filterTable('banDeleteUsersSearch', 'banDeleteUsersTable');
             document.getElementById('banDeleteOrgSearch') && filterTable('banDeleteOrgSearch', 'banDeleteOrgTable');
             document.getElementById('cardsSearch') && filterTable('cardsSearch', 'cardsTable');
             document.getElementById('approveOrganizationsSearch') && filterTable('approveOrganizationsSearch', 'approveOrganizationsTable');
-
+            document.getElementById('reviewsSearch') && filterTable('reviewsSearch', 'reviewsTable');
+            document.getElementById('testimonialsSearch') && filterTable('testimonialsSearch', 'testimonialsTable');
 
             function highlightActiveLink(activeLinkId) {
                 const links = document.querySelectorAll('nav a');
