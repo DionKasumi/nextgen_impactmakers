@@ -45,7 +45,7 @@
             font-size: 16px;
         }   
         .table-container {
-            max-height: 600px;
+            max-height: 650px;
             overflow-y: auto;
             overflow-x: auto;
             width: 100%; 
@@ -61,19 +61,31 @@
             position: sticky;
             top: 0;
         }
-        .pagination-controls button {
-        display: inline-block;
-        margin: 5px;
-        padding: 5px 10px;
-        cursor: pointer;
-        }
-        .pagination-controls button:hover {
-        background-color: #f0f0f0;
-        }
-        .pagination-controls button:disabled {
-        background-color: #e0e0e0;
-        cursor: not-allowed;
-        }
+        .pagination-controls {
+    position: sticky;
+    bottom: 0;
+    background-color: white; /* Ensure it doesn’t overlap visually */
+    padding: 20px; /* Optional, for better appearance */
+    text-align: right; /* Center align the buttons */
+    border-top: 1px solid #bbcff5; /* Optional, for separation */
+}
+
+.pagination-controls button {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.pagination-controls button:hover {
+    background-color: #2962be;
+}
+
+.pagination-controls button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
     </style>
 </head>
 <body class="bg-gray-100">
@@ -232,8 +244,7 @@
                 <tbody id="cardsTableBody">
                 </tbody>
             </table>
-        </div>
-        <div id="paginationControls" class="pagination-controls">
+            <div id="paginationControls" class="pagination-controls"></div>
         </div>
 
 
@@ -606,68 +617,76 @@
 
             let currentPage = 1; 
             const limit = 10; 
+            let totalPage =0;
 
-            function fetchCards(apiUrl, title, columns, page = 1) {
-                currentApiUrl = apiUrl; 
-                currentTitle = title; 
-                currentColumns = columns; 
-                currentPage = page;
 
-                fetch(`${apiUrl}?page=${page}&limit=${limit}`)
-                    .then(response => {
-                        if (!response.ok) throw new Error('Network response was not ok');
-                        return response.json();
-                    })
-                    .then(data => {
-                        const tableBody = document.getElementById('cardsTableBody');
-                        const cardsHeader = document.getElementById('cardsTableHeader');
+function fetchCards(apiUrl, title, columns, page = 1) {
+    currentApiUrl = apiUrl; 
+    currentTitle = title; 
+    currentColumns = columns; 
+    currentPage = page;
 
-                        tableBody.innerHTML = '';
-                        cardsHeader.innerHTML = '';
+    fetch(`${apiUrl}?page=${page}&limit=${limit}`)
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            // Extract total and calculate totalPage
+            const { data: items, total } = data;
+            totalPage = Math.ceil(total / limit);
 
-                        document.getElementById('cardsHeader').textContent = title;
+            const tableBody = document.getElementById('cardsTableBody');
+            const cardsHeader = document.getElementById('cardsTableHeader');
 
-                        columns.forEach(col => {
-                            const th = document.createElement('th');
-                            th.innerHTML = `<b>${col}</b>`;
-                            th.className = 'border-b';
-                            cardsHeader.appendChild(th);
-                        });
+            tableBody.innerHTML = '';
+            cardsHeader.innerHTML = '';
 
-                        const actionHeader = document.createElement('th');
-                        actionHeader.textContent = 'Actions';
-                        actionHeader.className = 'border-b';
-                        cardsHeader.appendChild(actionHeader);
+            document.getElementById('cardsHeader').textContent = title;
 
-                        data.forEach(item => {
-                            const row = document.createElement('tr');
-                            row.innerHTML = `
-                                ${columns.map(col => `<td class="py-2 px-4 border-b">${item[col.toLowerCase().replace(/ /g, "_")] || 'N/A'}</td>`).join('')}
-                                <td class="py-2 px-4 border-b">
-                                    <button onclick="editRow(${item.id}, this)" class="bg-blue-500 text-white px-2 py-1 rounded">Edit</button>
-                                </td>
-                            `;
-                            tableBody.appendChild(row);
-                        });
+            // Create table headers
+            columns.forEach(col => {
+                const th = document.createElement('th');
+                th.innerHTML = `<b>${col}</b>`;
+                th.className = 'border-b';
+                cardsHeader.appendChild(th);
+            });
 
-                        document.getElementById('cardsTableContainer').style.display = 'block';
-                        addTooltipToTruncatedCells();
-                        displayPaginationControls();
-                    })
-                    .catch(error => {
-                        console.error('Error fetching data:', error);
-                        alert('There was an error fetching data. Please try again later.');
-                    });
-            }
+            const actionHeader = document.createElement('th');
+            actionHeader.textContent = 'Actions';
+            actionHeader.className = 'border-b';
+            cardsHeader.appendChild(actionHeader);
 
-            function displayPaginationControls() {
-                const paginationContainer = document.getElementById('paginationControls');
-                paginationContainer.innerHTML = `
-                    <button onclick="fetchCards(currentApiUrl, currentTitle, currentColumns, ${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>Previous</button>
-                    <span>Page ${currentPage}</span>
-                    <button onclick="fetchCards(currentApiUrl, currentTitle, currentColumns, ${currentPage + 1})">Next</button>
+            // Populate table rows
+            items.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    ${columns.map(col => `<td class="py-2 px-4 border-b">${item[col.toLowerCase().replace(/ /g, "_")] || 'N/A'}</td>`).join('')}
+                    <td class="py-2 px-4 border-b">
+                        <button onclick="editRow(${item.id}, this)" class="bg-blue-500 text-white px-2 py-1 rounded">Edit</button>
+                    </td>
                 `;
-            }
+                tableBody.appendChild(row);
+            });
+
+            document.getElementById('cardsTableContainer').style.display = 'block';
+            addTooltipToTruncatedCells();
+            displayPaginationControls();
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            alert('There was an error fetching data. Please try again later.');
+        });
+}
+
+function displayPaginationControls() {
+    const paginationContainer = document.getElementById('paginationControls');
+    paginationContainer.innerHTML = `
+        <button onclick="fetchCards(currentApiUrl, currentTitle, currentColumns, ${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>Previous</button>
+        <span>Page ${currentPage} of ${totalPage}</span>
+        <button onclick="fetchCards(currentApiUrl, currentTitle, currentColumns, ${currentPage + 1})" ${currentPage >= totalPage ? 'disabled' : ''}>Next</button>
+    `;
+}
 
             function getTypeFromContext() {
                 if (document.getElementById('internshipsLink').classList.contains('active')) {
@@ -845,6 +864,7 @@
                 document.getElementById('greeting').style.display = 'none'; 
                 document.getElementById('greetingDescription').style.display = 'none'; 
                 document.getElementById('organizationsTableContainer').style.display = 'none';
+                document.getElementById('cardsTableContainer').style.display = 'none';
             });
 
             document.getElementById('internshipsLink').addEventListener('click', function(event) {
