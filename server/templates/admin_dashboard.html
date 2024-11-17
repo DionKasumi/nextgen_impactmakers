@@ -45,7 +45,7 @@
             font-size: 16px;
         }   
         .table-container {
-            max-height: 600px;
+            max-height: 650px;
             overflow-y: auto;
             overflow-x: auto;
             width: 100%; 
@@ -61,18 +61,28 @@
             position: sticky;
             top: 0;
         }
+        .pagination-controls {
+        position: sticky;
+        bottom: 0;
+        background-color: white;
+        padding: 20px;
+        text-align: right;
+        border-top: 1px solid #bbcff5;
+        }
         .pagination-controls button {
-        display: inline-block;
-        margin: 5px;
-        padding: 5px 10px;
-        cursor: pointer;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
         }
         .pagination-controls button:hover {
-        background-color: #f0f0f0;
+            background-color: #2962be;
         }
         .pagination-controls button:disabled {
-        background-color: #e0e0e0;
-        cursor: not-allowed;
+            background-color: #ccc;
+            cursor: not-allowed;
         }
     </style>
 </head>
@@ -232,8 +242,7 @@
                 <tbody id="cardsTableBody">
                 </tbody>
             </table>
-        </div>
-        <div id="paginationControls" class="pagination-controls">
+            <div id="paginationControls" class="pagination-controls"></div>
         </div>
 
 
@@ -258,6 +267,7 @@
         <!-- Manage Reviews Table -->
         <div id="manageReviewsTableContainer" class="table-container" style="display: none;">
             <h2 class="text-2xl font-bold mb-4" id="manageReviewsHeader">Manage Reviews</h2>
+            <input type="text" id="reviewsSearch" placeholder="Search reviews..." class="search-bar">
             <table class="min-w-full bg-white" id="reviewsTable">
                 <thead>
                     <tr>
@@ -274,6 +284,7 @@
         <!-- Manage Testimonials Table -->
         <div id="manageTestimonialsTableContainer" class="table-container" style="display: none;">
             <h2 class="text-2xl font-bold mb-4" id="manageTestimonialsHeader">Manage Testimonials</h2>
+            <input type="text" id="testimonialsSearch" placeholder="Search testimonials..." class="search-bar">
             <table class="min-w-full bg-white" id="testimonialsTable">
                 <thead>
                     <tr>
@@ -388,11 +399,24 @@
                 showTableAndSearch('approveOrganizationsTableContainer', 'approveOrganizationsSearch');
             });
 
+            document.getElementById('manageReviewsLink').addEventListener('click', function(event) {
+                event.preventDefault();
+                handleSubMenuClick();
+                showTableAndSearch('manageReviewsTableContainer', 'reviewsSearch');
+            });
+
+            document.getElementById('manageTestimonialsLink').addEventListener('click', function(event) {
+                event.preventDefault();
+                handleSubMenuClick();
+                showTableAndSearch('manageTestimonialsTableContainer', 'testimonialsSearch');
+            });
+
             document.getElementById('banDeleteUsersSearch') && filterTable('banDeleteUsersSearch', 'banDeleteUsersTable');
             document.getElementById('banDeleteOrgSearch') && filterTable('banDeleteOrgSearch', 'banDeleteOrgTable');
             document.getElementById('cardsSearch') && filterTable('cardsSearch', 'cardsTable');
             document.getElementById('approveOrganizationsSearch') && filterTable('approveOrganizationsSearch', 'approveOrganizationsTable');
-
+            document.getElementById('reviewsSearch') && filterTable('reviewsSearch', 'reviewsTable');
+            document.getElementById('testimonialsSearch') && filterTable('testimonialsSearch', 'testimonialsTable');
 
             function highlightActiveLink(activeLinkId) {
                 const links = document.querySelectorAll('nav a');
@@ -595,17 +619,18 @@
                 const cells = document.querySelectorAll("td");
 
                 cells.forEach(cell => {
-                    if (cell.offsetWidth < cell.scrollWidth) { // Check if text is overflowing
-                        cell.title = cell.textContent;        // Set tooltip to show full text
+                    if (cell.offsetWidth < cell.scrollWidth) {
+                        cell.title = cell.textContent;
                     } else {
                         cell.title = "";                    
                     }
                 });
             }
 
-
             let currentPage = 1; 
             const limit = 10; 
+            let totalPage =0;
+
 
             function fetchCards(apiUrl, title, columns, page = 1) {
                 currentApiUrl = apiUrl; 
@@ -619,6 +644,9 @@
                         return response.json();
                     })
                     .then(data => {
+                        const { data: items, total } = data;
+                        totalPage = Math.ceil(total / limit);
+
                         const tableBody = document.getElementById('cardsTableBody');
                         const cardsHeader = document.getElementById('cardsTableHeader');
 
@@ -639,7 +667,7 @@
                         actionHeader.className = 'border-b';
                         cardsHeader.appendChild(actionHeader);
 
-                        data.forEach(item => {
+                        items.forEach(item => {
                             const row = document.createElement('tr');
                             row.innerHTML = `
                                 ${columns.map(col => `<td class="py-2 px-4 border-b">${item[col.toLowerCase().replace(/ /g, "_")] || 'N/A'}</td>`).join('')}
@@ -664,8 +692,8 @@
                 const paginationContainer = document.getElementById('paginationControls');
                 paginationContainer.innerHTML = `
                     <button onclick="fetchCards(currentApiUrl, currentTitle, currentColumns, ${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>Previous</button>
-                    <span>Page ${currentPage}</span>
-                    <button onclick="fetchCards(currentApiUrl, currentTitle, currentColumns, ${currentPage + 1})">Next</button>
+                    <span>Page ${currentPage} of ${totalPage}</span>
+                    <button onclick="fetchCards(currentApiUrl, currentTitle, currentColumns, ${currentPage + 1})" ${currentPage >= totalPage ? 'disabled' : ''}>Next</button>
                 `;
             }
 
@@ -845,6 +873,7 @@
                 document.getElementById('greeting').style.display = 'none'; 
                 document.getElementById('greetingDescription').style.display = 'none'; 
                 document.getElementById('organizationsTableContainer').style.display = 'none';
+                document.getElementById('cardsTableContainer').style.display = 'none';
             });
 
             document.getElementById('internshipsLink').addEventListener('click', function(event) {

@@ -28,7 +28,7 @@ app.config['SESSION_COOKIE_SECURE'] = False    # Disable secure cookies for deve
 # Database connection parameters
 db_params = {
     'user': 'root',
-    'passwd': '1234',
+    'passwd': '12345678',
     'host': 'localhost',
     'port': 3306,
     'db': 'pye_data'
@@ -36,12 +36,20 @@ db_params = {
 
 def fetch_courses_from_database(page=1, limit=10):
     courses = []
+    total = 0
     offset = (page - 1) * limit
     try:
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
+
+        # Query to get the total count of records
+        total_query = "SELECT COUNT(*) AS total FROM all_courses"
+        cursor.execute(total_query)
+        total = cursor.fetchone()['total']
+
+        # Query to get paginated results
         query = """
-        SELECT id, source, title, trainer, description, price, students, rating, image_url, duration , email, phone_number, office_address, company_logo, apply_link 
+        SELECT id, source, title, trainer, description, price, students, rating, image_url, duration, email, phone_number, office_address, company_logo, apply_link 
         FROM all_courses
         LIMIT %s OFFSET %s
         """
@@ -55,7 +63,10 @@ def fetch_courses_from_database(page=1, limit=10):
             db.close()
         except MySQLdb.Error as e:
             print(f"Error closing connection: {e}")
-    return courses
+
+    # Return both the paginated data and the total count
+    return {"data": courses, "total": total, "page": page, "limit": limit}
+
 
 def fetch_course_by_id(course_id):
     course = None
@@ -93,10 +104,18 @@ def get_course(course_id):
 
 def fetch_internships_from_database(page=1, limit=10):
     internships = []
+    total = 0
     offset = (page - 1) * limit
     try:
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
+
+        # Query to get the total count of records
+        total_query = "SELECT COUNT(*) AS total FROM all_internships"
+        cursor.execute(total_query)
+        total = cursor.fetchone()['total']
+
+        # Query to get paginated results
         query = """
         SELECT id, source, title, description, posted_date, salary, duration, location, image_url, email, phone_number, office_address, company_logo, apply_link
         FROM all_internships
@@ -112,7 +131,9 @@ def fetch_internships_from_database(page=1, limit=10):
             db.close()
         except MySQLdb.Error as e:
             print(f"Error closing connection: {e}")
-    return internships
+
+    # Return both the paginated data and the total count
+    return {"data": internships, "total": total, "page": page, "limit": limit}
 
 
 def fetch_internship_by_id(internship_id):
@@ -151,10 +172,18 @@ def get_internship(internship_id):
 
 def fetch_events_from_database(page=1, limit=10):
     events = []
+    total = 0
     offset = (page - 1) * limit
     try:
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
+
+        # Query to get the total count of records
+        total_query = "SELECT COUNT(*) AS total FROM all_events"
+        cursor.execute(total_query)
+        total = cursor.fetchone()['total']
+
+        # Query to get paginated results
         query = """
         SELECT id, source, organizer, title, duration, location, image_url, email, phone_number, office_address, company_logo, apply_link
         FROM all_events
@@ -170,7 +199,10 @@ def fetch_events_from_database(page=1, limit=10):
             db.close()
         except MySQLdb.Error as e:
             print(f"Error closing connection: {e}")
-    return events
+
+    # Return both the paginated data and the total count
+    return {"data": events, "total": total, "page": page, "limit": limit}
+
 
 def fetch_event_by_id(event_id):
     event = None
@@ -208,10 +240,18 @@ def get_event(event_id):
 
 def fetch_volunteering_from_database(page=1, limit=10):
     volunteering_opportunities = []
+    total = 0
     offset = (page - 1) * limit
     try:
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
+
+        # Query to get the total count of records
+        total_query = "SELECT COUNT(*) AS total FROM all_volunteering"
+        cursor.execute(total_query)
+        total = cursor.fetchone()['total']
+
+        # Query to get paginated results
         query = """
         SELECT id, source, title, duration, cause, age_group, image_url, email, phone_number, office_address, company_logo, apply_link
         FROM all_volunteering
@@ -227,7 +267,10 @@ def fetch_volunteering_from_database(page=1, limit=10):
             db.close()
         except MySQLdb.Error as e:
             print(f"Error closing connection: {e}")
-    return volunteering_opportunities
+
+    # Return both the paginated data and the total count
+    return {"data": volunteering_opportunities, "total": total, "page": page, "limit": limit}
+
 
 def fetch_volunteering_by_id(volunteering_id):
     volunteering = None
@@ -1161,7 +1204,7 @@ def get_all_organizations():
     try:
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
-        query = "SELECT * FROM organizations"  # Fetch all organizations
+        query = "SELECT * FROM organizations WHERE status='approved"  # Fetch all organizations
         cursor.execute(query)
         organizations = cursor.fetchall()
         cursor.close()
