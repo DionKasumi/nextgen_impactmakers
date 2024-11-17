@@ -1204,7 +1204,7 @@ def get_all_organizations():
     try:
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
-        query = "SELECT * FROM organizations"  # Fetch all organizations
+        query = "SELECT * FROM organizations WHERE status='approved"  # Fetch all organizations
         cursor.execute(query)
         organizations = cursor.fetchall()
         cursor.close()
