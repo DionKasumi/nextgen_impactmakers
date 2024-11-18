@@ -11,7 +11,7 @@ const fetchInternships = async () => {
         const response = await axios.get(
             'http://localhost:8080/api/internships'
         );
-        return response.data;
+        return response.data || [];
     } catch (error) {
         console.error('Error fetching internships:', error);
         return [];
@@ -23,7 +23,7 @@ const fetchFavorites = async () => {
             'http://localhost:8080/api/favorites',
             { withCredentials: true }
         );
-        return response.data.map((fav) => fav.card_id);
+        return (response.data || []).map((fav) => fav.card_id);
     } catch (error) {
         console.error('Error fetching favorites:', error);
         return [];
@@ -100,7 +100,7 @@ const InternshipsPage = () => {
     useEffect(() => {
         const fetchData = async () => {
             const internshipsData = await fetchInternships();
-            setInternships(internshipsData);
+            setInternships(internshipsData.data);
 
             const favoritesData = await fetchFavorites();
             setFavoriteIds(favoritesData);
@@ -325,7 +325,11 @@ const InternshipsPage = () => {
                         handleFilterToggle={handleFilterToggle}
                     />
                     <CardsContainer
-                        internships={internships.slice(0, visibleInternships)}
+                        internships={
+                            Array.isArray(internships)
+                                ? internships.slice(0, visibleInternships)
+                                : []
+                        }
                         loadMoreInternships={loadMoreInternships}
                         allInternshipsLoaded={allInternshipsLoaded}
                         isFilterOpen={isFilterOpen}

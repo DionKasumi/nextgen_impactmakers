@@ -9,19 +9,20 @@ import axios from 'axios';
 const fetchCourses = async () => {
     try {
         const response = await axios.get('http://localhost:8080/api/courses');
-        return response.data;
+        return response.data || [];
     } catch (error) {
         console.error('Error fetching courses:', error);
         return [];
     }
 };
+
 const fetchFavorites = async () => {
     try {
         const response = await axios.get(
             'http://localhost:8080/api/favorites',
             { withCredentials: true }
         );
-        return response.data.map((fav) => fav.card_id);
+        return (response.data || []).map((fav) => fav.card_id);
     } catch (error) {
         console.error('Error fetching favorites:', error);
         return [];
@@ -96,7 +97,7 @@ const TrainingsPage = () => {
     useEffect(() => {
         const fetchData = async () => {
             const coursesData = await fetchCourses();
-            setCourses(coursesData);
+            setCourses(coursesData.data);
 
             const favoritesData = await fetchFavorites();
             setFavoriteIds(favoritesData);
@@ -313,7 +314,11 @@ const TrainingsPage = () => {
                         handleFilterToggle={handleFilterToggle}
                     />
                     <CardsContainer
-                        courses={courses.slice(0, visibleCourses)}
+                        courses={
+                            Array.isArray(courses)
+                                ? courses.slice(0, visibleCourses)
+                                : []
+                        }
                         loadMoreCourses={loadMoreCourses}
                         allCoursesLoaded={allCoursesLoaded}
                         isFilterOpen={isFilterOpen}
