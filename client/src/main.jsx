@@ -160,10 +160,10 @@ const router = createBrowserRouter([
 
 const MainComponent = () => {
     // Used only to change language if needed
-    const { i18n } = useTranslation();
-    useEffect(() => {
-        i18n.changeLanguage('en');
-    }, []);
+    // const { i18n } = useTranslation();
+    // useEffect(() => {
+    //     i18n.changeLanguage('al');
+    // }, []);
     return (
         <StrictMode>
             <RouterProvider router={router} />

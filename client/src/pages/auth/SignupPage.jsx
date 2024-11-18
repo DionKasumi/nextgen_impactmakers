@@ -17,10 +17,10 @@ import {
     MenuItem,
     Select,
     FormControl,
-    patch,
 } from '@mui/material';
 import { IoMdClose } from 'react-icons/io';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
 
 const theme = createTheme({
     palette: {
@@ -31,6 +31,8 @@ const theme = createTheme({
 });
 
 const ParticipantForm = ({ participantData, handleChange, errors }) => {
+    const { t } = useTranslation();
+
     return (
         <ThemeProvider theme={theme}>
             <Box
@@ -44,14 +46,14 @@ const ParticipantForm = ({ participantData, handleChange, errors }) => {
             >
                 <FormControl variant="outlined">
                     <InputLabel id="language" required>
-                        Language
+                        {t('signup-page.language')}
                     </InputLabel>
                     <Select
                         labelId="language"
                         id="language"
                         value={participantData.language}
                         onChange={(e) => handleChange(e)}
-                        label="Language"
+                        label={t('signup-page.language')}
                         name="language"
                         required
                     >
@@ -62,43 +64,49 @@ const ParticipantForm = ({ participantData, handleChange, errors }) => {
                 <TextField
                     type="text"
                     id="username"
-                    label="Username"
+                    label={t('signup-page.username')}
                     variant="outlined"
                     required
                     name="username"
                     value={participantData.username || ''}
                     onChange={(e) => handleChange(e)}
                     error={!!errors.username}
-                    helperText={errors.username ? 'Username is invalid!' : ''}
+                    helperText={
+                        errors.username ? t('signup-page.errors.username') : ''
+                    }
                 />
                 <TextField
                     type="email"
                     id="email"
-                    label="Email"
+                    label={t('signup-page.email')}
                     variant="outlined"
                     required
                     name="email"
                     value={participantData.email || ''}
                     onChange={(e) => handleChange(e)}
                     error={!!errors.email}
-                    helperText={errors.email ? 'Email is invalid!' : ''}
+                    helperText={
+                        errors.email ? t('signup-page.errors.email') : ''
+                    }
                 />
                 <TextField
                     type="text"
                     id="phone"
-                    label="Phone"
+                    label={t('signup-page.phone')}
                     variant="outlined"
                     required
                     name="phone"
                     value={participantData.phone || ''}
                     onChange={(e) => handleChange(e)}
                     error={!!errors.phone}
-                    helperText={errors.phone ? 'Phone number is invalid!' : ''}
+                    helperText={
+                        errors.phone ? t('signup-page.errors.phone') : ''
+                    }
                 />
                 <TextField
                     type="password"
                     id="password"
-                    label="Password"
+                    label={t('signup-page.password')}
                     variant="outlined"
                     color="primary"
                     required
@@ -106,7 +114,9 @@ const ParticipantForm = ({ participantData, handleChange, errors }) => {
                     value={participantData.password || ''}
                     onChange={(e) => handleChange(e)}
                     error={!!errors.password}
-                    helperText={errors.password ? 'Password is invalid' : ''}
+                    helperText={
+                        errors.password ? t('signup-page.errors.password') : ''
+                    }
                 />
             </Box>
         </ThemeProvider>
@@ -185,6 +195,7 @@ const ParticipantSecondForm = ({ preferencesData, handleChange }) => {
 };
 
 const OrganizationForm = ({ orgData, handleChange, errors }) => {
+    const { t } = useTranslation();
     return (
         <ThemeProvider theme={theme}>
             <Box
@@ -198,14 +209,14 @@ const OrganizationForm = ({ orgData, handleChange, errors }) => {
             >
                 <FormControl variant="outlined">
                     <InputLabel id="language" required>
-                        Language
+                        {t('signup-page.language')}
                     </InputLabel>
                     <Select
                         labelId="language"
                         id="language"
                         value={orgData.language}
                         onChange={(e) => handleChange(e)}
-                        label="Language"
+                        label={t('signup-page.language')}
                         name="language"
                         required
                     >
@@ -216,7 +227,7 @@ const OrganizationForm = ({ orgData, handleChange, errors }) => {
                 <TextField
                     type="text"
                     id="name_of_org"
-                    label="Name Of Organization"
+                    label={t('signup-page.name-of-org')}
                     variant="outlined"
                     required
                     name="name_of_org"
@@ -225,14 +236,14 @@ const OrganizationForm = ({ orgData, handleChange, errors }) => {
                     error={!!errors.name_of_org}
                     helperText={
                         errors.name_of_org
-                            ? 'Please enter a valid organization name.'
+                            ? t('signup-page.errors.name-of-org')
                             : ''
                     }
                 />
                 <TextField
                     type="email"
                     id="email_of_org"
-                    label="Email"
+                    label={t('signup-page.email')}
                     variant="outlined"
                     required
                     name="email_of_org"
@@ -240,13 +251,13 @@ const OrganizationForm = ({ orgData, handleChange, errors }) => {
                     onChange={(e) => handleChange(e)}
                     error={!!errors.email_of_org}
                     helperText={
-                        errors.email_of_org ? 'Please enter a valid email.' : ''
+                        errors.email_of_org ? t('signup-page.errors.email') : ''
                     }
                 />
                 <TextField
                     type="text"
                     id="phone_number_of_org"
-                    label="Phone Number"
+                    label={t('signup-page.phone')}
                     variant="outlined"
                     required
                     name="phone_number_of_org"
@@ -255,14 +266,14 @@ const OrganizationForm = ({ orgData, handleChange, errors }) => {
                     error={!!errors.phone_number_of_org}
                     helperText={
                         errors.phone_number_of_org
-                            ? 'Please enter a valid phone number.'
+                            ? t('signup-page.errors.phone')
                             : ''
                     }
                 />
                 <TextField
                     type="password"
                     id="password_of_org"
-                    label="Password"
+                    label={t('signup-page.password')}
                     variant="outlined"
                     required
                     name="password_of_org"
@@ -271,14 +282,14 @@ const OrganizationForm = ({ orgData, handleChange, errors }) => {
                     error={!!errors.password_of_org}
                     helperText={
                         errors.password_of_org
-                            ? 'Please enter a valid password.'
+                            ? t('signup-page.errors.password')
                             : ''
                     }
                 />
                 <TextField
                     type="text"
                     id="url_of_org"
-                    label="URL"
+                    label={t('signup-page.url')}
                     variant="outlined"
                     required
                     name="url_of_org"
@@ -286,13 +297,13 @@ const OrganizationForm = ({ orgData, handleChange, errors }) => {
                     onChange={(e) => handleChange(e)}
                     error={!!errors.url_of_org}
                     helperText={
-                        errors.url_of_org ? 'Please enter a valid URL.' : ''
+                        errors.url_of_org ? t('signup-page.errors.url') : ''
                     }
                 />
                 <TextField
                     type="text"
                     id="description_of_org"
-                    label="Description"
+                    label={t('signup-page.description')}
                     variant="outlined"
                     multiline
                     maxRows={2}
@@ -303,7 +314,7 @@ const OrganizationForm = ({ orgData, handleChange, errors }) => {
                     error={!!errors.description_of_org}
                     helperText={
                         errors.description_of_org
-                            ? 'Please enter a valid description.'
+                            ? t('signup-page.errors.description')
                             : ''
                     }
                 />
@@ -313,6 +324,8 @@ const OrganizationForm = ({ orgData, handleChange, errors }) => {
 };
 
 const MainForm = () => {
+    const { t } = useTranslation();
+
     const navigate = useNavigate();
     const [isOrg, setOrg] = useState(false);
     const [alertOpen, setAlertOpen] = useState(false);
@@ -521,26 +534,15 @@ const MainForm = () => {
     };
 
     const handleSuccessResponse = (res) => {
-        let count = 3;
         setAlertMessage({
             type: 'success',
             heading: 'Success',
-            message: `${res.data.message} Redirecting in ${count}`,
+            message: t('signup-page.alerts.success'),
         });
         setAlertOpen(true);
 
-        let t1 = setInterval(() => {
-            if (count > 0) {
-                count--;
-                setAlertMessage({
-                    type: 'success',
-                    heading: 'Success',
-                    message: `${res.data.message} Redirecting in ${count}`,
-                });
-            } else {
-                clearTimeout(t1);
-                navigate('/login');
-            }
+        setTimeout(() => {
+            navigate('/login');
         }, 1000);
 
         resetData();
@@ -551,8 +553,7 @@ const MainForm = () => {
             type: 'error',
             heading: 'Error',
             message:
-                error.response?.data.message ||
-                'Signup failed. Please try again.',
+                error.response?.data.message || t('signup-page.alerts.success'),
         });
         setAlertOpen(true);
         resetData();
@@ -562,13 +563,13 @@ const MainForm = () => {
         <>
             <div className="w-11/12 sm:w-4/5 md:w-5/6 xl:w-5/6 h-[95%] flex justify-center items-center flex-col">
                 <h2 className="text-xl md:text-2xl xl:text-3xl text-black font-bold mt-4">
-                    Sign Up
+                    {t('signup-page.signup')}
                 </h2>
                 <h2 className="text-sm md:text-base xl:text-lg text-black italic font-normal mb-1">
-                    Create An Account
+                    {t('signup-page.text-1')}
                 </h2>
                 <h3 className="font-bold mb-4 text-base md:text-lg">
-                    Are you a
+                    {t('signup-page.text-2')}
                 </h3>
                 <div className="flex flex-row justify-center items-center w-full md:w-2/3 lg:w-1/2 mb-4">
                     <button
@@ -577,16 +578,18 @@ const MainForm = () => {
                         type="button"
                         className="bg-[#C5C5C5] border-none rounded-md focus:outline-none py-2 px-4 md:px-6 text-[#4F1ABE] text-sm disabled:bg-[#4F1ABE] disabled:scale-95 disabled:text-white transition-all"
                     >
-                        Participant
+                        {t('signup-page.user-type.participant')}
                     </button>
-                    <p className="mx-2 text-sm md:text-base">or</p>
+                    <p className="mx-2 text-sm md:text-base">
+                        {t('signup-page.text-3')}
+                    </p>
                     <button
                         disabled={isOrg}
                         onClick={onFormTypeChange}
                         type="button"
                         className="bg-[#C5C5C5] border-none rounded-md focus:outline-none py-2 px-4 md:px-6 text-[#4F1ABE] text-sm disabled:bg-[#4F1ABE] disabled:scale-95 disabled:text-white transition-all"
                     >
-                        Organization
+                        {t('signup-page.user-type.organization')}
                     </button>
                 </div>
                 {!isOrg ? (
@@ -614,7 +617,9 @@ const MainForm = () => {
                     onClick={onSubmit}
                     className="py-2 px-16 lg:px-24 bg-[#4F1ABE] text-white flex justify-center items-center rounded-md m-auto my-4 text-sm md:text-base"
                 >
-                    {isOrg ? 'Finish' : 'Continue'}
+                    {isOrg
+                        ? t('signup-page.finish')
+                        : t('signup-page.continue')}
                 </button>
             </div>
             {alertOpen ? (
