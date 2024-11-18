@@ -4,6 +4,8 @@ import MySQLdb
 import bcrypt
 from datetime import datetime
 import secrets
+import mysql.connector
+from db_config import db_params
 
 
 ## Integrate the setup_db.py to run each time the app starts 
@@ -26,13 +28,9 @@ app.config['SESSION_COOKIE_SECURE'] = False    # Disable secure cookies for deve
 
 
 # Database connection parameters
-db_params = {
-    'user': 'root',
-    'passwd': '12345678',
-    'host': 'localhost',
-    'port': 3306,
-    'db': 'pye_data'
-}
+def get_db_connection():
+    # Pass db_params directly
+    return mysql.connector.connect(**db_params)
 
 def fetch_courses_from_database(page=1, limit=10):
     courses = []
@@ -1463,6 +1461,137 @@ def get_favorites():
     except MySQLdb.Error as e:
         print(f"MySQL error: {e}")
         return jsonify({"error": "Failed to fetch favorites"}), 500
-   
+# Add application logic
+@app.route('/api/applications/add', methods=['POST'])
+def add_application():
+    if 'user_email' not in session:
+        return jsonify({"error": "User not logged in"}), 401
+
+    data = request.get_json()
+    card_id = data.get('card_id')
+    card_type = data.get('card_type')
+    user_email = session['user_email']  
+
+    if not card_id or not card_type:
+        return jsonify({"error": "Missing required fields"}), 400
+
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+
+        # Check if the application already exists for this card_id and card_type
+        check_query = """
+        SELECT COUNT(*) FROM applications WHERE user_email = %s AND card_id = %s AND card_type = %s
+        """
+        cursor.execute(check_query, (user_email, card_id, card_type))
+        (count,) = cursor.fetchone()
+
+        if count > 0:
+            return jsonify({"message": "Application already exists for this card"}), 200
+
+        # Insert new application
+        query = """
+        INSERT INTO applications (user_email, card_id, card_type, testimonial, rating)
+        VALUES (%s, %s, %s, '', 0)
+        """
+        cursor.execute(query, (user_email, card_id, card_type))
+        db.commit()
+        return jsonify({"message": "Application added successfully"}), 201
+    except MySQLdb.Error as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        db.close()
+
+@app.route('/api/applications', methods=['GET'])
+def get_applications():
+    if 'user_email' not in session:
+        return jsonify({"error": "User not logged in"}), 401
+
+    user_email = session['user_email']
+
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+
+        # Fetch basic applications data
+        cursor.execute("""
+            SELECT card_id, card_type FROM applications WHERE user_email = %s
+        """, (user_email,))
+        applications = cursor.fetchall()
+
+        detailed_applications = []
+
+        for app in applications:
+            card_id = app['card_id']
+            card_type = app['card_type']
+
+            query = None
+            if card_type == 'all_courses':
+                query = """
+                SELECT id AS card_id, title AS card_title, image_url AS card_img, duration AS card_duration,
+                       description AS card_description, price AS card_price, source AS card_source
+                FROM all_courses WHERE id = %s
+                """
+            elif card_type == 'all_events':
+                query = """
+                SELECT id AS card_id, title AS card_title, image_url AS card_img, duration AS card_duration,
+                       '' AS card_description, '' AS card_price, source AS card_source
+                FROM all_events WHERE id = %s
+                """
+            elif card_type == 'all_internships':
+                query = """
+                SELECT id AS card_id, title AS card_title, image_url AS card_img, duration AS card_duration,
+                       description AS card_description, salary AS card_price, source AS card_source
+                FROM all_internships WHERE id = %s
+                """
+            elif card_type == 'all_volunteering':
+                query = """
+                SELECT id AS card_id, title AS card_title, image_url AS card_img, duration AS card_duration,
+                       cause AS card_description, '' AS card_price, source AS card_source
+                FROM all_volunteering WHERE id = %s
+                """
+
+            if query:
+                cursor.execute(query, (card_id,))
+                result = cursor.fetchone()
+                if result:
+                    detailed_applications.append(result)
+
+        return jsonify(detailed_applications), 200
+    except MySQLdb.Error as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        db.close()
+@app.route('/api/applications/remove', methods=['DELETE'])
+def remove_application():
+    if 'user_email' not in session:
+        return jsonify({"error": "User not logged in"}), 401
+
+    data = request.get_json()
+    card_id = data.get('card_id')
+    card_type = data.get('card_type')
+    user_email = session['user_email']
+
+    if not card_id or not card_type:
+        return jsonify({"error": "Missing required fields"}), 400
+
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+
+        query = """
+        DELETE FROM applications WHERE user_email = %s AND card_id = %s AND card_type = %s
+        """
+        cursor.execute(query, (user_email, card_id, card_type))
+        db.commit()
+        return jsonify({"message": "Application removed successfully"}), 200
+    except MySQLdb.Error as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        db.close()
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8080)

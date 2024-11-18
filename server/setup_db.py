@@ -3,7 +3,7 @@ import MySQLdb
 # Database connection parameters
 db_params = {
     'user': 'root', 
-    'passwd': '12345678',  
+    'passwd': '1234',  
     'host': 'localhost',
     'port': 3306
 }
@@ -126,6 +126,37 @@ def create_database():
             FOREIGN KEY (participant_id) REFERENCES participants(id) ON DELETE CASCADE
         );
         """)
+         # Check if the index already exists
+        cursor.execute("""
+        SELECT COUNT(1)
+        FROM information_schema.statistics 
+        WHERE table_schema = DATABASE() 
+        AND table_name = 'participants' 
+        AND index_name = 'idx_email';
+        """)
+        index_exists = cursor.fetchone()[0]
+
+        if not index_exists:
+            cursor.execute("""
+            CREATE INDEX idx_email ON participants(email);
+            """)
+            print("Index 'idx_email' created on participants(email).")
+        else:
+            print("Index 'idx_email' already exists on participants(email).")
+
+        # Create applications table
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS applications (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_email VARCHAR(255) NOT NULL,
+            card_id INT NOT NULL,
+            card_type ENUM('all_courses', 'all_events', 'all_internships', 'all_volunteering') NOT NULL,
+            testimonial TEXT,
+            rating INT NOT NULL,
+            FOREIGN KEY (user_email) REFERENCES participants(email) ON DELETE CASCADE
+        );
+        """)
+
 
         #########################################################
         # UPDATES FROM INITIAL SETUP GO HERE...
