@@ -13,8 +13,11 @@ import {
     ListItemButton,
     ListItemIcon,
     Checkbox,
-    FormGroup,
-    FormControlLabel,
+    InputLabel,
+    MenuItem,
+    Select,
+    FormControl,
+    patch,
 } from '@mui/material';
 import { IoMdClose } from 'react-icons/io';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -39,6 +42,23 @@ const ParticipantForm = ({ participantData, handleChange, errors }) => {
                 autoComplete="off"
                 className="w-full"
             >
+                <FormControl variant="outlined">
+                    <InputLabel id="language" required>
+                        Language
+                    </InputLabel>
+                    <Select
+                        labelId="language"
+                        id="language"
+                        value={participantData.language}
+                        onChange={(e) => handleChange(e)}
+                        label="Language"
+                        name="language"
+                        required
+                    >
+                        <MenuItem value={'en'}>English</MenuItem>
+                        <MenuItem value={'al'}>Shqip</MenuItem>
+                    </Select>
+                </FormControl>
                 <TextField
                     type="text"
                     id="username"
@@ -176,6 +196,23 @@ const OrganizationForm = ({ orgData, handleChange, errors }) => {
                 autoComplete="off"
                 className="w-full"
             >
+                <FormControl variant="outlined">
+                    <InputLabel id="language" required>
+                        Language
+                    </InputLabel>
+                    <Select
+                        labelId="language"
+                        id="language"
+                        value={orgData.language}
+                        onChange={(e) => handleChange(e)}
+                        label="Language"
+                        name="language"
+                        required
+                    >
+                        <MenuItem value={'en'}>English</MenuItem>
+                        <MenuItem value={'al'}>Shqip</MenuItem>
+                    </Select>
+                </FormControl>
                 <TextField
                     type="text"
                     id="name_of_org"
@@ -288,6 +325,7 @@ const MainForm = () => {
     const [isParticipantSecondForm, setParticipantSecondForm] = useState(false);
 
     const [participantData, setParticipantData] = useState({
+        language: 'en',
         username: '',
         email: '',
         phone: '',
@@ -296,6 +334,7 @@ const MainForm = () => {
 
     const [preferencesData, setPreferencesData] = useState([]);
     const [orgData, setOrgData] = useState({
+        language: 'en',
         name_of_org: '',
         email_of_org: '',
         phone_number_of_org: '',
@@ -345,12 +384,14 @@ const MainForm = () => {
         setOrg(!isOrg);
         setAlertOpen(false);
         setParticipantData({
+            language: 'en',
             username: '',
             email: '',
             phone: '',
             password: '',
         });
         setOrgData({
+            language: 'en',
             name_of_org: '',
             email_of_org: '',
             phone_number_of_org: '',
@@ -364,12 +405,14 @@ const MainForm = () => {
         setParticipantSecondForm(false);
         setPreferencesData([]);
         setParticipantData({
+            language: 'en',
             username: '',
             email: '',
             phone: '',
             password: '',
         });
         setOrgData({
+            language: 'en',
             name_of_org: '',
             email_of_org: '',
             phone_number_of_org: '',
@@ -439,44 +482,43 @@ const MainForm = () => {
     };
 
     const onSubmit = async (e) => {
-    e.preventDefault();
+        e.preventDefault();
 
-    // Validate form before submission
-    if (!validateForm()) return;
+        // Validate form before submission
+        if (!validateForm()) return;
 
-    try {
-        if (isOrg) {
-            const response = await axios.post(
-                'http://localhost:8080/signup',
-                {
-                    ...orgData,
-                    isOrg: true,
-                }
-            );
-
-            handleSuccessResponse(response);
-        } else {
-            if (isParticipantSecondForm) {
+        try {
+            if (isOrg) {
                 const response = await axios.post(
                     'http://localhost:8080/signup',
-                    { ...participantData, preferences: preferencesData }
+                    {
+                        ...orgData,
+                        isOrg: true,
+                    }
                 );
 
                 handleSuccessResponse(response);
             } else {
-                setParticipantSecondForm(true);
+                if (isParticipantSecondForm) {
+                    const response = await axios.post(
+                        'http://localhost:8080/signup',
+                        { ...participantData, preferences: preferencesData }
+                    );
+
+                    handleSuccessResponse(response);
+                } else {
+                    setParticipantSecondForm(true);
+                }
+            }
+        } catch (error) {
+            // Check for the specific banned email message
+            if (error.response && error.response.status === 403) {
+                alert('You cannot register with a banned email.'); // Show banned message
+            } else {
+                handleFailedResponse(error); // Handle other errors
             }
         }
-    } catch (error) {
-        // Check for the specific banned email message
-        if (error.response && error.response.status === 403) {
-            alert("You cannot register with a banned email."); // Show banned message
-        } else {
-            handleFailedResponse(error); // Handle other errors
-        }
-    }
-};
-
+    };
 
     const handleSuccessResponse = (res) => {
         let count = 3;

@@ -1,0 +1,204 @@
+{
+    "navbar": {
+        "home": "Home",
+        "contact-us": "Contact Us",
+        "categories": {
+            "title": "Categories",
+            "items": {
+                "events": "Events",
+                "internships": "Internships",
+                "trainings": "Trainings",
+                "volunteering": "Volunteering"
+            }
+        },
+        "profile": {
+            "title": "Profile",
+            "items": {
+                "view-profile": "View Profile",
+                "edit-profile": "Edit Profile",
+                "my-applications": "My Applications",
+                "saved-for-later": "Saved For Later",
+                "rate-this-website": "Rate This Website"
+            }
+        },
+        "login": "Log In",
+        "logout": "Log Out",
+        "signup": "Sign Up"
+    },
+    "footer": {
+        "phone": "Phone",
+        "email": "Email",
+        "primary-links": {
+            "home": {
+                "label": "Home",
+                "url": "/"
+            },
+            "contact-us": {
+                "label": "Contact Us",
+                "url": "/contact"
+            }
+        },
+        "secondary-links": {
+            "terms-and-conditions": {
+                "label": "Terms & Conditions",
+                "url": "/"
+            },
+            "our-work": {
+                "label": "Our Work",
+                "url": "/"
+            },
+            "testimonials": {
+                "label": "Testimonials",
+                "url": "/"
+            },
+            "faq": {
+                "label": "FAQ",
+                "url": "/"
+            }
+        },
+        "tertiary-links": {
+            "privacy-policy": {
+                "label": "Privacy Policy",
+                "url": "/"
+            },
+            "terms-of-service": {
+                "label": "Terms of Service",
+                "url": "/"
+            },
+            "copyright-information": {
+                "label": "Copyright Information",
+                "url": "/"
+            }
+        }
+    },
+    "login-page": {
+        "login": "Log In",
+        "email": "Email",
+        "password": "Password",
+        "remember-me": "Remember Me",
+        "forgot-password": "Forgot Password?",
+        "user-type": {
+            "participant": "Participant",
+            "organization": "Organization"
+        },
+        "second-login": "or log in with",
+        "alerts": {
+            "success": "Logged In! You will be redirected soon!",
+            "failed": "Log I    n Failed! Please try again!"
+        },
+        "errors": {
+            "email": "Email is invalid!",
+            "password": "Password is invalid!"
+        }
+    },
+    "signup-page": {
+        "signup": "Sign Up",
+        "text-1": "Create An Account",
+        "text-2": "Are you a",
+        "or": "or",
+        "language": "Language",
+        "username": "Username",
+        "name-of-org": "Name Of Organization",
+        "email": "Email",
+        "phone": "Phone",
+        "password": "Password",
+        "url": "URL (www.example.com)",
+        "description": "Description",
+        "continue": "Continue",
+        "finish": "Finish",
+        "user-type": {
+            "participant": "Participant",
+            "organization": "Organization"
+        },
+        "alerts": {
+            "success": "Account Created! You will be redirected soon!",
+            "failed": "Sign Up Failed! Please try again!"
+        },
+        "errors": {
+            "username": "Username is invalid!",
+            "email": "Email is invalid!",
+            "password": "Password is invalid!",
+            "phone": "Phone number is invalid!",
+            "name-of-org": "Organization name is invalid!",
+            "url": "URL is invalid!",
+            "description": "Description is invalid!"
+        }
+    },
+    "error-page": {
+        "text-1": "404 Not Found",
+        "text-2": "This page doesn't seem to exist.",
+        "button-text": "Go back to home page"
+    },
+    "card": {
+        "notitle": "No Title",
+        "nodescription": "No Description",
+        "nosource": "No Source",
+        "price": "Price: ",
+        "button-rate": "Rate",
+        "button-text": "Explore More",
+        "rate-text": "Rate This Opportunity",
+        "your-review": "Your Review",
+        "save-changes": "Save Changes"
+    },
+    "profile": {
+        "participant": {
+            "navigation": {
+                "edit-profile": "Edit Profile",
+                "my-applications": "My Applications",
+                "saved-for-later": "Saved For Later",
+                "rate-this-website": "Rate This Website"
+            }
+        },
+        "organization": {
+            "post-an-opportunity": "Post An Opportunity",
+            "personal-info": "PersonalInfo",
+            "name": "Name",
+            "social-media": "SocialMedia",
+            "address": "Address",
+            "phone": "Phone",
+            "text-1": "Please give us some info about your event!",
+            "forms": {
+                "form-1": {
+                    "personalInfo": "Personal Info",
+                    "name": "Name",
+                    "socialMedia": "Social Media",
+                    "address": "Address",
+                    "phone": "Phone"
+                },
+                "form-2": {
+                    "1": {
+                        "title": "Post Opportunity Through",
+                        "options": [
+                            "Opportunity’s URL",
+                            "Typing in the info about the opportunity"
+                        ]
+                    },
+                    "2": {
+                        "title": "What type of activity are you posting?",
+                        "options": [
+                            "Event",
+                            "Trainings",
+                            "Volunteering",
+                            "Internships"
+                        ]
+                    },
+                    "3": {
+                        "title": "Location",
+                        "options": ["Prishtina", "Gjilan", "Prizren"]
+                    },
+                    "4": {
+                        "title": "Special Features",
+                        "options": ["Remote", "In Office", "Hybrid"]
+                    },
+                    "5": {
+                        "title": "Duration",
+                        "options": ["2 months", "4 months", "6 months"]
+                    }
+                },
+                "description": "Description Of The Activity",
+                "post": "Post"
+            },
+            "error": "It looks like you missed a few questions. Please answer all of them to continue."
+        }
+    }
+}
