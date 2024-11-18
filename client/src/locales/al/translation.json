@@ -1,0 +1,204 @@
+{
+    "navbar": {
+        "home": "Ballina",
+        "contact-us": "Na Kontaktoni",
+        "categories": {
+            "title": "Kategoritë",
+            "items": {
+                "events": "Evente",
+                "internships": "Praktikë",
+                "trainings": "Trajnime",
+                "volunteering": "Vullnetarizëm"
+            }
+        },
+        "profile": {
+            "title": "Profili",
+            "items": {
+                "view-profile": "Shiko Profilin",
+                "edit-profile": "Ndrysho Profilin",
+                "my-applications": "Aplikimet e Mia",
+                "saved-for-later": "Ruajtur për Më Vonë",
+                "rate-this-website": "Vlerëso Këtë Faqe"
+            }
+        },
+        "login": "Kyçu",
+        "logout": "Dil",
+        "signup": "Regjistrohu"
+    },
+    "footer": {
+        "phone": "Telefoni",
+        "email": "Email",
+        "primary-links": {
+            "home": {
+                "label": "Ballina",
+                "url": "/"
+            },
+            "contact-us": {
+                "label": "Na Kontaktoni",
+                "url": "/contact"
+            }
+        },
+        "secondary-links": {
+            "terms-and-conditions": {
+                "label": "Terms & Conditions",
+                "url": "/"
+            },
+            "our-work": {
+                "label": "Our Work",
+                "url": "/"
+            },
+            "testimonials": {
+                "label": "Testimonials",
+                "url": "/"
+            },
+            "faq": {
+                "label": "FAQ",
+                "url": "/"
+            }
+        },
+        "tertiary-links": {
+            "privacy-policy": {
+                "label": "Privacy Policy",
+                "url": "/"
+            },
+            "terms-of-service": {
+                "label": "Terms of Service",
+                "url": "/"
+            },
+            "copyright-information": {
+                "label": "Copyright Information",
+                "url": "/"
+            }
+        }
+    },
+    "login-page": {
+        "login": "Kyçu",
+        "email": "Email",
+        "password": "Password",
+        "remember-me": "Më Rikujto",
+        "forgot-password": "Ke Harruar Passwordin?",
+        "user-type": {
+            "participant": "Pjesëtarë",
+            "organization": "Organizatë"
+        },
+        "second-login": "apo kyçu me",
+        "alerts": {
+            "success": "Kyçje e suksesshme!",
+            "failed": "Kyçje e dështuar! Ju lutemi provoni përsëri!"
+        },
+        "errors": {
+            "email": "Emaili është invalid!",
+            "password": "Passwordi është invalid!"
+        }
+    },
+    "signup-page": {
+        "signup": "Regjistrohu",
+        "text-1": "Krijo një llogari",
+        "text-2": "A jeni",
+        "or": "apo",
+        "language": "Gjuha",
+        "username": "Username",
+        "name-of-org": "Emri I Organizatës",
+        "email": "Email",
+        "phone": "Telefoni",
+        "password": "Password",
+        "url": "URL (www.example.com)",
+        "description": "Pershkrimi",
+        "continue": "Vazhdo",
+        "finish": "Perfundo",
+        "user-type": {
+            "participant": "Pjesëtarë",
+            "organization": "Organizatë"
+        },
+        "alerts": {
+            "success": "Llogaria u krijua me sukses!",
+            "failed": "Krijimi i llogarisë dështoi!"
+        },
+        "errors": {
+            "username": "Username është invalid!",
+            "email": "Emaili është invalid!",
+            "password": "Passwordi është invalid!",
+            "phone": "Numri i telefonit është invalid!",
+            "name-of-org": "Emri I organizatës është invalid!",
+            "url": "URL është invalid!",
+            "description": "Pershkrimi është invalid!"
+        }
+    },
+    "error-page": {
+        "text-1": "404 Faqe e panjohur",
+        "text-2": "Kjo faqe nuk ekziston!",
+        "button-text": "Kthehu te Ballina"
+    },
+    "card": {
+        "notitle": "Pa Titull",
+        "nodescription": "Pa Përshkrim",
+        "nosource": "Pa Autor",
+        "price": "Çmimi: ",
+        "button-rate": "Vlerëso",
+        "button-text": "Shiko Më Shumë",
+        "rate-text": "Vlerëso Këtë Listim",
+        "your-review": "Vlerësimi Yt",
+        "save-changes": "Ruaj Ndryshimet"
+    },
+    "profile": {
+        "participant": {
+            "navigation": {
+                "edit-profile": "Ndrysho Profilin",
+                "my-applications": "Aplikimet e Mia",
+                "saved-for-later": "Ruajtur për Më Vonë",
+                "rate-this-website": "Vlerëso Këtë Faqe"
+            }
+        },
+        "organization": {
+            "post-an-opportunity": "Posto një \"Mundësi\"",
+            "personal-info": "InformataPersonale",
+            "name": "Emri",
+            "social-media": "SocialMedia",
+            "address": "Adresa",
+            "phone": "Telefoni",
+            "text-1": "Na jep disa informata rreth \"Mundësisë\" tënde!",
+            "forms": {
+                "form-1": {
+                    "personalInfo": "Info Personale",
+                    "name": "Emri",
+                    "socialMedia": "Social Media",
+                    "address": "Adresa",
+                    "phone": "Telefoni"
+                },
+                "form-2": {
+                    "1": {
+                        "title": "Posto një \"Mundësi\" përmes",
+                        "options": [
+                            "URL-së së eventit",
+                            "Shkrimit të informatave të \"Mundësisë\""
+                        ]
+                    },
+                    "2": {
+                        "title": "Çfar lloj aktiviteti jeni duke postuar?",
+                        "options": [
+                            "Event",
+                            "Trajnim",
+                            "Vullentarizëm",
+                            "Praktikë"
+                        ]
+                    },
+                    "3": {
+                        "title": "Lokacioni",
+                        "options": ["Prishtina", "Gjilan", "Prizren"]
+                    },
+                    "4": {
+                        "title": "Kërkesa speciale",
+                        "options": ["Remote", "In Office", "Hybrid"]
+                    },
+                    "5": {
+                        "title": "Kohë zgjatja",
+                        "options": ["2 muaj", "4 muaj", "6 muaj"]
+                    }
+                },
+                "description": "Përshkrimi i Aktivitetit",
+                "post": "Posto"
+            },
+            "error": "Ju lutemi plotësoni të gjitha të dhënat para se të shtypni \"Posto\"."
+        }
+    }
+}

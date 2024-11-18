@@ -1,5 +1,6 @@
 import './index.css';
-import { StrictMode } from 'react';
+import './i18n';
+import { StrictMode, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import PrimaryLayout from './routes/PrimaryLayout.jsx';
@@ -26,6 +27,7 @@ import UserProfileMyapp from './pages/profiles/UserProfileMyapp.jsx';
 import UserProfileMyappRate from './pages/profiles/UserProfileMyappRate.jsx';
 import UserProfileMyappSaved from './pages/profiles/UserProfileMyappSaved.jsx';
 import UserProfileAuth from './pages/auth/UserProfileAuth.jsx';
+import { useTranslation } from 'react-i18next';
 
 const router = createBrowserRouter([
     {
@@ -156,8 +158,17 @@ const router = createBrowserRouter([
     },
 ]);
 
-createRoot(document.getElementById('root')).render(
-    <StrictMode>
-        <RouterProvider router={router} />
-    </StrictMode>
-);
+const MainComponent = () => {
+    // Used only to change language if needed
+    const { i18n } = useTranslation();
+    useEffect(() => {
+        i18n.changeLanguage('en');
+    }, []);
+    return (
+        <StrictMode>
+            <RouterProvider router={router} />
+        </StrictMode>
+    );
+};
+
+createRoot(document.getElementById('root')).render(<MainComponent />);
