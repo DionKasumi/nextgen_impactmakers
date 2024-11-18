@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 const UserProfile = () => {
+    const { t } = useTranslation();
+
     const [username, setUsername] = useState('Username');
 
     useEffect(() => {
@@ -43,11 +46,27 @@ const UserProfile = () => {
                         <p className="text-white text-2xl sm:text-3xl md:text-4xl font-semibold mb-2 md:mb-4">
                             {username || 'Username'}
                         </p>
-                        <nav className="hidden sm:flex space-x-10 text-white font-bold text-lg">
-                            <Link to="/profile/edit">Edit Profile</Link>
-                            <Link to="/profile/myapp">My applications</Link>
-                            <Link to="/profile/saved">Saved for Later</Link>
-                            <Link to="/profile/rate">Rate this Website</Link>
+                        <nav className="hidden sm:flex space-x-5 text-white font-bold text-lg">
+                            <Link to="/profile/edit">
+                                {t(
+                                    'profile.participant.navigation.edit-profile'
+                                )}
+                            </Link>
+                            <Link to="/profile/myapp">
+                                {t(
+                                    'profile.participant.navigation.my-applications'
+                                )}
+                            </Link>
+                            <Link to="/profile/saved">
+                                {t(
+                                    'profile.participant.navigation.saved-for-later'
+                                )}
+                            </Link>
+                            <Link to="/profile/rate">
+                                {t(
+                                    'profile.participant.navigation.rate-this-website'
+                                )}
+                            </Link>
                         </nav>
                     </div>
                 </div>
@@ -65,29 +84,30 @@ const UserProfile = () => {
                 <img
                     src="assets/Group 704.png"
                     alt="Group Icon"
-                    className="w-10 h-10 -mb-60 ml-64 md:-mb-60 md:ml-96 sm:w-12 sm:h-12 sm:-mb-60 sm:ml-96 md:w-14 md:h-14 lg:w-16 lg:h-16"
+                    className="w-10 h-10 -mb-60 ml-64 md:-mb-20 md:ml-96 sm:w-12 sm:h-12 sm:-mb-60 sm:ml-96 md:w-14 md:h-14 lg:w-16 lg:h-16"
                 />
             </div>
             {/* Welcome */}
-            <div className="text-center mt-44 h-auto relative w-full max-w-md mb-96 px-4">
+            <div className="text-center mt-20 h-auto relative w-full max-w-sm md:max-w-lg mb-96 px-4">
                 <div className="space-y-8">
-                    <div className="text-white text-2xl sm:text-3xl md:text-4xl font-semibold">
-                        Welcome, Username
+                    <h1 className="text-white text-2xl sm:text-3xl md:text-4xl font-semibold">
+                        {t('profile.participant.welcome')},{' '}
+                        {username || 'Username'}
                         <hr className="absolute left-0 right-0 mx-auto top-12 h-1 bg-white" />
-                    </div>
-                    <div className="text-white text-2xl sm:text-3xl md:text-4xl font-semibold">
-                        Upcoming opportunities
+                    </h1>
+                    <h1 className="text-white text-xl sm:text-3xl md:text-4xl font-semibold">
+                        {t('profile.participant.upcoming-opportunities')}
                         <hr className="absolute left-0 right-0 mx-auto top-full h-0.5 bg-white opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                    </div>
-                    <div className="relative group text-white text-lg sm:text-xl md:text-2xl font-semibold hover:text-3xl">
+                    </h1>
+                    <h1 className="relative group text-white text-lg sm:text-xl md:text-2xl font-semibold hover:text-3xl">
                         Opportunity 1: Deadline
-                    </div>
-                    <div className="relative group text-white text-lg sm:text-xl md:text-xl font-semibold hover:text-2xl">
+                    </h1>
+                    <h1 className="relative group text-white text-lg sm:text-xl md:text-xl font-semibold hover:text-2xl">
                         Opportunity 2: Deadline
-                    </div>
-                    <div className="relative group text-white text-sm sm:text-lg md:text-lg font-semibold hover:text-xl">
+                    </h1>
+                    <h1 className="relative group text-white text-sm sm:text-lg md:text-lg font-semibold hover:text-xl">
                         Opportunity 3: Deadline
-                    </div>
+                    </h1>
                 </div>
             </div>
         </div>

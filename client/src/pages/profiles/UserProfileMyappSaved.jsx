@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Card from '../../components/Card';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 const UserProfileMyappSaved = () => {
+    const { t } = useTranslation();
+
     const [favorites, setFavorites] = useState([]);
     const [removingId, setRemovingId] = useState(null);
     const [notification, setNotification] = useState('');
@@ -71,16 +74,30 @@ const UserProfileMyappSaved = () => {
                         <p className="text-white text-2xl sm:text-3xl md:text-4xl font-semibold mb-2 md:mb-4">
                             {username || 'Username'}
                         </p>
-                        <nav className="hidden sm:flex space-x-10 text-white font-bold text-lg">
-                            <Link to="/profile/edit">Edit Profile</Link>
-                            <Link to="/profile/myapp">My applications</Link>
+                        <nav className="hidden sm:flex space-x-5 text-white font-bold text-lg">
+                            <Link to="/profile/edit">
+                                {t(
+                                    'profile.participant.navigation.edit-profile'
+                                )}
+                            </Link>
+                            <Link to="/profile/myapp">
+                                {t(
+                                    'profile.participant.navigation.my-applications'
+                                )}
+                            </Link>
                             <Link
                                 to="/profile/saved"
                                 className="text-[#FF9202]"
                             >
-                                Saved for Later
+                                {t(
+                                    'profile.participant.navigation.saved-for-later'
+                                )}
                             </Link>
-                            <Link to="/profile/rate">Rate this Website</Link>
+                            <Link to="/profile/rate">
+                                {t(
+                                    'profile.participant.navigation.rate-this-website'
+                                )}
+                            </Link>
                         </nav>
                     </div>
                 </div>

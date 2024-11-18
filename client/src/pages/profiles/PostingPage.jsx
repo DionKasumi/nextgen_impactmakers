@@ -1,135 +1,232 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from 'react';
+import {
+    TextField,
+    Radio,
+    RadioGroup,
+    FormControlLabel,
+    FormControl,
+    FormLabel,
+} from '@mui/material/';
+import { useTranslation } from 'react-i18next';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import axios from 'axios';
 
-const CheckboxGroup = ({ options, category, selectedOptions, handleCheckboxChange }) => (
-  <div className="space-y-2">
-    {options.map((option) => (
-      <label key={option} className="flex items-center space-x-2">
-        <input
-          type="checkbox"
-          checked={selectedOptions[category].includes(option)}
-          onChange={() => handleCheckboxChange(category, option)}
-          className="appearance-none w-3.5 h-3.5 rounded-full border-2 border-[#ffffff] checked:bg-[#ffffff] checked:border-[#A78DDF] checked:shadow-md"
-          aria-label={`Select ${option} for ${category}`}
-        />
-        <span>{option}</span>
-      </label>
-    ))}
-  </div>
+const CheckboxGroup = ({
+    options,
+    title,
+    category,
+    selectedOptions,
+    handleCheckboxChange,
+}) => (
+    <FormControl>
+        <FormLabel
+            id={`${category}-group-label`}
+            style={{ color: 'white', fontWeight: 'bold', fontSize: '1.2rem' }}
+        >
+            {title}
+        </FormLabel>
+        <RadioGroup
+            aria-labelledby={`${category}-group-label`}
+            name={`${category}-radio-buttons-group`}
+            value={selectedOptions[category]} // Bind state
+            onChange={(e) => handleCheckboxChange(category, e.target.value)}
+        >
+            {options.map((option) => (
+                <FormControlLabel
+                    key={option.value} // Add key for React
+                    value={option.value}
+                    control={<Radio sx={{ color: 'white' }} />}
+                    label={option.label}
+                />
+            ))}
+        </RadioGroup>
+    </FormControl>
 );
 
 const Posting = () => {
-  const [selectedOptions, setSelectedOptions] = useState({
-    opportunityType: [],
-    location: [],
-    specialFeatures: [],
-    duration: [],
-  });
-  const [errorMessage, setErrorMessage] = useState("");
+    const { t } = useTranslation();
 
-  const handleCheckboxChange = (category, value) => {
-    setSelectedOptions((prev) => {
-      const isSelected = prev[category].includes(value);
-      const updatedOptions = isSelected
-        ? prev[category].filter((item) => item !== value)
-        : [...prev[category], value];
-        
-      return { ...prev, [category]: updatedOptions };
+    const [username, setUsername] = useState('Username');
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const response = await axios.get(
+                    'http://localhost:8080/api/user/profile',
+                    {
+                        withCredentials: true,
+                    }
+                );
+
+                setUsername(response.data.username);
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        };
+        fetchUserData();
+    }, []);
+
+    const [selectedOptions, setSelectedOptions] = useState({
+        postingType: '',
+        opportunityType: '',
+        location: '',
+        specialFeatures: '',
+        duration: '',
     });
-    setErrorMessage(""); // Reset error message when a selection is made
-  };
+    const [description, setDescription] = useState('');
 
-  const handleSubmit = () => {
-    const isFormValid = Object.values(selectedOptions).every((options) => options.length > 0);
+    const [errorMessage, setErrorMessage] = useState('');
 
-    if (isFormValid) {
-      console.log("Form submitted successfully!");
-    } else {
-      setErrorMessage("It looks like you missed a few questions. Please answer all of them to continue.");
-    }
-  };
+    const handleCheckboxChange = (category, value) => {
+        setSelectedOptions((prev) => ({
+            ...prev,
+            [category]: value, // Set the selected value directly
+        }));
+        setErrorMessage(''); // Reset error message
+    };
 
-  return (
-    <div className="relative text-white h-full w-full bg-gradient-to-b from-[#4F1ABE] to-[#FFFFFF]  flex flex-col items-center px-4 md:px-6 py-8">
-      <img src="/assets/Group 750.png" alt="Background" className="absolute inset-0 w-full h-full object-cover opacity-50" />
-      <div className="relative w-full max-w-md mt-24 p-8 rounded-lg z-10">
-        <h2 className="text-3xl font-bold mb-12 text-white text-center md:text-left">ORG logo ORG name</h2>
-        <p className="text-white mb-24 text-center md:text-left">Please give us some info about your event!</p>
-      </div>
+    const handleSubmit = () => {
+        const isFormValid = Object.values(selectedOptions).every(
+            (option) => option !== '' // Ensure all categories have a selected value
+        );
 
-      <div className="relative flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24  w-full max-w-md md:w-3/4 h-auto mb-12 z-10 md:items-start">
-        <h1 className="font-bold text-2xl mb-4 text-center md:text-left">Post Opportunity through</h1>
-        <CheckboxGroup
-          options={["Opportunity’s URL", "Typing in the info about the opportunity"]}
-          category="opportunityType"
-          selectedOptions={selectedOptions}
-          handleCheckboxChange={handleCheckboxChange}
-        />
-      </div>
+        if (isFormValid) {
+            console.log('Form submitted successfully!', selectedOptions);
+            console.log('Description: ' + description);
+        } else {
+            setErrorMessage(
+                'It looks like you missed a few questions. Please answer all of them to continue.'
+            );
+        }
+    };
 
-      <div className="relative flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24  w-full max-w-md md:w-3/4 h-auto mb-12 z-10 md:items-start">
-      <h1 className="font-bold text-2xl mb-4 text-center md:text-left">What type of activity are you posting?</h1>
-        <CheckboxGroup
-          options={["Event", "Trainings", "Volunteering", "Internships"]}
-          category="opportunityType"
-          selectedOptions={selectedOptions}
-          handleCheckboxChange={handleCheckboxChange}
-        />
-      </div>
+    const theme = createTheme({
+        palette: {
+            primary: {
+                main: '#4F1ABE',
+            },
+        },
+    });
 
-      <div className="relative flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24  w-full max-w-md md:w-3/4 h-auto mb-12 z-10 md:items-start">
-      <h1 className="font-bold text-2xl mb-4 text-center md:text-left">Location</h1>
-        <CheckboxGroup
-          options={["Prishtina", "Gjilan", "Prizren"]}
-          category="location"
-          selectedOptions={selectedOptions}
-          handleCheckboxChange={handleCheckboxChange}
-        />
-      </div>
+    return (
+        <ThemeProvider theme={theme}>
+            <div className="relative text-white h-full w-full bg-gradient-to-b from-[#4F1ABE] to-[#FFFFFF] flex flex-col items-center px-4 md:px-6 py-8">
+                <img
+                    src="/assets/Group 750.png"
+                    alt="Background"
+                    className="absolute inset-0 w-full h-full object-cover opacity-50"
+                />
+                <div className="relative w-full mt-24 p-8 z-10">
+                    <h2 className="text-3xl font-bold mb-8 text-white text-center">
+                        {username || 'Username'}
+                    </h2>
+                    <p className="text-white text-2xl mb-12 text-center">
+                        {t('profile.organization.text-1')}
+                    </p>
+                </div>
 
-      <div className="relative flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24  w-full max-w-md md:w-3/4 h-auto mb-12 z-10 md:items-start">
-      <h1 className="font-bold text-2xl mb-4 text-center md:text-left">Special Features</h1>
-        <CheckboxGroup
-          options={["Remote", "In office", "Hybrid"]}
-          category="specialFeatures"
-          selectedOptions={selectedOptions}
-          handleCheckboxChange={handleCheckboxChange}
-        />
-      </div>
+                <div className="relative flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24 w-full max-w-md md:w-3/4 h-auto mb-12 z-10 md:items-start">
+                    <CheckboxGroup
+                        options={t(
+                            'profile.organization.forms.form-2.1.options',
+                            {
+                                returnObjects: true,
+                            }
+                        )}
+                        title={t('profile.organization.forms.form-2.1.title')}
+                        category="postingType"
+                        selectedOptions={selectedOptions}
+                        handleCheckboxChange={handleCheckboxChange}
+                    />
+                </div>
+                <div className="relative flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24 w-full max-w-md md:w-3/4 h-auto mb-12 z-10 md:items-start">
+                    <CheckboxGroup
+                        options={t(
+                            'profile.organization.forms.form-2.2.options',
+                            {
+                                returnObjects: true,
+                            }
+                        )}
+                        title={t('profile.organization.forms.form-2.2.title')}
+                        category="opportunityType"
+                        selectedOptions={selectedOptions}
+                        handleCheckboxChange={handleCheckboxChange}
+                    />
+                </div>
+                <div className="relative flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24 w-full max-w-md md:w-3/4 h-auto mb-12 z-10 md:items-start">
+                    <CheckboxGroup
+                        options={t(
+                            'profile.organization.forms.form-2.3.options',
+                            {
+                                returnObjects: true,
+                            }
+                        )}
+                        title={t('profile.organization.forms.form-2.3.title')}
+                        category="location"
+                        selectedOptions={selectedOptions}
+                        handleCheckboxChange={handleCheckboxChange}
+                    />
+                </div>
+                <div className="relative flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24 w-full max-w-md md:w-3/4 h-auto mb-12 z-10 md:items-start">
+                    <CheckboxGroup
+                        options={t(
+                            'profile.organization.forms.form-2.4.options',
+                            {
+                                returnObjects: true,
+                            }
+                        )}
+                        title={t('profile.organization.forms.form-2.4.title')}
+                        category="specialFeatures"
+                        selectedOptions={selectedOptions}
+                        handleCheckboxChange={handleCheckboxChange}
+                    />
+                </div>
+                <div className="relative flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24 w-full max-w-md md:w-3/4 h-auto mb-12 z-10 md:items-start">
+                    <CheckboxGroup
+                        options={t(
+                            'profile.organization.forms.form-2.5.options',
+                            {
+                                returnObjects: true,
+                            }
+                        )}
+                        title={t('profile.organization.forms.form-2.5.title')}
+                        category="duration"
+                        selectedOptions={selectedOptions}
+                        handleCheckboxChange={handleCheckboxChange}
+                    />
+                </div>
 
-      <div className="relative flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24  w-full max-w-md md:w-3/4 h-auto mb-12 z-10 md:items-start">
-      <h1 className="font-bold text-2xl mb-4 text-center md:text-left">Duration</h1>
-        <CheckboxGroup
-          options={["3 months", "4 months", "6 months"]}
-          category="duration"
-          selectedOptions={selectedOptions}
-          handleCheckboxChange={handleCheckboxChange}
-        />
-      </div>
+                <div className="relative text-black font-bold flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24 w-full max-w-md md:w-3/4 h-auto mb-12 z-10 md:items-start">
+                    <TextField
+                        id="description-box"
+                        label={t('profile.organization.forms.description')}
+                        value={description}
+                        onChange={(e) => {
+                            setDescription(e.target.value);
+                        }}
+                        multiline
+                        fullWidth
+                        variant="filled"
+                        rows={4}
+                    />
+                </div>
 
-      {/* Description Box */}
-      <div className="relative text-black font-bold flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24  w-full max-w-md md:w-3/4 h-auto mb-12 z-10 md:items-start">
-      <h1>Description of the activity</h1>
-       <textarea
-          placeholder=""
-          className="px-6 py-4 mt-6 font-light border border-black rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
-          rows="5" 
-          cols="50"
-  />
-      </div>
-
-      <div className="relative flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24  w-full max-w-md md:w-3/4 h-auto mb-12 z-10 md:items-start">
-        <button
-          onClick={handleSubmit}
-          className="px-12 py-4 bg-[#4F1ABE] text-white rounded-2xl w-full md:w-auto"
-        >
-          Post
-        </button>
-        {errorMessage && (
-          <p className="text-red-500 mt-2 text-center md:text-left">{errorMessage}</p>
-        )}
-      </div>
-    </div>
-  );
+                <div className="relative flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24 w-full max-w-md md:w-3/4 h-auto mb-12 z-10 md:items-start">
+                    <button
+                        onClick={handleSubmit}
+                        className="px-12 py-4 bg-[#4F1ABE] text-white rounded-2xl"
+                    >
+                        {t('profile.organization.forms.post')}
+                    </button>
+                    {errorMessage && (
+                        <p className="text-red-500 mt-2 text-center md:text-left">
+                            {errorMessage}
+                        </p>
+                    )}
+                </div>
+            </div>
+        </ThemeProvider>
+    );
 };
 
 export default Posting;

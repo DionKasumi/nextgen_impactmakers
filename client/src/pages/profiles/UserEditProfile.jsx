@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 const UserEditProfile = () => {
+    const { t } = useTranslation();
+
     const [formData, setFormData] = useState({
         name: '',
         surname: '',
@@ -30,7 +33,7 @@ const UserEditProfile = () => {
                     surname: response.data.surname || '',
                     email: response.data.email || '', // Read-only field
                     username: response.data.username || '',
-                };                
+                };
 
                 setFormData(data);
                 setInitialData(data); // Store the initial data for comparison
@@ -106,13 +109,27 @@ const UserEditProfile = () => {
                         <p className="text-white text-2xl sm:text-3xl md:text-4xl font-semibold mb-2 md:mb-4">
                             {formData.username || 'Username'}
                         </p>
-                        <nav className="hidden sm:flex space-x-10 text-white font-bold text-lg">
+                        <nav className="hidden sm:flex space-x-5 text-white font-bold text-lg">
                             <Link to="/profile/edit" className="text-[#FF9202]">
-                                Edit Profile
+                                {t(
+                                    'profile.participant.navigation.edit-profile'
+                                )}
                             </Link>
-                            <Link to="/profile/myapp">My applications</Link>
-                            <Link to="/profile/saved">Saved for Later</Link>
-                            <Link to="/profile/rate">Rate this Website</Link>
+                            <Link to="/profile/myapp">
+                                {t(
+                                    'profile.participant.navigation.my-applications'
+                                )}
+                            </Link>
+                            <Link to="/profile/saved">
+                                {t(
+                                    'profile.participant.navigation.saved-for-later'
+                                )}
+                            </Link>
+                            <Link to="/profile/rate">
+                                {t(
+                                    'profile.participant.navigation.rate-this-website'
+                                )}
+                            </Link>
                         </nav>
                     </div>
                 </div>
@@ -132,8 +149,8 @@ const UserEditProfile = () => {
                     {/* Left Column */}
                     <div className="space-y-4 sm:space-y-6 px-4 md:px-6">
                         {[
-                            'Name',
-                            'Surname',
+                            t('profile.participant.name'),
+                            t('profile.participant.surname'),
                         ].map((label) => (
                             <div key={label}>
                                 <label className="block text-white mb-1 sm:mb-2 text-lg sm:text-xl">
@@ -163,8 +180,8 @@ const UserEditProfile = () => {
                     {/* Right Column */}
                     <div className="space-y-4 sm:space-y-6 px-4 md:px-6">
                         {[
-                            'Email',
-                            'Phone',
+                            t('profile.participant.email'),
+                            t('profile.participant.phone'),
                         ].map((label) => (
                             <div key={label}>
                                 <label className="block text-white mb-1 sm:mb-2 text-lg sm:text-xl">

@@ -3,8 +3,11 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import RateCard from '../../components/RateCard';
+import { useTranslation } from 'react-i18next';
 
 const UserProfileMyapp = () => {
+    const { t } = useTranslation();
+
     const [username, setUsername] = useState('Username');
 
     const [applications, setApplications] = useState([]); // Store applications
@@ -64,16 +67,30 @@ const UserProfileMyapp = () => {
                         <p className="text-white text-2xl sm:text-3xl md:text-4xl font-semibold mb-2 md:mb-4">
                             {username || 'Username'}
                         </p>
-                        <nav className="hidden sm:flex space-x-10 text-white font-bold text-lg">
-                            <Link to="/profile/edit">Edit Profile</Link>
+                        <nav className="hidden sm:flex space-x-5 text-white font-bold text-lg">
+                            <Link to="/profile/edit">
+                                {t(
+                                    'profile.participant.navigation.edit-profile'
+                                )}
+                            </Link>
                             <Link
                                 to="/profile/myapp"
                                 className="text-[#FF9202]"
                             >
-                                My applications
+                                {t(
+                                    'profile.participant.navigation.my-applications'
+                                )}
                             </Link>
-                            <Link to="/profile/saved">Saved for Later</Link>
-                            <Link to="/profile/rate">Rate this Website</Link>
+                            <Link to="/profile/saved">
+                                {t(
+                                    'profile.participant.navigation.saved-for-later'
+                                )}
+                            </Link>
+                            <Link to="/profile/rate">
+                                {t(
+                                    'profile.participant.navigation.rate-this-website'
+                                )}
+                            </Link>
                         </nav>
                     </div>
                 </div>
