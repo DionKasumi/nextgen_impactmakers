@@ -133,6 +133,7 @@
         "notitle": "No Title",
         "nodescription": "No Description",
         "nosource": "No Source",
+        "noduration": "No Duration",
         "price": "Price: ",
         "button-rate": "Rate",
         "button-text": "Explore More",
@@ -147,7 +148,14 @@
                 "my-applications": "My Applications",
                 "saved-for-later": "Saved For Later",
                 "rate-this-website": "Rate This Website"
-            }
+            },
+            "welcome": "Welcome",
+            "upcoming-opportunities": "Upcoming Opportunitites",
+            "review-text": "Write your review here...",
+            "name": "Name",
+            "email": "Email",
+            "surname": "Surname",
+            "phone": "Phone"
         },
         "organization": {
             "post-an-opportunity": "Post An Opportunity",
@@ -169,36 +177,66 @@
                     "1": {
                         "title": "Post Opportunity Through",
                         "options": [
-                            "Opportunity’s URL",
-                            "Typing in the info about the opportunity"
+                            { "label": "Opportunity's URL", "value": "url" },
+                            {
+                                "label": "Typing in the info about the opportunity",
+                                "value": "info"
+                            }
                         ]
                     },
                     "2": {
                         "title": "What type of activity are you posting?",
                         "options": [
-                            "Event",
-                            "Trainings",
-                            "Volunteering",
-                            "Internships"
+                            { "label": "Event", "value": "event" },
+                            { "label": "Training", "value": "training" },
+                            {
+                                "label": "Volunteering",
+                                "value": "volunteering"
+                            },
+                            { "label": "Internship", "value": "internship" }
                         ]
                     },
                     "3": {
                         "title": "Location",
-                        "options": ["Prishtina", "Gjilan", "Prizren"]
+                        "options": [
+                            { "label": "Prishtina", "value": "prishtina" },
+                            { "label": "Gjilan", "value": "gjilan" },
+                            { "label": "Prizren", "value": "prizren" }
+                        ]
                     },
                     "4": {
                         "title": "Special Features",
-                        "options": ["Remote", "In Office", "Hybrid"]
+                        "options": [
+                            { "label": "Remote", "value": "remote" },
+                            { "label": "In Office", "value": "in-office" },
+                            { "label": "Hybrid", "value": "hybrid" }
+                        ]
                     },
                     "5": {
                         "title": "Duration",
-                        "options": ["2 months", "4 months", "6 months"]
+                        "options": [
+                            {
+                                "label": "2 months",
+                                "value": "2mo"
+                            },
+                            {
+                                "label": "4 months",
+                                "value": "4mo"
+                            },
+                            {
+                                "label": "6 months",
+                                "value": "6mo"
+                            }
+                        ]
                     }
                 },
                 "description": "Description Of The Activity",
                 "post": "Post"
             },
-            "error": "It looks like you missed a few questions. Please answer all of them to continue."
+            "errors": {
+                "1": "Oops! Looks like we’re missing some info. Let’s complete all fields to unlock the next step!",
+                "2": "It looks like you missed a few questions. Please answer all of them to continue."
+            }
         }
     }
 }

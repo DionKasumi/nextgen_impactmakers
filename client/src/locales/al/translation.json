@@ -133,6 +133,7 @@
         "notitle": "Pa Titull",
         "nodescription": "Pa Përshkrim",
         "nosource": "Pa Autor",
+        "noduration": "Pa Datë",
         "price": "Çmimi: ",
         "button-rate": "Vlerëso",
         "button-text": "Shiko Më Shumë",
@@ -147,7 +148,14 @@
                 "my-applications": "Aplikimet e Mia",
                 "saved-for-later": "Ruajtur për Më Vonë",
                 "rate-this-website": "Vlerëso Këtë Faqe"
-            }
+            },
+            "welcome": "Përshendetje",
+            "upcoming-opportunities": "\"Mundësi\"-të e ardhshme",
+            "review-text": "Shkruaj vlerësimin tënd këtu...",
+            "name": "Emri",
+            "email": "Email",
+            "surname": "Mbiemri",
+            "phone": "Telefoni"
         },
         "organization": {
             "post-an-opportunity": "Posto një \"Mundësi\"",
@@ -159,7 +167,7 @@
             "text-1": "Na jep disa informata rreth \"Mundësisë\" tënde!",
             "forms": {
                 "form-1": {
-                    "personalInfo": "Info Personale",
+                    "personalInfo": "Informata Personale",
                     "name": "Emri",
                     "socialMedia": "Social Media",
                     "address": "Adresa",
@@ -169,30 +177,57 @@
                     "1": {
                         "title": "Posto një \"Mundësi\" përmes",
                         "options": [
-                            "URL-së së eventit",
-                            "Shkrimit të informatave të \"Mundësisë\""
+                            { "label": "URL-së së eventit", "value": "url" },
+                            {
+                                "label": "Shkrimit të informatave të \"Mundësisë\"",
+                                "value": "info"
+                            }
                         ]
                     },
                     "2": {
                         "title": "Çfar lloj aktiviteti jeni duke postuar?",
                         "options": [
-                            "Event",
-                            "Trajnim",
-                            "Vullentarizëm",
-                            "Praktikë"
+                            { "label": "Event", "value": "event" },
+                            { "label": "Trajnim", "value": "training" },
+                            {
+                                "label": "Vullentarizëm",
+                                "value": "volunteering"
+                            },
+                            { "label": "Praktikë", "value": "internship" }
                         ]
                     },
                     "3": {
                         "title": "Lokacioni",
-                        "options": ["Prishtina", "Gjilan", "Prizren"]
+                        "options": [
+                            { "label": "Prishtina", "value": "prishtina" },
+                            { "label": "Gjilan", "value": "gjilan" },
+                            { "label": "Prizren", "value": "prizren" }
+                        ]
                     },
                     "4": {
                         "title": "Kërkesa speciale",
-                        "options": ["Remote", "In Office", "Hybrid"]
+                        "options": [
+                            { "label": "Remote", "value": "remote" },
+                            { "label": "In Office", "value": "in-office" },
+                            { "label": "Hybrid", "value": "hybrid" }
+                        ]
                     },
                     "5": {
                         "title": "Kohë zgjatja",
-                        "options": ["2 muaj", "4 muaj", "6 muaj"]
+                        "options": [
+                            {
+                                "label": "2 muaj",
+                                "value": "2mo"
+                            },
+                            {
+                                "label": "4 muaj",
+                                "value": "4mo"
+                            },
+                            {
+                                "label": "6 muaj",
+                                "value": "6mo"
+                            }
+                        ]
                     }
                 },
                 "description": "Përshkrimi i Aktivitetit",

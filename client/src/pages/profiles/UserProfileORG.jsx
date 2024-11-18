@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from '../../components/Card';
+import { useTranslation } from 'react-i18next';
 
 const UserProfileORG = () => {
+    const { t } = useTranslation();
+
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
-        PersonalInfo: '',
-        Name: '',
-        SocialMedia: '',
-        Address: '',
-        PhoneNumber: '',
+        personalInfo: '',
+        name: '',
+        socialMedia: '',
+        address: '',
+        phone: '',
     });
 
     const [error, setError] = useState(''); // State for error message
@@ -29,11 +32,14 @@ const UserProfileORG = () => {
         if (isFormValid) {
             navigate('/profile/org/post');
         } else {
-            setError(
-                'Oops! Looks like we’re missing some info. Let’s complete all fields to unlock the next step!'
-            );
+            setError(t('profile.organization.errors.1'));
         }
+        console.log(formData);
     };
+
+    const formInputs = t('profile.organization.forms.form-1', {
+        returnObjects: true,
+    });
 
     return (
         <div className="min-h-screen w-full bg-gradient-to-b from-[#4F1ABE] to-[#FFFFFF] flex flex-col items-center px-6 py-8">
@@ -53,12 +59,12 @@ const UserProfileORG = () => {
                     ORG
                 </h2>
                 <form className="space-y-4">
-                    {Object.keys(formData).map((key) => (
+                    {Object.entries(formInputs).map(([key, value]) => (
                         <input
                             key={key}
                             type="text"
                             name={key}
-                            placeholder={key.replace(/([A-Z])/g, ' $1').trim()} // Converts camelCase to readable format
+                            placeholder={value}
                             value={formData[key]}
                             onChange={handleInputChange}
                             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"

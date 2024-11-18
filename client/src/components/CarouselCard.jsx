@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { GoHeart, GoHeartFill } from 'react-icons/go';
 import { useNavigate } from 'react-router-dom';
 import { useSwiperSlide } from 'swiper/react';
+import { useTranslation } from 'react-i18next';
 
 const CarouselCard = ({
     id,
@@ -16,6 +17,8 @@ const CarouselCard = ({
     isFavorite,
     onToggleFavorite,
 }) => {
+    const { t } = useTranslation();
+
     const swiperSlide = useSwiperSlide();
     const [heart, setHeart] = useState(isFavorite);
     const navigate = useNavigate();
@@ -92,16 +95,16 @@ const CarouselCard = ({
                 )}
                 <div className="flex w-full h-auto flex-row justify-between items-center absolute bottom-0 p-5 px-6">
                     <p className="text-md text-white">
-                        {card_price ? (
+                        {card_price != null && card_price != 'N/A' ? (
                             <>
-                                Price:{' '}
+                                {t('card.price')}
                                 <span className="text-green-700 font-bold text-lg">
                                     {card_price}
                                 </span>
                             </>
                         ) : (
                             <>
-                                Price:{' '}
+                                {t('card.price')}
                                 <span className="text-green-700 font-bold text-lg">
                                     --
                                 </span>
@@ -126,22 +129,24 @@ const CarouselCard = ({
                 <div className="mt-2">
                     <div className="flex flex-row justify-between items-center">
                         <h4 className="text-sm font-bold text-wrap text-ellipsis overflow-hidden whitespace-nowrap line-clamp-1 text-black">
-                            {card_title ? card_title : 'No Title'}
+                            {card_title ? card_title : t('card.notitle')}
                         </h4>
                         <p className="text-sm text-black">
-                            {card_source ? card_source : 'No Source'}
+                            {card_source ? card_source : t('card.nosource')}
                         </p>
                     </div>
                     <p className="text-sm text-gray-600 text-wrap text-ellipsis overflow-hidden whitespace-nowrap line-clamp-2">
-                        {card_description ? card_description : 'No Description'}
+                        {card_description
+                            ? card_description
+                            : t('card.nodescription')}
                     </p>
                 </div>
                 <div className="flex w-full h-1/4 justify-between items-center flex-row">
                     <button className="bg-[#50BACF] text-xs text-black w-2/6 h-full font-medium border-black border-[1px] rounded-[5px] hover:scale-105 transition-all">
-                        Explore More
+                        {t('card.button-text')}
                     </button>
                     <p className="text-xs italic text-gray-600">
-                        {card_duration ? card_duration : 'No Duration'}
+                        {card_duration ? card_duration : t('card.noduration')}
                     </p>
                 </div>
             </div>
