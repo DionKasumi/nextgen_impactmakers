@@ -7,22 +7,41 @@ import RateCard from '../../components/RateCard';
 const UserProfileMyapp = () => {
     const [username, setUsername] = useState('Username');
 
+    const [applications, setApplications] = useState([]); // Store applications
+
     useEffect(() => {
         const fetchUserData = async () => {
             try {
                 const response = await axios.get(
                     'http://localhost:8080/api/user/profile',
                     {
-                        withCredentials: true,
+                        withCredentials: true, // Include session credentials
                     }
                 );
-
                 setUsername(response.data.username);
             } catch (error) {
                 console.error('Error fetching user data:', error);
             }
         };
+
+        const fetchApplications = async () => {
+            try {
+                const response = await axios.get(
+                    'http://localhost:8080/api/applications',
+                    {
+                        withCredentials: true,
+                    }
+                );
+
+                console.log('Fetched applications:', response.data); // Debug response
+                setApplications(response.data);
+            } catch (error) {
+                console.error('Error fetching applications:', error);
+            }
+        };
+
         fetchUserData();
+        fetchApplications();
     }, []);
 
     return (
@@ -70,21 +89,25 @@ const UserProfileMyapp = () => {
 
             <div className="w-full h-full flex justify-center items-center">
                 <div className="w-3/4 h-full grid grid-cols-1 md:grid-cols-2 gap-8 justify-items-center">
-                    {Array(6)
-                        .fill(null)
-                        .map((_, index) => (
+                    {applications.length > 0 ? (
+                        applications.map((app) => (
                             <RateCard
-                                key={index}
-                                id={0}
-                                card_title={''}
-                                card_img={''}
-                                card_duration={''}
-                                card_description={''}
-                                card_price={''}
-                                card_source={''}
-                                card_type="events"
+                                key={app.card_id}
+                                id={app.card_id}
+                                card_title={app.card_title}
+                                card_img={app.card_img}
+                                card_duration={app.card_duration}
+                                card_description={app.card_description}
+                                card_price={app.card_price}
+                                card_source={app.card_source}
+                                card_type={app.card_type}
                             />
-                        ))}
+                        ))
+                    ) : (
+                        <p className="text-white text-center">
+                            No applications found.
+                        </p>
+                    )}
                 </div>
             </div>
         </div>
