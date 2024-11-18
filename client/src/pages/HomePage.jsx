@@ -453,9 +453,41 @@ const SixthPart = () => {
     );
 };
 
+const TestimonialCard = ({ card, index, selectedCard, changeSelectedCard }) => {
+    return (
+        <div
+            onClick={() => changeSelectedCard(card.review.username)}
+            className={`relative flex flex-col md:flex-row justify-center items-center rounded-xl w-3/4 md:w-2/5 h-36 p-4 shadow-lg transition-transform duration-200 ease-in-out select-none
+                        ${
+                            selectedCard === card.review.username
+                                ? 'z-40 md:-top-20 scale-110'
+                                : 'z-10 scale-100'
+                        } 
+                        ${
+                            index === 0
+                                ? 'bg-[#4FEAC6]'
+                                : index === 1
+                                ? 'bg-[#F6F49D]'
+                                : 'bg-[#B3B5FF]'
+                        }`}
+        >
+            <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full bg-white border-2 border-[#F6F49D]"></div>
+            <div className="flex w-full h-full flex-col justify-start">
+                <h1 className="text-lg mb-2 self-start">
+                    - {card.review.username}
+                </h1>
+                <p className="text-sm md:text-base text-black text-wrap whitespace-nowrap break-words line-clamp-3">
+                    "{card.review.review}"
+                </p>
+            </div>
+        </div>
+    );
+};
+
 const SeventhPart = () => {
     const [selectedCard, setSelectedCard] = useState('');
     const [reviews, setReviews] = useState([]);
+    const [testimonialLength, setTestimonialLength] = useState(0);
 
     useEffect(() => {
         const fetchReviews = async () => {
@@ -466,7 +498,10 @@ const SeventhPart = () => {
                 setReviews(response.data);
 
                 // Set the default selected card to the second card if it exists
-                setSelectedCard(response.data[1].username);
+                setTestimonialLength(response.data.length);
+                if (response.data.length >= 3) {
+                    setSelectedCard(response.data[1].username);
+                }
             } catch (error) {
                 console.error('Error fetching reviews:', error);
             }
@@ -501,36 +536,26 @@ const SeventhPart = () => {
     ];
 
     return (
-        <div className="w-full h-full flex flex-col bg-[url('../assets/background3.png')] justify-center items-center py-20">
-            <div className="text-white text-5xl font-bold mb-48">Reviews</div>
+        <div
+            className={`w-full h-full ${
+                testimonialLength >= 3 ? 'flex' : 'hidden'
+            } flex-col bg-[url('../assets/background3.png')] bg-cover justify-center items-center py-20`}
+        >
+            <div className="text-white text-5xl font-bold mb-20 md:mb-48">
+                Reviews
+            </div>
 
-            <div className="relative w-full flex justify-center items-center -space-x-80">
+            <div className="relative w-full flex justify-center items-center flex-col space-y-20 md:flex-row md:-space-x-60 md:space-y-0">
                 {cards.map((card, index) => (
-                    <div
-                        key={card.id}
-                        onClick={() => setSelectedCard(card.review.username)} // Click sets selected card
-                        className={`relative flex flex-col justify-center items-center rounded-xl w-[44rem] h-56 p-6 shadow-lg transition-transform duration-500 ease-in-out 
-                        ${
-                            selectedCard === card.review.username
-                                ? 'z-40 mb-44 scale-110'
-                                : 'z-10 scale-100'
-                        } 
-                        ${
-                            index === 0
-                                ? 'bg-[#4FEAC6]'
-                                : index === 1
-                                ? 'bg-[#F6F49D]'
-                                : 'bg-[#B3B5FF]'
-                        }`}
-                    >
-                        <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full bg-white border-2 border-[#F6F49D]"></div>
-                        <h1 className="text-lg mb-8 self-start">
-                            {card.review.username}
-                        </h1>
-                        <div className="text-sm md:text-base text-black">
-                            {card.review.review}
-                        </div>
-                    </div>
+                    <TestimonialCard
+                        key={index}
+                        card={card}
+                        index={index}
+                        selectedCard={selectedCard}
+                        changeSelectedCard={(e) => {
+                            setSelectedCard(card.review.username);
+                        }}
+                    />
                 ))}
             </div>
         </div>
