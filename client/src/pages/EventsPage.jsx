@@ -9,7 +9,7 @@ import axios from 'axios';
 const fetchEvents = async () => {
     try {
         const response = await axios.get('http://localhost:8080/api/events');
-        return response.data;
+        return response.data || [];
     } catch (error) {
         console.error('Error fetching events:', error);
         return [];
@@ -24,7 +24,7 @@ const fetchFavorites = async () => {
                 withCredentials: true,
             }
         );
-        return response.data.map((fav) => fav.card_id);
+        return (response.data || []).map((fav) => fav.card_id);
     } catch (error) {
         console.error('Error fetching favorites:', error);
         return [];
@@ -97,7 +97,7 @@ const EventsPage = () => {
     useEffect(() => {
         const fetchData = async () => {
             const eventsData = await fetchEvents();
-            setEvents(eventsData);
+            setEvents(eventsData.data);
 
             const favoritesData = await fetchFavorites();
             setFavoriteIds(favoritesData);
@@ -304,7 +304,11 @@ const EventsPage = () => {
                         handleFilterToggle={handleFilterToggle}
                     />
                     <CardsContainer
-                        events={events.slice(0, visibleEvents)}
+                        events={
+                            Array.isArray(events)
+                                ? events.slice(0, visibleEvents)
+                                : []
+                        }
                         loadMoreEvents={loadMoreEvents}
                         allEventsLoaded={allEventsLoaded}
                         isFilterOpen={isFilterOpen}

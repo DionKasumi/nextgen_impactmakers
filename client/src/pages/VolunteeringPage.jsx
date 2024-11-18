@@ -11,7 +11,7 @@ const fetchVolunteerings = async () => {
         const response = await axios.get(
             'http://localhost:8080/api/volunteering'
         );
-        return response.data;
+        return response.data || [];
     } catch (error) {
         console.error('Error fetching volunteerings:', error);
         return [];
@@ -26,7 +26,7 @@ const fetchFavorites = async () => {
                 withCredentials: true,
             }
         );
-        return response.data.map((fav) => fav.card_id);
+        return (response.data || []).map((fav) => fav.card_id);
     } catch (error) {
         console.error('Error fetching favorites:', error);
         return [];
@@ -103,7 +103,7 @@ const VolunteeringPage = () => {
     useEffect(() => {
         const fetchData = async () => {
             const volunteeringsData = await fetchVolunteerings();
-            setVolunteerings(volunteeringsData);
+            setVolunteerings(volunteeringsData.data);
 
             const favoritesData = await fetchFavorites();
             setFavoriteIds(favoritesData);
@@ -315,10 +315,11 @@ const VolunteeringPage = () => {
                         handleFilterToggle={handleFilterToggle}
                     />
                     <CardsContainer
-                        volunteerings={volunteerings.slice(
-                            0,
-                            visibleVolunteerings
-                        )}
+                        volunteerings={
+                            Array.isArray(volunteerings)
+                                ? volunteerings.slice(0, visibleVolunteerings)
+                                : []
+                        }
                         loadMoreVolunteerings={loadMoreVolunteerings}
                         allVolunteeringsLoaded={allVolunteeringsLoaded}
                         isFilterOpen={isFilterOpen}

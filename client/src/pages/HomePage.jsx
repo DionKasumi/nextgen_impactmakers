@@ -36,19 +36,22 @@ const FirstPart = ({ favoriteIds }) => {
                 if (response.status === 200) {
                     const result = response.data;
                     let gatheredData = [];
-                    if (
-                        loggedIn &&
-                        typeof result === 'object' &&
-                        result[0] != [] &&
-                        result[1] != [] &&
-                        result[2] != [] &&
-                        result[3] != []
-                    ) {
-                        for (const category in result) {
-                            if (Array.isArray(result[category])) {
+
+                    if (loggedIn && typeof result === 'object') {
+                        // Check for valid keys and process data
+                        const categories = [
+                            'courses',
+                            'events',
+                            'internships',
+                            'volunteering',
+                        ];
+                        for (const category of categories) {
+                            if (
+                                Array.isArray(result[category]) &&
+                                result[category].length > 0
+                            ) {
                                 const remainingSlots = 5 - gatheredData.length;
 
-                                // Add type property to each item and limit to remaining slots
                                 const itemsWithCategory = result[category]
                                     .slice(0, remainingSlots)
                                     .map((item) => ({
@@ -61,22 +64,24 @@ const FirstPart = ({ favoriteIds }) => {
                                 if (gatheredData.length >= 5) break; // Stop when there is 5 items
                             }
                         }
-                    } else if (Array.isArray(result)) {
-                        // For non-logged-in users, add default type 'course' or similar
-                        gatheredData = result
+                    } else if (Array.isArray(result.data)) {
+                        // For non-logged-in users
+                        gatheredData = result.data
                             .slice(0, 5)
                             .map((item) => ({ ...item, type: 'courses' }));
                     }
+
                     setCarouselData(gatheredData);
                 } else {
-                    console.error('Failed to fetch cards');
+                    console.error('Failed to fetch data:', response.status);
                 }
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.error('Error fetching data:', error.message);
             }
         };
         fetchCarouselData();
     }, []);
+
     const handleSearch = () => {
         // Determine the route based on the selected category
         switch (selectedCategory) {
@@ -371,19 +376,21 @@ const FivethPart = ({ favoriteIds }) => {
                     const result = response.data;
                     let gatheredData = [];
 
-                    if (
-                        loggedIn &&
-                        typeof result === 'object' &&
-                        result[0] != [] &&
-                        result[1] != [] &&
-                        result[2] != [] &&
-                        result[3] != []
-                    ) {
-                        for (const category in result) {
-                            if (Array.isArray(result[category])) {
+                    if (loggedIn && typeof result === 'object') {
+                        // Check for valid keys and process data
+                        const categories = [
+                            'courses',
+                            'events',
+                            'internships',
+                            'volunteering',
+                        ];
+                        for (const category of categories) {
+                            if (
+                                Array.isArray(result[category]) &&
+                                result[category].length > 0
+                            ) {
                                 const remainingSlots = 5 - gatheredData.length;
 
-                                // Add type property to each item and limit to remaining slots
                                 const itemsWithCategory = result[category]
                                     .slice(0, remainingSlots)
                                     .map((item) => ({
@@ -396,18 +403,19 @@ const FivethPart = ({ favoriteIds }) => {
                                 if (gatheredData.length >= 5) break; // Stop when there is 5 items
                             }
                         }
-                    } else if (Array.isArray(result)) {
-                        // For non-logged-in users, add default type 'course' or similar
-                        gatheredData = result
+                    } else if (Array.isArray(result.data)) {
+                        // For non-logged-in users
+                        gatheredData = result.data
                             .slice(0, 5)
                             .map((item) => ({ ...item, type: 'courses' }));
                     }
+
                     setCarouselData(gatheredData);
                 } else {
-                    console.error('Failed to fetch cards');
+                    console.error('Failed to fetch data:', response.status);
                 }
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.error('Error fetching data:', error.message);
             }
         };
         fetchCarouselData();
@@ -530,17 +538,35 @@ const SeventhPart = () => {
 };
 
 const HomePage = () => {
+    const checkSession = async () => {
+        try {
+            const response = await axios.get(
+                'http://localhost:8080/api/session'
+            );
+            return response.data.isLoggedIn; // Return boolean
+        } catch (error) {
+            console.error('Error checking session:', error);
+            return false;
+        }
+    };
+
     const [favoriteIds, setFavoriteIds] = useState([]);
 
     useEffect(() => {
         const fetchFavoriteIds = async () => {
             try {
-                const response = await axios.get(
-                    'http://localhost:8080/api/favorites'
-                );
-                if (response.status === 200) {
-                    setFavoriteIds(response.data.map((fav) => fav.card_id));
+                const loggedIn = await checkSession();
+                if (loggedIn) {
+                    const response = await axios.get(
+                        'http://localhost:8080/api/favorites'
+                    );
+                    if (response.status === 200) {
+                        setFavoriteIds(response.data.map((fav) => fav.card_id));
+                    }
                 }
+                /*else {
+                    console.log('Not LoggedIn');
+                }*/
             } catch (error) {
                 console.error('Error fetching favorite IDs:', error);
             }
