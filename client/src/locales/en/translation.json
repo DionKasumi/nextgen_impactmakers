@@ -81,7 +81,7 @@
             "participant": "Participant",
             "organization": "Organization"
         },
-        "second-login": "or log in with",
+        "text-1": "or log in with",
         "alerts": {
             "success": "Logged In! You will be redirected soon!",
             "failed": "Log I    n Failed! Please try again!"
@@ -95,7 +95,7 @@
         "signup": "Sign Up",
         "text-1": "Create An Account",
         "text-2": "Are you a",
-        "or": "or",
+        "text-3": "or",
         "language": "Language",
         "username": "Username",
         "name-of-org": "Name Of Organization",

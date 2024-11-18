@@ -81,7 +81,7 @@
             "participant": "Pjesëtarë",
             "organization": "Organizatë"
         },
-        "second-login": "apo kyçu me",
+        "text-1": "apo kyçu me",
         "alerts": {
             "success": "Kyçje e suksesshme!",
             "failed": "Kyçje e dështuar! Ju lutemi provoni përsëri!"
@@ -95,7 +95,7 @@
         "signup": "Regjistrohu",
         "text-1": "Krijo një llogari",
         "text-2": "A jeni",
-        "or": "apo",
+        "text-3": "apo",
         "language": "Gjuha",
         "username": "Username",
         "name-of-org": "Emri I Organizatës",

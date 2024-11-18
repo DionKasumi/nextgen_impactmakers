@@ -13,10 +13,13 @@ import { MdExpandLess, MdExpandMore } from 'react-icons/md';
 import { FaUserCircle, FaCircle } from 'react-icons/fa';
 import axios from 'axios';
 import { ImExit } from 'react-icons/im';
+import { useTranslation } from 'react-i18next';
 
 axios.defaults.withCredentials = true; // Ensure Axios sends session cookies with requests
 
 const NavBar = ({ theme }) => {
+    const { t, i18n } = useTranslation();
+
     const [isMenuOpen, setMenuOpen] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isOrg, setIsOrg] = useState(false);
@@ -72,19 +75,30 @@ const NavBar = ({ theme }) => {
         }
     };
 
+    const [lang, setLang] = useState('en');
+    const switchLanguage = () => {
+        if (lang === 'en') {
+            setLang('al');
+            i18n.changeLanguage('al');
+        } else {
+            setLang('en');
+            i18n.changeLanguage('en');
+        }
+    };
+
     useEffect(() => {
         checkSession();
     }, []);
 
     // Navigation items
     const NAV_ITEMS = [
-        { href: '/', label: 'Home' },
-        { href: '/contact', label: 'Contact Us' },
+        { href: '/', label: t('navbar.home') },
+        { href: '/contact', label: t('navbar.contact-us') },
     ];
 
     const BurgerMenu = (
         <Box
-            className={`w-[70%] h-screen flex flex-col fixed sm:hidden top-0 left-0 bg-white text-[#4F1ABE] z-50 ${
+            className={`w-[70%] h-screen flex flex-col fixed sm:hidden top-0 left-0 bg-white text-[#4F1ABE] z-[99] shadow-2xl ${
                 !isMenuOpen ? 'hidden' : ''
             }`}
             role="presentation"
@@ -124,7 +138,7 @@ const NavBar = ({ theme }) => {
                                     size={20}
                                     style={{ marginRight: '0.75rem' }}
                                 />
-                                Log Out
+                                {t('navbar.logout')}
                             </button>
                         </ListItemButton>
                     </>
@@ -140,7 +154,7 @@ const NavBar = ({ theme }) => {
                                 to={'/login'}
                                 className="w-full h-full flex flex-row items-center"
                             >
-                                Log In
+                                {t('navbar.login')}
                             </Link>
                         </ListItemButton>
                         <ListItemButton
@@ -153,7 +167,7 @@ const NavBar = ({ theme }) => {
                                 to={'/signup'}
                                 className="w-full h-full flex flex-row items-center"
                             >
-                                Sign Up
+                                {t('navbar.signup')}
                             </Link>
                         </ListItemButton>
                     </>
@@ -166,7 +180,7 @@ const NavBar = ({ theme }) => {
                         '&:hover': { bgcolor: '#A3A9FE80' },
                     }}
                 >
-                    <ListItemText primary="Categories" />
+                    <ListItemText primary={t('navbar.categories.title')} />
                     {categoriesOpen ? (
                         <MdExpandLess className="scale-150" />
                     ) : (
@@ -191,7 +205,7 @@ const NavBar = ({ theme }) => {
                                 }}
                             >
                                 <FaCircle className="scale-50 ml-8 mr-2" />
-                                Events
+                                {t('navbar.categories.items.events')}
                             </Link>
                         </ListItemButton>
                         <ListItemButton
@@ -210,7 +224,7 @@ const NavBar = ({ theme }) => {
                                 }}
                             >
                                 <FaCircle className="scale-50 ml-8 mr-2" />
-                                Internships
+                                {t('navbar.categories.items.internships')}
                             </Link>
                         </ListItemButton>
                         <ListItemButton
@@ -229,7 +243,7 @@ const NavBar = ({ theme }) => {
                                 }}
                             >
                                 <FaCircle className="scale-50 ml-8 mr-2" />
-                                Volunteering
+                                {t('navbar.categories.items.volunteering')}
                             </Link>
                         </ListItemButton>
                         <ListItemButton
@@ -248,7 +262,7 @@ const NavBar = ({ theme }) => {
                                 }}
                             >
                                 <FaCircle className="scale-50 ml-8 mr-2" />
-                                Trainings
+                                {t('navbar.categories.items.trainings')}
                             </Link>
                         </ListItemButton>
                     </List>
@@ -267,7 +281,7 @@ const NavBar = ({ theme }) => {
                         className="profile-icon"
                         style={{ marginRight: '0.5rem' }}
                     />
-                    <ListItemText primary="Profile" />
+                    <ListItemText primary={t('navbar.profile.title')} />
                     {profileOpen ? (
                         <MdExpandLess className="scale-150" />
                     ) : (
@@ -297,7 +311,7 @@ const NavBar = ({ theme }) => {
                                 }}
                             >
                                 <FaCircle className="scale-50 ml-8 mr-2" />
-                                Edit Profile
+                                {t('navbar.profile.items.edit-profile')}
                             </Link>
                         </ListItemButton>
                         <ListItemButton
@@ -316,7 +330,7 @@ const NavBar = ({ theme }) => {
                                 }}
                             >
                                 <FaCircle className="scale-50 ml-8 mr-2" />
-                                My Applications
+                                {t('navbar.profile.items.my-applications')}
                             </Link>
                         </ListItemButton>
                         <ListItemButton
@@ -335,7 +349,7 @@ const NavBar = ({ theme }) => {
                                 }}
                             >
                                 <FaCircle className="scale-50 ml-8 mr-2" />
-                                Saved For Later
+                                {t('navbar.profile.items.saved-for-later')}
                             </Link>
                         </ListItemButton>
                         <ListItemButton
@@ -354,7 +368,7 @@ const NavBar = ({ theme }) => {
                                 }}
                             >
                                 <FaCircle className="scale-50 ml-8 mr-2" />
-                                Rate this Website
+                                {t('navbar.profile.items.rate-this-website')}
                             </Link>
                         </ListItemButton>
                     </List>
@@ -400,6 +414,15 @@ const NavBar = ({ theme }) => {
 
                     {/* Menu Links for larger screens */}
                     <ul className="flex-row hidden sm:flex items-center">
+                        <li>
+                            <button
+                                onClick={switchLanguage}
+                                className="ml-8 focus:outline-none"
+                            >
+                                Switch Lang
+                            </button>
+                        </li>
+
                         {NAV_ITEMS.map(({ href, label }, index) => {
                             const isActive = location.pathname === href;
 
@@ -416,14 +439,13 @@ const NavBar = ({ theme }) => {
                                 </li>
                             );
                         })}
-
                         <li className="relative dropdown-wrapper">
                             <div className="flex flex-row justify-end items-center">
                                 <h1
                                     className="ml-8 focus:outline-none cursor-pointer"
                                     onClick={handleCategoriesClick}
                                 >
-                                    Categories
+                                    {t('navbar.categories.title')}
                                 </h1>
                                 {categoriesOpen ? (
                                     <MdExpandLess className="scale-150 ml-2" />
@@ -442,7 +464,9 @@ const NavBar = ({ theme }) => {
                                             to={'/events'}
                                             onClick={handleCategoriesClick}
                                         >
-                                            Events
+                                            {t(
+                                                'navbar.categories.items.events'
+                                            )}
                                         </Link>
                                     </li>
                                     <li className="px-4 py-2 hover:bg-gray-200">
@@ -450,7 +474,9 @@ const NavBar = ({ theme }) => {
                                             to={'/internships'}
                                             onClick={handleCategoriesClick}
                                         >
-                                            Internships
+                                            {t(
+                                                'navbar.categories.items.internships'
+                                            )}
                                         </Link>
                                     </li>
                                     <li className="px-4 py-2 hover:bg-gray-200">
@@ -458,7 +484,9 @@ const NavBar = ({ theme }) => {
                                             to={'/volunteering'}
                                             onClick={handleCategoriesClick}
                                         >
-                                            Volunteering
+                                            {t(
+                                                'navbar.categories.items.volunteering'
+                                            )}
                                         </Link>
                                     </li>
                                     <li className="px-4 py-2 hover:bg-gray-200">
@@ -466,7 +494,9 @@ const NavBar = ({ theme }) => {
                                             to={'/trainings'}
                                             onClick={handleCategoriesClick}
                                         >
-                                            Trainings
+                                            {t(
+                                                'navbar.categories.items.trainings'
+                                            )}
                                         </Link>
                                     </li>
                                 </ul>
@@ -500,7 +530,9 @@ const NavBar = ({ theme }) => {
                                                             handleCategoriesClick
                                                         }
                                                     >
-                                                        View Profile
+                                                        {t(
+                                                            'navbar.profile.items.view-profile'
+                                                        )}
                                                     </Link>
                                                 </li>
                                             </>
@@ -513,7 +545,9 @@ const NavBar = ({ theme }) => {
                                                             handleCategoriesClick
                                                         }
                                                     >
-                                                        View Profile
+                                                        {t(
+                                                            'navbar.profile.items.view-profile'
+                                                        )}
                                                     </Link>
                                                 </li>
                                                 <li className="px-4 py-2 hover:bg-gray-200">
@@ -523,7 +557,9 @@ const NavBar = ({ theme }) => {
                                                             handleCategoriesClick
                                                         }
                                                     >
-                                                        Edit Profile
+                                                        {t(
+                                                            'navbar.profile.items.edit-profile'
+                                                        )}
                                                     </Link>
                                                 </li>
                                                 <li className="px-4 py-2 hover:bg-gray-200">
@@ -533,7 +569,9 @@ const NavBar = ({ theme }) => {
                                                             handleCategoriesClick
                                                         }
                                                     >
-                                                        My applications
+                                                        {t(
+                                                            'navbar.profile.items.my-applications'
+                                                        )}
                                                     </Link>
                                                 </li>
                                                 <li className="px-4 py-2 hover:bg-gray-200">
@@ -543,7 +581,9 @@ const NavBar = ({ theme }) => {
                                                             handleCategoriesClick
                                                         }
                                                     >
-                                                        Saved for Later
+                                                        {t(
+                                                            'navbar.profile.items.saved-for-later'
+                                                        )}
                                                     </Link>
                                                 </li>
                                                 <li className="px-4 py-2 hover:bg-gray-200">
@@ -553,50 +593,20 @@ const NavBar = ({ theme }) => {
                                                             handleCategoriesClick
                                                         }
                                                     >
-                                                        Rate this Website
+                                                        {t(
+                                                            'navbar.profile.items.rate-this-website'
+                                                        )}
                                                     </Link>
                                                 </li>
                                             </>
                                         )}
-                                        {/* <li className="px-4 py-2 hover:bg-gray-200">
-                                            <Link
-                                                to={'/profile/edit'}
-                                                onClick={handleCategoriesClick}
-                                            >
-                                                Edit Profile
-                                            </Link>
-                                        </li>
-                                        <li className="px-4 py-2 hover:bg-gray-200">
-                                            <Link
-                                                to={'/profile/myapp'}
-                                                onClick={handleCategoriesClick}
-                                            >
-                                                My applications
-                                            </Link>
-                                        </li>
-                                        <li className="px-4 py-2 hover:bg-gray-200">
-                                            <Link
-                                                to={'/profile/saved'}
-                                                onClick={handleCategoriesClick}
-                                            >
-                                                Saved for Later
-                                            </Link>
-                                        </li>
-                                        <li className="px-4 py-2 hover:bg-gray-200">
-                                            <Link
-                                                to={'/profile/rate'}
-                                                onClick={handleCategoriesClick}
-                                            >
-                                                Rate this Website
-                                            </Link>
-                                        </li> */}
                                         <li className="px-4 py-2 hover:bg-gray-200">
                                             <button
                                                 onClick={handleLogout}
                                                 className="flex flex-row items-center"
                                             >
                                                 <ImExit className="mr-2" />
-                                                Log Out
+                                                {t('navbar.logout')}
                                             </button>
                                         </li>
                                     </ul>
@@ -609,7 +619,7 @@ const NavBar = ({ theme }) => {
                                         to="/login"
                                         className="ml-8 focus:outline-none"
                                     >
-                                        Log In
+                                        {t('navbar.login')}
                                     </Link>
                                 </li>
                                 <li>
@@ -617,7 +627,7 @@ const NavBar = ({ theme }) => {
                                         to="/signup"
                                         className="ml-8 focus:outline-none"
                                     >
-                                        Sign Up
+                                        {t('navbar.signup')}
                                     </Link>
                                 </li>
                             </>

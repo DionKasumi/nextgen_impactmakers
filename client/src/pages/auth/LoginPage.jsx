@@ -7,11 +7,14 @@ import { IoMdClose } from 'react-icons/io';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
 
 // Ensure Axios sends session cookies with requests
 axios.defaults.withCredentials = true;
 
 const LoginPage = () => {
+    const { t } = useTranslation();
+
     const [loginData, setLoginData] = useState({
         email: '',
         password: '',
@@ -64,26 +67,15 @@ const LoginPage = () => {
     };
 
     const handleSuccessResponse = (res) => {
-        let count = 3;
         setAlertMessage({
             type: 'success',
             heading: 'Success',
-            message: `${res.data.message} Redirecting in ${count}`,
+            message: t('login-page.alerts.success'),
         });
         setAlertOpen(true);
 
-        let t1 = setInterval(() => {
-            if (count > 0) {
-                count--;
-                setAlertMessage({
-                    type: 'success',
-                    heading: 'Success',
-                    message: `${res.data.message} Redirecting in ${count}`,
-                });
-            } else {
-                clearTimeout(t1);
-                navigate('/');
-            }
+        setTimeout(() => {
+            navigate('/');
         }, 1000);
 
         resetData();
@@ -94,8 +86,7 @@ const LoginPage = () => {
             type: 'error',
             heading: 'Error',
             message:
-                error.response?.data.message ||
-                'Login failed. Please try again.',
+                error.response?.data.message || t('login-page.alerts.failed'),
         });
         setAlertOpen(true);
         resetData();
@@ -152,7 +143,7 @@ const LoginPage = () => {
                 <form className="w-11/12 sm:w-3/5 md:w-3/5 lg:w-2/4 h-auto max-w-md flex flex-col bg-white rounded-lg p-6 justify-center items-center">
                     <div className="w-11/12 sm:w-4/5 md:w-5/6 xl:w-5/6 h-full">
                         <h2 className="text-xl text-black font-bold mt-12 mb-4">
-                            Log In
+                            {t('login-page.login')}
                         </h2>
                         <Box
                             component="div"
@@ -166,28 +157,32 @@ const LoginPage = () => {
                                 type="email"
                                 id="email"
                                 name="email"
-                                label="Email"
+                                label={t('login-page.email')}
                                 variant="outlined"
                                 required
                                 value={loginData.email || ''}
                                 onChange={(e) => handleLoginDataChange(e)}
                                 error={!!errors.email}
                                 helperText={
-                                    errors.email ? 'Email is invalid!' : ''
+                                    errors.email
+                                        ? t('login-page.errors.email')
+                                        : ''
                                 }
                             />
                             <TextField
                                 type="password"
                                 id="password"
                                 name="password"
-                                label="Password"
+                                label={t('login-page.password')}
                                 variant="outlined"
                                 required
                                 value={loginData.password || ''}
                                 onChange={(e) => handleLoginDataChange(e)}
                                 error={!!errors.password}
                                 helperText={
-                                    errors.password ? 'Password is invalid' : ''
+                                    errors.password
+                                        ? t('login-page.errors.password')
+                                        : ''
                                 }
                             />
                         </Box>
@@ -201,11 +196,13 @@ const LoginPage = () => {
                                     onChange={(e) => setRememberMe(!rememberMe)}
                                     className="mr-2 w-4"
                                 />
-                                <h1 className="font-medium">Remember Me</h1>
+                                <h1 className="font-medium">
+                                    {t('login-page.remember-me')}
+                                </h1>
                             </div>
 
                             <Link to={'/login'} className="font-medium">
-                                Forgot Password?
+                                {t('login-page.forgot-password')}
                             </Link>
                         </div>
 
@@ -220,7 +217,7 @@ const LoginPage = () => {
                                 }`}
                                 onClick={(e) => setIsOrg(false)}
                             >
-                                Participant
+                                {t('login-page.user-type.participant')}
                             </button>
                             <button
                                 type="button"
@@ -231,7 +228,7 @@ const LoginPage = () => {
                                 }`}
                                 onClick={(e) => setIsOrg(true)}
                             >
-                                Organization
+                                {t('login-page.user-type.organization')}
                             </button>
                         </div>
 
@@ -240,11 +237,11 @@ const LoginPage = () => {
                             className="py-2 px-24 bg-[#4F1ABE] text-white flex justify-center items-center rounded-md m-auto mb-4 text-sm md:text-base hover:bg-[#3E1399] transition-all duration-300"
                             onClick={onSubmit}
                         >
-                            Log In
+                            {t('login-page.login')}
                         </button>
 
                         <div className="w-full h-max flex flex-col justify-center items-center">
-                            <p className="mb-4">or log in with</p>
+                            <p className="mb-4">{t('login-page.text-1')}</p>
                             <div className="flex flex-row w-2/3 justify-between">
                                 <img
                                     src="../assets/instagram_logo.svg"
