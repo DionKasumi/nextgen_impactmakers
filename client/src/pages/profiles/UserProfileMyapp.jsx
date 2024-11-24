@@ -48,7 +48,7 @@ const UserProfileMyapp = () => {
     }, []);
 
     return (
-        <div className="min-h-screen w-full bg-gradient-to-b from-[#4F1ABE] via-[#A78DDF] flex flex-col items-center py-20 relative">
+        <div className="min-h-screen w-full bg-gradient-to-b from-[#4F1ABE] via-[#B93DD6] to-[#BC3ED6] flex flex-col items-center py-20 relative">
             <img
                 src="/assets/Frame 1.png"
                 alt=""
