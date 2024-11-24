@@ -384,10 +384,7 @@ const NavBar = ({ theme }) => {
                 style={
                     theme === 'primary' || theme === 'tertiary'
                         ? {
-                              backgroundImage: 'url(/assets/nav.png)', // Replace with your image path
-                              backgroundSize: 'cover',
-                              backgroundPosition: 'center',
-                              backgroundRepeat: 'no-repeat',
+                              backgroundColor: '#916fed',
                               color: 'white',
                           }
                         : theme === 'secondary'
