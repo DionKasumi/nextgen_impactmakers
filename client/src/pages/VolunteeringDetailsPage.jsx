@@ -7,6 +7,7 @@ import { IoMdStar, IoMdStarHalf, IoMdStarOutline } from 'react-icons/io';
 import SwiperCarousel from '../components/SwiperCarousel';
 import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
+import { useTranslation } from 'react-i18next';
 
 // Function to fetch course data from the API
 const fetchCourse = async (id) => {
@@ -114,16 +115,13 @@ const VolunteeringDetailsPage = () => {
                 console.error('Error fetching applications:', error);
             }
         };
-
-        fetchApplications();
-    }, [id]);
-
-    useEffect(() => {
         const fetchData = async () => {
             const data = await fetchCourse(id);
             setCourse(data);
         };
+
         fetchData();
+        fetchApplications();
     }, [id]);
 
     const [carouselData, setCarouselData] = useState([]);
@@ -161,11 +159,6 @@ const VolunteeringDetailsPage = () => {
                 console.error('Error fetching data:', error);
             }
         };
-
-        fetchCarouselData();
-    }, []);
-
-    useEffect(() => {
         const fetchFavoriteIds = async () => {
             try {
                 const response = await axios.get(
@@ -178,14 +171,18 @@ const VolunteeringDetailsPage = () => {
                 console.error('Error fetching favorite IDs:', error);
             }
         };
+
         fetchFavoriteIds();
+        fetchCarouselData();
     }, []);
+
+    const { t } = useTranslation();
 
     return (
         <>
             <div className="w-full h-full flex flex-col justify-between items-center">
                 <div className="w-full min-h-svh items-center flex flex-col relative top-16 mb-10">
-                    <div className="w-full h-full py-12 flex justify-center bg-[url('../assets/img5.png')] items-center flex-col">
+                    <div className="w-full h-full py-12 flex justify-center items-center flex-col">
                         <div
                             className={`w-5/6 aspect-[16/5] flex justify-center items-center rounded-md relative mb-16 ${
                                 course.image_url == null ? 'bg-gray-400' : ''
@@ -207,7 +204,7 @@ const VolunteeringDetailsPage = () => {
                         </div>
                         <div className="flex flex-col justify-center items-center w-5/6 h-auto mb-12">
                             <h1 className="font-bold text-2xl mb-4">
-                                Title of the Volunteering Opportunity
+                                {t('pages.evit-details.events.text-1')}
                             </h1>
                             {course.title ? (
                                 <p className="text-center w-full md:w-1/2">
@@ -231,7 +228,7 @@ const VolunteeringDetailsPage = () => {
                         </div>
                         <div className="flex flex-col justify-center items-center w-5/6 h-auto mb-12">
                             <h1 className="font-bold text-2xl mb-4">
-                                About The Volunteering Opportunity
+                                {t('pages.evit-details.events.text-2')}
                             </h1>
                             {course.cause ? (
                                 <p className="text-center w-full md:w-1/2">
@@ -255,7 +252,7 @@ const VolunteeringDetailsPage = () => {
                         </div>
                         <div className="flex flex-col justify-center items-center w-5/6 h-auto mb-12">
                             <h1 className="font-bold text-2xl mb-4">
-                                Type of The Volunteering
+                                {t('pages.evit-details.events.text-3')}
                             </h1>
                             {course.label ? (
                                 <p className="text-center w-full md:w-1/2">
@@ -280,7 +277,7 @@ const VolunteeringDetailsPage = () => {
                     </div>
 
                     {/* Volunteering Details Section */}
-                    <div className="w-full h-full py-24 flex justify-center items-center flex-col bg-[#4F1ABE] relative">
+                    <div className="w-full h-full py-24 flex justify-center items-center flex-col bg-custom-gradient-3 relative">
                         <div
                             className="absolute inset-0 hidden sm:block bg-no-repeat bg-left bg-contain"
                             style={{
@@ -290,26 +287,40 @@ const VolunteeringDetailsPage = () => {
                         {course.poseted_date &&
                             course.poseted_date !== 'Unknown' && (
                                 <div className="w-5/6 text-white flex flex-col items-center mb-6">
-                                    <h1 className="text-3xl font-bold">Date</h1>
+                                    <h1 className="text-3xl font-bold">
+                                        {t(
+                                            'pages.general-text.evit-details.date'
+                                        )}
+                                    </h1>
                                     <p>{course.poseted_date}</p>
                                 </div>
                             )}
                         {course.location && course.location !== 'Unknown' && (
                             <div className="w-5/6 text-white flex flex-col items-center mb-6">
-                                <h1 className="text-3xl font-bold">Location</h1>
+                                <h1 className="text-3xl font-bold">
+                                    {t(
+                                        'pages.general-text.evit-details.location'
+                                    )}
+                                </h1>
                                 <p>{course.location}</p>
                             </div>
                         )}
                         {course.duration && course.duration !== 'Unknown' && (
                             <div className="w-5/6 text-white flex flex-col items-center mb-6">
-                                <h1 className="text-3xl font-bold">Duration</h1>
+                                <h1 className="text-3xl font-bold">
+                                    {t(
+                                        'pages.general-text.evit-details.duration'
+                                    )}
+                                </h1>
                                 <p>{course.duration}</p>
                             </div>
                         )}
                         {course.source && course.source !== 'Unknown' && (
                             <div className="w-5/6 text-white flex flex-col items-center mb-6">
                                 <h1 className="text-3xl font-bold">
-                                    Organization
+                                    {t(
+                                        'pages.general-text.evit-details.organization'
+                                    )}
                                 </h1>
                                 <p>{course.source}</p>
                             </div>
@@ -321,13 +332,16 @@ const VolunteeringDetailsPage = () => {
                             rel="noopener noreferrer"
                             onClick={() => setApplyModalOpen(true)}
                         >
-                            Apply Here
+                            {t('pages.general-text.evit-details.apply-here')}
                         </a>
                     </div>
+
                     {/* Source of this Opportunity Content Div */}
-                    <div className="w-full h-full py-24 bg-[url('../assets/image8.png')] flex justify-center items-center flex-col">
+                    <div className="w-full h-full py-24 bg-[url('/assets/registered.png')] flex justify-center items-center flex-col bg-no-repeat bg-cover">
                         <h1 className="font-bold text-2xl mb-12 -mt-12">
-                            Source of this Opportunity
+                            {t(
+                                'pages.general-text.evit-details.source-of-this-opportunity'
+                            )}
                         </h1>
                         <div className="flex flex-col bg-[#A3A9FE] w-full  md:w-4/6 h-auto p-3  justify-center items-center gap-10">
                             <img
@@ -356,22 +370,27 @@ const VolunteeringDetailsPage = () => {
                         </div>
                         {/* Testimonials Content Div */}
                         <h1 className="font-bold text-2xl mb-12 mt-20">
-                            Testimonials
+                            {t('pages.general-text.evit-details.testimonials')}
                         </h1>
-                        <div className="h-auto pl-32 pr-32 flex flex-col xl:flex-row justify-between items-center gap-5 mb-16">
+                        <div className="w-2/3 h-auto flex flex-col xl:flex-row justify-between items-center gap-5 mb-16">
                             <TestimonialCard />
                             <TestimonialCard />
                             <TestimonialCard />
                         </div>
                     </div>
-                    <div className="w-full h-auto py-24 flex justify-center  flex-col bg-[#4F1ABE] bg-[url('../assets/image15.png')] bg-no-repeat text-white">
+
+                    <div className="w-full h-auto py-24 flex justify-center items-center flex-col bg-[#4F1ABE] bg-[url('../assets/image11.png')] bg-no-repeat text-white">
                         {/* Carousel Div */}
                         <div className="flex flex-col justify-center items-center mb-16">
                             <h1 className="font-bold text-2xl mb-4">
-                                Explore similar volunteering opportunities
+                                {t(
+                                    'pages.evit-details.volunteerings.explore-similar-volunteerings'
+                                )}
                             </h1>
                             <p className="font-light text-lg">
-                                Find your next opportunity
+                                {t(
+                                    'pages.general-text.evit-details.find-your-next-opportunity'
+                                )}
                             </p>
                         </div>
                         <div className="w-full h-full">
@@ -381,12 +400,16 @@ const VolunteeringDetailsPage = () => {
                                 favoriteIds={favoriteIds}
                             />
                         </div>
-                        <a
-                            href="/volunteering"
-                            className="font-light text-lg pl-96"
-                        >
-                            ← Go back to all Volunteering
-                        </a>
+                        <div className="w-3/4">
+                            <a
+                                href="/volunteering"
+                                className="font-light text-lg"
+                            >
+                                {t(
+                                    'pages.evit-details.volunteerings.go-back-to-all-volunteerings'
+                                )}
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -395,7 +418,7 @@ const VolunteeringDetailsPage = () => {
                     <Fade in={applyModalOpen}>
                         <div className="fixed inset-0 flex items-center justify-center p-4 bg-black bg-opacity-50">
                             <div className="relative w-full max-w-lg bg-white shadow-lg rounded-3xl flex flex-col justify-center p-8">
-                                <h1 className="font-bold text-[#4F1ABE] text-xl mb-6 text-center">
+                                <h1 className="text-black text-2xl mb-6 text-center">
                                     Did you apply?
                                 </h1>
                                 <div className="flex flex-col items-center space-y-4 mb-6">
@@ -404,11 +427,11 @@ const VolunteeringDetailsPage = () => {
                                             onClick={() =>
                                                 handleButtonChange(true)
                                             }
-                                            className={`relative uppercase px-6 py-2 rounded-full transition-all duration-300 border-2 border-transparent ${
-                                                applied === true
-                                                    ? 'bg-[#4F1ABE] text-white'
-                                                    : 'bg-transparent border-violet-700'
-                                            } `}
+                                            className={`relative uppercase px-6 py-2 rounded-md transition-all border-transparent border-[3px] duration-300 bg-[#85d855] text-white hover:scale-105 ${
+                                                applied
+                                                    ? 'border-green-500'
+                                                    : ''
+                                            }`}
                                         >
                                             yes
                                         </button>
@@ -417,11 +440,9 @@ const VolunteeringDetailsPage = () => {
                                             onClick={() =>
                                                 handleButtonChange(false)
                                             }
-                                            className={`relative uppercase px-6 py-2 rounded-full transition-all duration-300 border-2 border-transparent ${
-                                                applied === false
-                                                    ? 'bg-[#4F1ABE]  text-white'
-                                                    : 'bg-transparent border-violet-700'
-                                            } `}
+                                            className={`relative uppercase px-6 py-2 rounded-md transition-all border-transparent border-[3px] duration-300 bg-[#FF7777] text-white hover:scale-105 ${
+                                                !applied ? 'border-red-500' : ''
+                                            }`}
                                         >
                                             no
                                         </button>
@@ -432,26 +453,12 @@ const VolunteeringDetailsPage = () => {
                                         {errorMessage}
                                     </p>
                                 )}
-                                <div className="flex justify-center sm:justify-end">
+                                <div className="flex justify-center">
                                     <button
                                         onClick={handleSubmit}
-                                        className="flex items-center justify-center space-x-2 px-8 py-2 text-sm font-medium text-white bg-gradient-to-r from-[#4F1ABE] to-[#A3A9FE] rounded-full shadow-lg border border-transparent hover:from-[#4F1ABE] hover:to-[#A3A9FE] hover:scale-105 transition-transform duration-300 ease-in-out"
+                                        className="bg-[#4F1ABE] text-white text-lg py-2 w-1/2 rounded-lg hover:scale-105 transition-transform"
                                     >
                                         <span>Submit</span>
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            strokeWidth={2}
-                                            stroke="currentColor"
-                                            className="w-4 h-4"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                d="M13 5l7 7-7 7M5 12h14"
-                                            />
-                                        </svg>
                                     </button>
                                 </div>
                             </div>

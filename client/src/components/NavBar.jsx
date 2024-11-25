@@ -8,6 +8,10 @@ import {
     ListItemButton,
     ListItemText,
     Collapse,
+    MenuItem,
+    FormControl,
+    InputLabel,
+    Select,
 } from '@mui/material';
 import { MdExpandLess, MdExpandMore } from 'react-icons/md';
 import { FaUserCircle, FaCircle } from 'react-icons/fa';
@@ -35,12 +39,14 @@ const NavBar = ({ theme }) => {
     const handleCategoriesClick = () => {
         setCategoriesOpen(!categoriesOpen);
         setProfileOpen(false);
+        setLangOpen(false);
     };
 
     const [profileOpen, setProfileOpen] = useState(false);
     const handleProfileClick = () => {
         setProfileOpen(!profileOpen);
         setCategoriesOpen(false);
+        setLangOpen(false);
     };
 
     const checkSession = async () => {
@@ -75,7 +81,13 @@ const NavBar = ({ theme }) => {
         }
     };
 
-    const [lang, setLang] = useState('en');
+    const [lang, setLang] = useState(i18n.language);
+    const [langOpen, setLangOpen] = useState(false);
+    const handleLangClick = () => {
+        setLangOpen(!langOpen);
+        setProfileOpen(false);
+        setCategoriesOpen(false);
+    };
     const switchLanguage = () => {
         if (lang === 'en') {
             setLang('al');
@@ -384,7 +396,7 @@ const NavBar = ({ theme }) => {
                 style={
                     theme === 'primary' || theme === 'tertiary'
                         ? {
-                              backgroundColor: '#916fed',
+                              backgroundColor: '#6A46D2',
                               color: 'white',
                           }
                         : theme === 'secondary'
@@ -411,15 +423,6 @@ const NavBar = ({ theme }) => {
 
                     {/* Menu Links for larger screens */}
                     <ul className="flex-row hidden sm:flex items-center">
-                        <li>
-                            <button
-                                onClick={switchLanguage}
-                                className="ml-8 focus:outline-none"
-                            >
-                                Switch Lang
-                            </button>
-                        </li>
-
                         {NAV_ITEMS.map(({ href, label }, index) => {
                             const isActive = location.pathname === href;
 
@@ -495,6 +498,49 @@ const NavBar = ({ theme }) => {
                                                 'navbar.categories.items.trainings'
                                             )}
                                         </Link>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+
+                        <li className="relative dropdown-wrapper">
+                            <div className="flex flex-row justify-end items-center">
+                                <img
+                                    src={`/assets/flags/${
+                                        lang == 'en'
+                                            ? 'united-kingdom-flag.svg'
+                                            : 'albanian-flag.svg'
+                                    }`}
+                                    alt=""
+                                    onClick={handleLangClick}
+                                    className="w-8 ml-8"
+                                />
+                                {langOpen ? (
+                                    <MdExpandLess className="scale-150 ml-2" />
+                                ) : (
+                                    <MdExpandMore className="scale-150 ml-2" />
+                                )}
+                                <ul
+                                    className={`absolute top-full right-[20%] bg-white text-black shadow-lg rounded-md mt-2 py-2 transition-all duration-300 ease-in-out transform ${
+                                        langOpen
+                                            ? 'opacity-100 translate-y-0'
+                                            : 'opacity-0 -translate-y-3 pointer-events-none'
+                                    }`}
+                                >
+                                    <li className="px-2 hover:bg-gray-200">
+                                        <img
+                                            src={`/assets/flags/${
+                                                lang == 'en'
+                                                    ? 'albanian-flag.svg'
+                                                    : 'united-kingdom-flag.svg'
+                                            }`}
+                                            alt=""
+                                            onClick={() => {
+                                                handleLangClick();
+                                                switchLanguage();
+                                            }}
+                                            className="w-8"
+                                        />
                                     </li>
                                 </ul>
                             </div>

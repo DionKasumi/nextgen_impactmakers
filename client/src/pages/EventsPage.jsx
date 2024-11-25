@@ -4,6 +4,8 @@ import Card from '../components/Card';
 import Filter from '../components/Filter';
 import SkeletonCard from '../components/SkeletonCard';
 import axios from 'axios';
+import Footer from '../components/Footer';
+import { useTranslation } from 'react-i18next';
 
 // Function to fetch event data from the API
 const fetchEvents = async () => {
@@ -149,13 +151,17 @@ const EventsPage = () => {
         }
     };
 
+    const { t } = useTranslation();
+
     return (
         <div className="w-full h-full flex flex-col justify-between items-center">
-            <div className="w-full min-h-svh items-center flex flex-col bg-[url('../assets/background.png')]  bg-no-repeat relative top-16 mb-10">
+            <div className="w-full min-h-svh items-center flex flex-col bg-custom-gradient-2 relative top-16 mb-10">
                 <div className="flex justify-center items-center flex-col mt-24 text-white mb-24 w-5/6 h-auto">
-                    <h1 className="text-5xl font-bold mb-6">Events</h1>
+                    <h1 className="text-5xl font-bold mb-6">
+                        {t('pages.general-text.evit.events')}
+                    </h1>
                     <p className="text-2xl font-light">
-                        Pick up your preferences
+                        {t('pages.general-text.pick-up-your-preferences')}
                     </p>
                 </div>
                 {/* <div className="flex flex-row justify-between w-5/6 h-auto"> */}
@@ -316,6 +322,7 @@ const EventsPage = () => {
                         toggleFavorite={toggleFavorite}
                     />
                 </div>
+                <Footer withBackground={false} />
             </div>
         </div>
     );

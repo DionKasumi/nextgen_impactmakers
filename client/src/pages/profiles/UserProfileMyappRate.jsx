@@ -4,6 +4,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
+import Footer from '../../components/Footer';
 
 const UserProfileMyappRate = () => {
     const { t } = useTranslation();
@@ -62,9 +63,15 @@ const UserProfileMyappRate = () => {
 
     return (
         <ThemeProvider theme={theme}>
-            <div className="min-h-screen w-full bg-gradient-to-b from-[#4F1ABE] via-[#B93DD6] to-[#BC3ED6] flex flex-col items-center py-20 relative">
+            <div className="min-h-screen w-full bg-custom-gradient-2 flex flex-col items-center py-20 relative">
+                <img
+                    src="/assets/bg-design.png"
+                    alt=""
+                    className="absolute bottom-0 left-0 z-10 opacity-50"
+                />
+
                 {/* Profile Header */}
-                <div className="flex flex-col items-center md:flex-row md:justify-between w-full max-w-2xl md:max-w-4xl lg:max-w-5xl p-4 mb-16 md:mb-32 z-10">
+                <div className="flex flex-col items-center md:flex-row md:justify-between w-full max-w-2xl md:max-w-4xl lg:max-w-5xl p-4 mb-16 md:mb-32 z-20">
                     <div className="flex flex-col md:flex-row items-center md:items-end space-y-4 md:space-y-0 md:space-x-4">
                         <img
                             src="/assets/icon2.png"
@@ -112,7 +119,7 @@ const UserProfileMyappRate = () => {
                     </div>
                 </div>
 
-                <div className="w-full h-auto flex justify-center">
+                <div className="w-full h-auto flex justify-center z-20">
                     <div className="w-2/3 h-full flex flex-col justify-center items-end">
                         <TextField
                             id="review"
@@ -132,6 +139,8 @@ const UserProfileMyappRate = () => {
                         </button>
                     </div>
                 </div>
+
+                <Footer withBackground={false} />
             </div>
         </ThemeProvider>
     );

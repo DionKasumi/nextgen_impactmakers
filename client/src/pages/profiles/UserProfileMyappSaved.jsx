@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Card from '../../components/Card';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
+import Footer from '../../components/Footer';
 
 const UserProfileMyappSaved = () => {
     const { t } = useTranslation();
@@ -11,7 +12,22 @@ const UserProfileMyappSaved = () => {
     const [removingId, setRemovingId] = useState(null);
     const [notification, setNotification] = useState('');
     const [username, setUsername] = useState('Username');
+
     useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const response = await axios.get(
+                    'http://localhost:8080/api/user/profile',
+                    {
+                        withCredentials: true, // Include session credentials
+                    }
+                );
+                setUsername(response.data.username);
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        };
+
         const fetchFavorites = async () => {
             try {
                 const response = await fetch(
@@ -31,6 +47,7 @@ const UserProfileMyappSaved = () => {
             }
         };
 
+        fetchUserData();
         fetchFavorites();
     }, []);
     const handleRemoveFavorite = async (cardId) => {
@@ -55,15 +72,15 @@ const UserProfileMyappSaved = () => {
         }, 500);
     };
     return (
-        <div className="min-h-screen w-full bg-gradient-to-b from-[#4F1ABE] via-[#B93DD6] to-[#BC3ED6] flex flex-col items-center py-20 relative">
+        <div className="min-h-screen w-full bg-custom-gradient-2 flex flex-col items-center py-20 relative">
             <img
-                src="/assets/Frame 1.png"
+                src="/assets/bg-design.png"
                 alt=""
-                className="absolute inset-0 w-full h-full object-cover opacity-100"
+                className="absolute bottom-0 left-0 z-10 opacity-50"
             />
 
             {/* Profile Header */}
-            <div className="flex flex-col items-center md:flex-row md:justify-between w-full max-w-2xl md:max-w-4xl lg:max-w-5xl p-4 mb-16 md:mb-32 z-10">
+            <div className="flex flex-col items-center md:flex-row md:justify-between w-full max-w-2xl md:max-w-4xl lg:max-w-5xl p-4 mb-16 md:mb-32 z-20">
                 <div className="flex flex-col md:flex-row items-center md:items-end space-y-4 md:space-y-0 md:space-x-4">
                     <img
                         src="/assets/icon2.png"
@@ -111,7 +128,7 @@ const UserProfileMyappSaved = () => {
                 </div>
             </div>
 
-            <div className="w-full h-full flex justify-center items-center">
+            <div className="w-full h-full flex justify-center items-center z-20">
                 <div className="w-2/4 h-full grid grid-cols-1 md:grid-cols-2 gap-8 justify-items-center">
                     {favorites.map((fav) => (
                         <div
@@ -138,6 +155,8 @@ const UserProfileMyappSaved = () => {
                     ))}
                 </div>
             </div>
+
+            <Footer withBackground={false} />
         </div>
     );
 };

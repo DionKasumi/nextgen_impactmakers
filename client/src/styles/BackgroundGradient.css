@@ -1,0 +1,31 @@
+.bg-custom-gradient-1 {
+    /* Home Page */
+    background: linear-gradient(
+        180deg,
+        #4f1abe 0%,
+        #a540d9 16.4%,
+        #a78cdf 80.4%,
+        #bc3ed6 95.4%,
+        #bc3ed6 95.41%
+    );
+}
+
+.bg-custom-gradient-2 {
+    /* EVIT - User Profile */
+    background: linear-gradient(
+        180deg,
+        #5e1ec3 0.9%,
+        #9d30d6 50.4%,
+        #ffffff 100%
+    );
+}
+
+.bg-custom-gradient-3 {
+    /* EVIT Details */
+    background: linear-gradient(
+        180deg,
+        #c965de 0%,
+        #882bcf 69.9%,
+        #6921c7 100%
+    );
+}

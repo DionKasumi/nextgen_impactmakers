@@ -1,5 +1,4 @@
 import NavBar from '../components/NavBar';
-import Footer from '../components/Footer';
 import { Outlet } from 'react-router-dom';
 
 const TertiaryLayout = () => {
@@ -7,7 +6,6 @@ const TertiaryLayout = () => {
         <>
             <NavBar theme={'tertiary'} />
             <Outlet />
-            <Footer />
         </>
     );
 };

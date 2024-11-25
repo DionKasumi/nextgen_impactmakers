@@ -4,6 +4,7 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import RateCard from '../../components/RateCard';
 import { useTranslation } from 'react-i18next';
+import Footer from '../../components/Footer';
 
 const UserProfileMyapp = () => {
     const { t } = useTranslation();
@@ -48,15 +49,15 @@ const UserProfileMyapp = () => {
     }, []);
 
     return (
-        <div className="min-h-screen w-full bg-gradient-to-b from-[#4F1ABE] via-[#B93DD6] to-[#BC3ED6] flex flex-col items-center py-20 relative">
+        <div className="min-h-screen w-full bg-custom-gradient-2 flex flex-col items-center py-20 relative">
             <img
-                src="/assets/Frame 1.png"
+                src="/assets/bg-design.png"
                 alt=""
-                className="absolute inset-0 w-full h-full object-cover opacity-100"
+                className="absolute bottom-0 left-0 z-10 opacity-50"
             />
 
             {/* Profile Header */}
-            <div className="flex flex-col items-center md:flex-row md:justify-between w-full max-w-2xl md:max-w-4xl lg:max-w-5xl p-4 mb-16 md:mb-32 z-10">
+            <div className="flex flex-col items-center md:flex-row md:justify-between w-full max-w-2xl md:max-w-4xl lg:max-w-5xl p-4 mb-16 md:mb-32 z-20">
                 <div className="flex flex-col md:flex-row items-center md:items-end space-y-4 md:space-y-0 md:space-x-4">
                     <img
                         src="/assets/icon2.png"
@@ -104,7 +105,7 @@ const UserProfileMyapp = () => {
                 </div>
             </div>
 
-            <div className="w-full h-full flex justify-center items-center">
+            <div className="w-full h-full flex justify-center items-center z-20">
                 <div className="w-3/4 h-full grid grid-cols-1 md:grid-cols-2 gap-8 justify-items-center">
                     {applications.length > 0 ? (
                         applications.map((app) => (
@@ -122,11 +123,13 @@ const UserProfileMyapp = () => {
                         ))
                     ) : (
                         <p className="text-white text-center">
-                            No applications found.
+                            {t('profile.participant.no-applications')}
                         </p>
                     )}
                 </div>
             </div>
+
+            <Footer withBackground={false} />
         </div>
     );
 };

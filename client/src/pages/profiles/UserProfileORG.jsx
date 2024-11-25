@@ -4,6 +4,7 @@ import Card from '../../components/Card';
 import { useTranslation } from 'react-i18next';
 import { TextField } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Footer from '../../components/Footer';
 
 const UserProfileORG = () => {
     const { t } = useTranslation();
@@ -40,10 +41,6 @@ const UserProfileORG = () => {
         console.log(formData);
     };
 
-    // const formInputs = t('profile.organization.forms.form-1', {
-    //     returnObjects: true,
-    // });
-
     const [formInputs, setFormInputs] = useState(
         t('profile.organization.forms.form-1', {
             returnObjects: true,
@@ -60,7 +57,7 @@ const UserProfileORG = () => {
 
     return (
         <ThemeProvider theme={theme}>
-            <div className="min-h-screen w-full bg-gradient-to-b from-[#4F1ABE] via-[#B93DD6] to-[#BC3ED6] items-center px-6 py-8">
+            <div className="min-h-screen w-full bg-custom-gradient-2 items-center px-6 py-8">
                 <div className="w-full md:w-3/4 lg:w-1/2 lg:flex-row lg:items-start items-center mt-20  mx-auto p-4 sm:p-6 md:p-8">
                     <img
                         src="../assets/userprofile.png"
@@ -75,8 +72,8 @@ const UserProfileORG = () => {
                             <div className="w-full md:w-[50%] space-y-4">
                                 <TextField
                                     type="text"
-                                    id={'personalInfo'}
-                                    name={'personalInfo'}
+                                    id="personalInfo"
+                                    name="personalInfo"
                                     label={formInputs.personalInfo}
                                     variant="outlined"
                                     required
@@ -86,8 +83,8 @@ const UserProfileORG = () => {
                                 />
                                 <TextField
                                     type="text"
-                                    id={'name'}
-                                    name={'name'}
+                                    id="name"
+                                    name="name"
                                     label={formInputs.name}
                                     variant="outlined"
                                     required
@@ -97,8 +94,8 @@ const UserProfileORG = () => {
                                 />
                                 <TextField
                                     type="text"
-                                    id={'socialMedia'}
-                                    name={'socialMedia'}
+                                    id="socialMedia"
+                                    name="socialMedia"
                                     label={formInputs.socialMedia}
                                     variant="outlined"
                                     required
@@ -110,8 +107,8 @@ const UserProfileORG = () => {
                             <div className="w-full md:w-[50%] space-y-4">
                                 <TextField
                                     type="text"
-                                    id={'address'}
-                                    name={'address'}
+                                    id="address"
+                                    name="address"
                                     label={formInputs.address}
                                     variant="outlined"
                                     required
@@ -121,8 +118,8 @@ const UserProfileORG = () => {
                                 />
                                 <TextField
                                     type="text"
-                                    id={'phone'}
-                                    name={'phone'}
+                                    id="phone"
+                                    name="phone"
                                     label={formInputs.phone}
                                     variant="outlined"
                                     required
@@ -169,7 +166,7 @@ const UserProfileORG = () => {
                     </div>
                 </div>
 
-                {/* Button */}
+                <Footer withBackground={false} />
             </div>
         </ThemeProvider>
     );
