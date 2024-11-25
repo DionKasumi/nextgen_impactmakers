@@ -1,4 +1,5 @@
 import './index.css';
+import './styles/BackgroundGradient.css';
 import './i18n';
 import { StrictMode, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';

@@ -149,13 +149,17 @@
                 "saved-for-later": "Saved For Later",
                 "rate-this-website": "Rate This Website"
             },
+            "form": {
+                "name": "Name",
+                "surname": "Surname",
+                "email": "Email",
+                "phone": "Phone"
+            },
+            "save-changes": "Save Changes",
             "welcome": "Welcome",
             "upcoming-opportunities": "Upcoming Opportunitites",
             "review-text": "Write your review here...",
-            "name": "Name",
-            "email": "Email",
-            "surname": "Surname",
-            "phone": "Phone"
+            "no-applications": "No applications found."
         },
         "organization": {
             "post-an-opportunity": "Post An Opportunity",
@@ -236,6 +240,113 @@
             "errors": {
                 "1": "Oops! Looks like we’re missing some info. Let’s complete all fields to unlock the next step!",
                 "2": "It looks like you missed a few questions. Please answer all of them to continue."
+            }
+        }
+    },
+    "pages": {
+        "general-text": {
+            "evit": {
+                "events": "Events",
+                "internships": "Internships",
+                "trainings": "Trainings",
+                "volunteering": "Volunteering"
+            },
+            "pick-up-your-preferences": "Pick up your preferences",
+            "see-more": "See More",
+            "evit-details": {
+                "apply-here": "Apply Here",
+
+                "date": "Date",
+                "location": "Location",
+                "price": "Price",
+                "duration": "Duration",
+                "tickets": "Tickets",
+                "part-time": "Part Time",
+                "last-day-to-apply": "Last Day To Apply",
+                "cause": "Cause",
+                "source": "Source",
+                "age-group": "Age Group",
+                "skill-level": "Skill Level",
+                "instructor": "Instructor",
+                "position": "Position",
+                "salary": "Salary",
+
+                "source-of-this-opportunity": "Source of This Opportunity",
+                "testimonials": "Testimonials",
+                "find-your-next-opportunity": "Find your next opportunity",
+
+                "organization": "Organization"
+            }
+        },
+        "home-page": {
+            "part-1": {
+                "text-1": "Opportunities in one!",
+                "input": "Select Category",
+                "search": "Search"
+            },
+            "part-2": {
+                "text-1": "ABOUT PYE",
+                "text-2": "A platform aimed at providing a trustful source of all events, trainings, interships, and Volunteering opportunities in Kosova"
+            },
+            "part-3": {
+                "text-1": "Our Services"
+            },
+            "part-4": {
+                "text-1": "Registered",
+                "text-2": "Users and Organizations",
+                "stats": {
+                    "individuals": {
+                        "label": "Individuals",
+                        "amount": "50000"
+                    },
+                    "organizations": {
+                        "label": "Organizations",
+                        "amount": "50000"
+                    }
+                }
+            },
+            "part-5": {
+                "text-1": "Reviews"
+            },
+            "part-6": {
+                "text-1": "Never stop growing with YEP!"
+            },
+            "part-7": {
+                "text-1": "Upcoming Opportunities",
+                "text-2": "Find your next opportunity"
+            }
+        },
+        "evit-details": {
+            "events": {
+                "text-1": "Title of Event",
+                "text-2": "About the Event",
+                "text-3": "Type of Event",
+                "explore-similar-events": "Explore similar events",
+                "go-back-to-all-events": "<- Go back to all events"
+            },
+            "internships": {
+                "text-1": "About the Internship",
+                "text-2": "Key Responsibilities",
+                "text-3": "Skills and Experiences",
+                "text-4": "Type of Internship",
+                "explore-similar-internships": "Explore similar internships",
+                "go-back-to-all-internships": "<- Go back to all internships"
+            },
+            "volunteerings": {
+                "text-1": "Title of the Volunteering Opportunity",
+                "text-2": "About the Volunteering Opportunity",
+                "text-3": "Type of the Volunteering",
+                "text-4": "Schedule and Commitment",
+                "explore-similar-volunteerings": "Explore similar volunteering opportunities",
+                "go-back-to-all-volunteerings": "<- Go back to all volunteerings"
+            },
+            "courses": {
+                "text-1": "Title of the Training",
+                "text-2": "About the Training",
+                "text-3": "Type of the Training",
+                "text-4": "Skills and Experience",
+                "explore-similar-trainings": "Explore similar trainings",
+                "go-back-to-all-trainings": "<- Go back to all trainings"
             }
         }
     }

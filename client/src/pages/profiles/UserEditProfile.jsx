@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { TextField } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import Footer from '../../components/Footer';
 
 const UserEditProfile = () => {
     const { t } = useTranslation();
+
+    const [username, setUsername] = useState('Username');
 
     const [formData, setFormData] = useState({
         name: '',
         surname: '',
         email: '',
-        username: '',
         phone: '',
     });
     const [initialData, setInitialData] = useState({});
@@ -32,9 +36,10 @@ const UserEditProfile = () => {
                     name: response.data.name || '',
                     surname: response.data.surname || '',
                     email: response.data.email || '', // Read-only field
-                    username: response.data.username || '',
+                    phone: response.data.phone || '',
                 };
 
+                setUsername(response.data.username);
                 setFormData(data);
                 setInitialData(data); // Store the initial data for comparison
             } catch (error) {
@@ -89,146 +94,142 @@ const UserEditProfile = () => {
         return JSON.stringify(formData) !== JSON.stringify(initialData);
     };
 
+    const formInputs = t('profile.participant.form', {
+        returnObjects: true,
+    });
+
+    const theme = createTheme({
+        palette: {
+            primary: {
+                main: '#4F1ABE',
+            },
+        },
+    });
+
     return (
-        <div className="min-h-screen w-full bg-gradient-to-b from-[#4F1ABE] via-[#A78DDF] flex flex-col items-center py-20 relative">
-            <img
-                src="/assets/Frame 1.png"
-                alt=""
-                className="absolute inset-0 w-full h-full object-cover opacity-100"
-            />
+        <ThemeProvider theme={theme}>
+            <div className="min-h-screen w-full bg-custom-gradient-2 flex flex-col items-center py-20 relative">
+                <img
+                    src="/assets/bg-design.png"
+                    alt=""
+                    className="absolute bottom-0 left-0 z-10 opacity-50"
+                />
 
-            {/* Profile Header */}
-            <div className="flex flex-col items-center md:flex-row md:justify-between w-full max-w-2xl md:max-w-4xl lg:max-w-5xl p-4 mb-16 md:mb-32 z-10">
-                <div className="flex flex-col md:flex-row items-center md:items-end space-y-4 md:space-y-0 md:space-x-4">
-                    <img
-                        src="/assets/icon2.png"
-                        alt="User Icon"
-                        className="w-24 h-24 sm:w-32 sm:h-32 md:w-44 md:h-44 rounded-full -mb-2 md:mr-10"
-                    />
-                    <div className="text-center md:text-left">
-                        <p className="text-white text-2xl sm:text-3xl md:text-4xl font-semibold mb-2 md:mb-4">
-                            {formData.username || 'Username'}
-                        </p>
-                        <nav className="hidden sm:flex space-x-5 text-white font-bold text-lg">
-                            <Link to="/profile/edit" className="text-[#FF9202]">
-                                {t(
-                                    'profile.participant.navigation.edit-profile'
-                                )}
-                            </Link>
-                            <Link to="/profile/myapp">
-                                {t(
-                                    'profile.participant.navigation.my-applications'
-                                )}
-                            </Link>
-                            <Link to="/profile/saved">
-                                {t(
-                                    'profile.participant.navigation.saved-for-later'
-                                )}
-                            </Link>
-                            <Link to="/profile/rate">
-                                {t(
-                                    'profile.participant.navigation.rate-this-website'
-                                )}
-                            </Link>
-                        </nav>
+                {/* Profile Header */}
+                <div className="flex flex-col items-center md:flex-row md:justify-between w-full max-w-2xl md:max-w-4xl lg:max-w-5xl p-4 mb-16 md:mb-32 z-20">
+                    <div className="flex flex-col md:flex-row items-center md:items-end space-y-4 md:space-y-0 md:space-x-4">
+                        <img
+                            src="/assets/icon2.png"
+                            alt="User Icon"
+                            className="w-24 h-24 sm:w-32 sm:h-32 md:w-44 md:h-44 rounded-full -mb-2 md:mr-10"
+                        />
+                        <div className="text-center md:text-left">
+                            <p className="text-white text-2xl sm:text-3xl md:text-4xl font-semibold mb-2 md:mb-4">
+                                {username || 'Username'}
+                            </p>
+                            <nav className="hidden sm:flex space-x-5 text-white font-bold text-lg">
+                                <Link
+                                    to="/profile/edit"
+                                    className="text-[#FF9202]"
+                                >
+                                    {t(
+                                        'profile.participant.navigation.edit-profile'
+                                    )}
+                                </Link>
+                                <Link to="/profile/myapp">
+                                    {t(
+                                        'profile.participant.navigation.my-applications'
+                                    )}
+                                </Link>
+                                <Link to="/profile/saved">
+                                    {t(
+                                        'profile.participant.navigation.saved-for-later'
+                                    )}
+                                </Link>
+                                <Link to="/profile/rate">
+                                    {t(
+                                        'profile.participant.navigation.rate-this-website'
+                                    )}
+                                </Link>
+                            </nav>
+                        </div>
+                    </div>
+                    <div className="flex space-x-2 w-24 h-auto md:mt-20">
+                        <button className="text-white text-3xl p-2 ">
+                            &#x1F56D;
+                        </button>
+                        <button className="text-white text-3xl p-2 ">
+                            &#9881;
+                        </button>
                     </div>
                 </div>
-                <div className="flex space-x-2 w-24 h-auto md:mt-20">
-                    <button className="text-white text-3xl p-2 ">
-                        &#x1F56D;
-                    </button>
-                    <button className="text-white text-3xl p-2 ">
-                        &#9881;
-                    </button>
-                </div>
-            </div>
 
-            {/* Form Section */}
-            <div className="w-full max-w-md sm:max-w-lg md:max-w-2xl lg:max-w-4xl px-4 md:px-0 rounded-lg mb-16 md:mb-44 z-10">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 p-4 md:p-6 lg:p-8 rounded-lg">
-                    {/* Left Column */}
-                    <div className="space-y-4 sm:space-y-6 px-4 md:px-6">
-                        {[
-                            t('profile.participant.name'),
-                            t('profile.participant.surname'),
-                        ].map((label) => (
-                            <div key={label}>
-                                <label className="block text-white mb-1 sm:mb-2 text-lg sm:text-xl">
-                                    {label}
-                                </label>
-                                <input
+                {/* Form Section */}
+                <div className="w-full md:w-3/4 lg:w-1/2 mb-8 p-4 sm:p-6 md:p-8 rounded-lg mx-auto z-20">
+                    <form className="space-y-4 bg-white w-full h-full p-8 md:p-12 lg:p-20 rounded-2xl">
+                        <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+                            <div className="w-full md:w-[50%] space-y-4">
+                                <TextField
                                     type="text"
-                                    name={label
-                                        .toLowerCase()
-                                        .replace(/\s+/g, '')}
-                                    className="w-full p-3 border rounded-2xl"
-                                    placeholder="Lorem Ipsum"
-                                    value={
-                                        formData[
-                                            label
-                                                .toLowerCase()
-                                                .replace(/\s+/g, '')
-                                        ]
-                                    }
-                                    onChange={handleChange}
-                                    readOnly={label === 'Email'} // Make email field read-only
+                                    id="name"
+                                    name="name"
+                                    label={formInputs.name}
+                                    variant="outlined"
+                                    required
+                                    value={formData['name']}
+                                    onChange={(e) => handleChange(e)}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
+                                />
+                                <TextField
+                                    type="text"
+                                    id="surname"
+                                    name="surname"
+                                    label={formInputs.surname}
+                                    variant="outlined"
+                                    required
+                                    value={formData['surname']}
+                                    onChange={(e) => handleChange(e)}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
                                 />
                             </div>
-                        ))}
-                    </div>
-
-                    {/* Right Column */}
-                    <div className="space-y-4 sm:space-y-6 px-4 md:px-6">
-                        {[
-                            t('profile.participant.email'),
-                            t('profile.participant.phone'),
-                        ].map((label) => (
-                            <div key={label}>
-                                <label className="block text-white mb-1 sm:mb-2 text-lg sm:text-xl">
-                                    {label}
-                                </label>
-                                <input
+                            <div className="w-full md:w-[50%] space-y-4">
+                                <TextField
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    label={formInputs.email}
+                                    variant="outlined"
+                                    disabled
+                                    value={formData['email']}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
+                                />
+                                <TextField
                                     type="text"
-                                    name={label
-                                        .toLowerCase()
-                                        .replace(/\s+/g, '')}
-                                    className="w-full p-3 border rounded-2xl"
-                                    placeholder="Lorem Ipsum"
-                                    value={
-                                        formData[
-                                            label
-                                                .toLowerCase()
-                                                .replace(/\s+/g, '')
-                                        ]
-                                    }
-                                    onChange={handleChange}
+                                    id="phone"
+                                    name="phone"
+                                    label={formInputs.phone}
+                                    variant="outlined"
+                                    required
+                                    value={formData['phone']}
+                                    onChange={(e) => handleChange(e)}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
                                 />
                             </div>
-                        ))}
-                        <div className="flex justify-center mt-6">
+                        </div>
+                        <div className="mt-8 mb-20 flex flex-col items-start">
                             <button
-                                className="bg-[#50BACF] text-white px-8 sm:px-10 md:px-12 py-3 rounded-xl"
                                 onClick={handleSaveChanges}
-                                disabled={!isDataChanged()} // Disable button if no changes
+                                className="px-12 py-4 bg-[#9F82DC] text-white rounded-2xl"
                             >
-                                Save changes
+                                {t('profile.participant.save-changes')}
                             </button>
                         </div>
-                        {/* Error and Success Messages */}
-                        {errorMessage && (
-                            <div className="text-red-500 text-center mt-4">
-                                {errorMessage}
-                            </div>
-                        )}
-                        {successMessage && (
-                            <div className="text-green-500 text-center mt-4">
-                                {successMessage}
-                            </div>
-                        )}
-                    </div>
+                    </form>
                 </div>
+
+                <Footer withBackground={false} />
             </div>
-        </div>
+        </ThemeProvider>
     );
 };
 

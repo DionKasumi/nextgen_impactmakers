@@ -37,11 +37,6 @@ const RateCard = ({
         navigate(`/${card_type}/${id}`);
     };
 
-    const handleHeartClick = (event) => {
-        event.stopPropagation(); // Prevents event from bubbling to the parent
-        setHeart(!heart);
-    };
-
     const handleRateClick = (event) => {
         event.stopPropagation();
         setRateModalOpen(!rateModalOpen);
@@ -102,17 +97,6 @@ const RateCard = ({
                                 </>
                             )}
                         </p>
-                        {!heart ? (
-                            <GoHeart
-                                onClick={handleHeartClick} // Handles heart click
-                                className="scale-125 lg:scale-[2] text-[#EA2727] origin-center hover:scale-[1.45] lg:hover:scale-[2.2] transition-all hover:cursor-pointer"
-                            />
-                        ) : (
-                            <GoHeartFill
-                                onClick={handleHeartClick} // Handles heart click
-                                className="scale-125 lg:scale-[2] text-[#EA2727] origin-center hover:scale-[1.45] lg:hover:scale-[2.2] transition-all hover:cursor-pointer"
-                            />
-                        )}
                     </div>
                 </div>
                 <div className="w-full h-2/6 flex justify-between flex-col">
@@ -132,10 +116,7 @@ const RateCard = ({
                                 : t('card.nodescription')}
                         </p>
                     </div>
-                    <div className="flex w-full h-1/4 justify-between items-center flex-row">
-                        <button className="bg-[#50BACF] text-xs text-black w-2/4 lg:w-2/6 h-full font-medium border-black border-[1px] rounded-[5px] hover:scale-105 transition-all">
-                            {t('card.button-text')}
-                        </button>
+                    <div className="flex w-full h-1/4 items-center flex-row">
                         <button
                             onClick={handleRateClick}
                             className="bg-[#50BACF] text-xs text-black w-2/4 lg:w-2/6 h-full font-medium border-black border-[1px] rounded-[5px] hover:scale-105 transition-all"

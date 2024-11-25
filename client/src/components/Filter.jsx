@@ -113,7 +113,7 @@ const Filter = ({
                 {generateFilter({ filterList, selectedValues, handleChange })}
             </div>
             <button
-                className={`mt-10 bg-white text-indigo-700 font-semibold py-3 px-4 rounded hover:bg-blue-200 mb-16 ${
+                className={`mt-10 bg-white text-black font-semibold py-3 px-4 rounded hover:bg-blue-200 mb-16 ${
                     filterOpen ? '' : 'hidden'
                 }`}
                 onClick={handleSearch}

@@ -110,13 +110,14 @@ const Posting = () => {
 
     return (
         <ThemeProvider theme={theme}>
-            <div className="relative text-white h-full w-full bg-gradient-to-b from-[#4F1ABE] to-[#FFFFFF] flex flex-col items-center px-4 md:px-6 py-8">
+            <div className="relative text-white h-full w-full bg-custom-gradient-2 flex flex-col items-center px-4 md:px-6 py-8">
                 <img
-                    src="/assets/Group 750.png"
-                    alt="Background"
-                    className="absolute inset-0 w-full h-full object-cover opacity-50"
+                    src="/assets/bg-design.png"
+                    alt=""
+                    className="absolute bottom-0 left-0 z-10 opacity-50"
                 />
-                <div className="relative w-full mt-24 p-8 z-10">
+
+                <div className="relative w-full mt-24 p-8 z-20">
                     <h2 className="text-3xl font-bold mb-8 text-white text-center">
                         {username || 'Username'}
                     </h2>
@@ -125,7 +126,7 @@ const Posting = () => {
                     </p>
                 </div>
 
-                <div className="relative flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24 w-full max-w-md md:w-3/4 h-auto mb-12 z-10 md:items-start">
+                <div className="relative flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24 w-full max-w-md md:w-3/4 h-auto mb-12 z-20 md:items-start">
                     <CheckboxGroup
                         options={t(
                             'profile.organization.forms.form-2.1.options',
@@ -139,7 +140,7 @@ const Posting = () => {
                         handleCheckboxChange={handleCheckboxChange}
                     />
                 </div>
-                <div className="relative flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24 w-full max-w-md md:w-3/4 h-auto mb-12 z-10 md:items-start">
+                <div className="relative flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24 w-full max-w-md md:w-3/4 h-auto mb-12 z-20 md:items-start">
                     <CheckboxGroup
                         options={t(
                             'profile.organization.forms.form-2.2.options',
@@ -153,7 +154,7 @@ const Posting = () => {
                         handleCheckboxChange={handleCheckboxChange}
                     />
                 </div>
-                <div className="relative flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24 w-full max-w-md md:w-3/4 h-auto mb-12 z-10 md:items-start">
+                <div className="relative flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24 w-full max-w-md md:w-3/4 h-auto mb-12 z-20 md:items-start">
                     <CheckboxGroup
                         options={t(
                             'profile.organization.forms.form-2.3.options',
@@ -167,7 +168,7 @@ const Posting = () => {
                         handleCheckboxChange={handleCheckboxChange}
                     />
                 </div>
-                <div className="relative flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24 w-full max-w-md md:w-3/4 h-auto mb-12 z-10 md:items-start">
+                <div className="relative flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24 w-full max-w-md md:w-3/4 h-auto mb-12 z-20 md:items-start">
                     <CheckboxGroup
                         options={t(
                             'profile.organization.forms.form-2.4.options',
@@ -181,7 +182,7 @@ const Posting = () => {
                         handleCheckboxChange={handleCheckboxChange}
                     />
                 </div>
-                <div className="relative flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24 w-full max-w-md md:w-3/4 h-auto mb-12 z-10 md:items-start">
+                <div className="relative flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24 w-full max-w-md md:w-3/4 h-auto mb-12 z-20 md:items-start">
                     <CheckboxGroup
                         options={t(
                             'profile.organization.forms.form-2.5.options',
@@ -196,7 +197,7 @@ const Posting = () => {
                     />
                 </div>
 
-                <div className="relative text-black font-bold flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24 w-full max-w-md md:w-3/4 h-auto mb-12 z-10 md:items-start">
+                <div className="relative text-black font-bold flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24 w-full max-w-md md:w-3/4 h-auto mb-12 z-20 md:items-start">
                     <TextField
                         id="description-box"
                         label={t('profile.organization.forms.description')}
@@ -211,7 +212,7 @@ const Posting = () => {
                     />
                 </div>
 
-                <div className="relative flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24 w-full max-w-md md:w-3/4 h-auto mb-12 z-10 md:items-start">
+                <div className="relative flex flex-col mr-0 md:mr-48 lg:mr-96 -ml-0 md:-ml-24 w-full max-w-md md:w-3/4 h-auto mb-12 z-20 md:items-start">
                     <button
                         onClick={handleSubmit}
                         className="px-12 py-4 bg-[#4F1ABE] text-white rounded-2xl"

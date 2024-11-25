@@ -1,0 +1,11 @@
+.balls::before {
+    content: '';
+    position: absolute;
+    width: 30%;
+    aspect-ratio: 1/1;
+    background-color: red;
+    border-radius: 50%;
+    display: block;
+    transform-origin: center;
+    transform: translate(-50%, -50%);
+}

@@ -4,6 +4,11 @@ import SwiperCarousel from '../components/SwiperCarousel';
 import { useState, useEffect, useRef } from 'react';
 import CountUp from 'react-countup';
 import axios from 'axios';
+import Footer from '../components/Footer';
+import '../styles/HomePageStyles.css';
+import { useTranslation } from 'react-i18next';
+import { MenuItem, Select, FormControl, InputLabel } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 axios.defaults.withCredentials = true;
 
@@ -102,6 +107,16 @@ const FirstPart = ({ favoriteIds }) => {
         }
     };
 
+    const theme = createTheme({
+        palette: {
+            primary: {
+                main: '#4F1ABE',
+            },
+        },
+    });
+
+    const { t } = useTranslation();
+
     return (
         <div className="w-full h-full pt-20 sm:pt-32 md:pt-40 flex flex-col justify-center items-center bg-transparent">
             <div className="w-full min-h-svh items-center flex flex-col relative top-[15%] md:top-[20%] px-4 sm:px-8 lg:px-12">
@@ -116,60 +131,71 @@ const FirstPart = ({ favoriteIds }) => {
                     </div>
                     {/* Title */}
                     <h1 className="text-2xl sm:text-3xl md:text-4xl text-white mb-6 pr-10 md:mb-8 font-bold text-center md:text-left whitespace-nowrap">
-                        Opportunities in One!
+                        {t('pages.home-page.part-1.text-1')}
                     </h1>
                 </div>
                 {/* Dropdown and Button */}
                 <div className="mb-12 md:mb-20 flex flex-col md:flex-row items-center justify-center">
-                    <select
-                        className="w-full md:w-auto mb-4 md:mb-0 md:mr-5 border border-gray-300 rounded px-8 md:px-20 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        name="select-category"
-                        id="select-category"
-                        value={selectedCategory}
-                        onChange={(e) => setSelectedCategory(e.target.value)}
-                    >
-                        <option value="" disabled>
-                            Select category
-                        </option>
-                        <option value="1">Events</option>
-                        <option value="2">Internships</option>
-                        <option value="3">Volunteering</option>
-                        <option value="4">Trainings</option>
-                    </select>
+                    <ThemeProvider theme={theme}>
+                        <FormControl
+                            variant="filled"
+                            size="small"
+                            sx={{ minWidth: 200 }}
+                        >
+                            <InputLabel id="select-category-label">
+                                {t('pages.home-page.part-1.input')}
+                            </InputLabel>
+                            <Select
+                                labelId="select-category-label"
+                                id="selected-category"
+                                name="selected-category"
+                                value={selectedCategory}
+                                label={t('pages.home-page.part-1.input')}
+                                onChange={(e) =>
+                                    setSelectedCategory(e.target.value)
+                                }
+                                style={{ backgroundColor: 'white' }}
+                            >
+                                <MenuItem value={'1'}>
+                                    {t('pages.general-text.evit.events')}
+                                </MenuItem>
+                                <MenuItem value={'2'}>
+                                    {t('pages.general-text.evit.internships')}
+                                </MenuItem>
+                                <MenuItem value={'3'}>
+                                    {t('pages.general-text.evit.volunteering')}
+                                </MenuItem>
+                                <MenuItem value={'4'}>
+                                    {t('pages.general-text.evit.trainings')}
+                                </MenuItem>
+                            </Select>
+                        </FormControl>
+                    </ThemeProvider>
                     <button
                         type="button"
-                        className="w-full md:w-auto py-2 px-10 md:px-20 bg-[#44FFD1] text-black font-semibold rounded"
+                        className="w-full md:w-auto py-2 px-10 md:px-20 bg-[#44FFD1] text-black font-semibold rounded mt-4 md:ml-4 md:mt-0"
                         onClick={handleSearch}
                     >
-                        Search
+                        {t('pages.home-page.part-1.search')}
                     </button>
                 </div>
                 {/* Swiper Carousel */}
                 <SwiperCarousel data={carouselData} favoriteIds={favoriteIds} />
-            </div>
-            {/* Chatbot Image */}
-            <div className="fixed bottom-5 right-5 m-5">
-                <img
-                    src="../assets/image 1.png"
-                    alt="chatbot"
-                    className="w-16 h-16 sm:w-20 sm:h-20 lg:w-25 lg:h-25 object-cover"
-                />
             </div>
         </div>
     );
 };
 
 const SecondPart = () => {
+    const { t } = useTranslation();
     return (
         <div className="bg-[#FFFFFF] text-#030007 py-12 sm:py-16 md:py-24 lg:py-32 min-h-[300px] md:min-h-[500px] w-full">
             <div className="container mx-auto text-center px-4 sm:px-8 lg:px-0">
                 <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[48px] font-bold mb-4 sm:mb-6 lg:mb-16">
-                    ABOUT YEP
+                    {t('pages.home-page.part-2.text-1')}
                 </h2>
                 <p className="text-sm sm:text-base md:text-lg max-w-md sm:max-w-lg lg:max-w-xl mx-auto leading-relaxed">
-                    A Platform Aimedlimed At Providing A Trustful Source Of All
-                    Events, Trainings, Interships And Volunteering Opportunities
-                    In Kosova
+                    {t('pages.home-page.part-2.text-2')}
                 </p>
             </div>
         </div>
@@ -177,14 +203,16 @@ const SecondPart = () => {
 };
 
 const ThirdPart = () => {
+    const { t } = useTranslation();
     return (
-        <div className="relative w-full h-auto py-10 bg-transparent">
-            <div className="relative flex flex-col items-center justify-center h-full text-white py-16 px-4 sm:px-8">
+        <div className="relative w-full h-auto py-10 bg-transparent flex justify-center">
+            <div className="w-full md:w-4/5 xl:max-w-[70%] 2xl:max-w-[30%] h-full relative flex flex-col items-center justify-center text-white py-16 px-4 sm:px-8 overflow-hidden">
                 <h2 className="text-center text-2xl sm:text-3xl md:text-4xl font-bold mb-8 sm:mb-12 md:mb-16">
-                    Our Services
+                    {t('pages.home-page.part-3.text-1')}
                 </h2>
-                <div className="backdrop-blur-sm border-[2px] border-[rgba(255,255,255,0.3)] bg-gradient-to-b from-[rgba(255,255,255,0.40)] to-transparent rounded-3xl p-20 shadow-2xl max-w-4xl w-full">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 sm:gap-8 md:gap-12 max-w-6xl mx-auto">
+                <div className="w-56 rounded-full aspect-square hidden sm:flex absolute z-[1] right-0 top-16 bg-gradient-to-br from-[#bc42c5] from-10% to-[#ffffff]"></div>
+                <div className="backdrop-blur-sm border-[2px] border-[rgba(255,255,255,0.3)] bg-gradient-to-b from-[rgba(224,224,231,0.6)] to-transparent rounded-3xl p-20 shadow-2xl max-w-4xl w-full z-10">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 md:gap-12 max-w-6xl mx-auto">
                         <a href="/internships" className="group">
                             <div className="relative flex flex-col items-center">
                                 <img
@@ -198,7 +226,7 @@ const ThirdPart = () => {
                                     className="absolute top-0 left-0 w-full h-40 sm:h-52 md:h-64 lg:h-72 rounded-lg object-cover opacity-0 transition-opacity duration-300"
                                 />
                                 <button className="px-10 py-2 mt-3 text-white text-lg font-semibold font-inter rounded-full border border-white shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
-                                    Internships
+                                    {t('pages.general-text.evit.internships')}
                                 </button>
                             </div>
                         </a>
@@ -216,7 +244,7 @@ const ThirdPart = () => {
                                     className="absolute top-0 left-0 w-full h-40 sm:h-52 md:h-64 lg:h-72 rounded-lg object-cover opacity-0 transition-opacity duration-300"
                                 />
                                 <button className="px-10 py-2 mt-3 text-white text-lg font-semibold font-inter rounded-full border border-white shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
-                                    Trainings
+                                    {t('pages.general-text.evit.trainings')}
                                 </button>
                             </div>
                         </a>
@@ -234,7 +262,7 @@ const ThirdPart = () => {
                                     className="absolute top-0 left-0 w-full h-40 sm:h-52 md:h-64 lg:h-72 rounded-lg object-cover opacity-0 transition-opacity duration-300"
                                 />
                                 <button className="px-10 py-2 mt-3 text-white text-lg font-semibold font-inter rounded-full border border-white shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
-                                    Volunteering
+                                    {t('pages.general-text.evit.volunteering')}
                                 </button>
                             </div>
                         </a>
@@ -252,12 +280,13 @@ const ThirdPart = () => {
                                     className="absolute top-0 left-0 w-full h-40 sm:h-52 md:h-64 lg:h-72 rounded-lg object-cover opacity-0 transition-opacity duration-300"
                                 />
                                 <button className="px-10 py-2 mt-3 text-white text-lg font-semibold font-inter rounded-full border border-white shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
-                                    Events
+                                    {t('pages.general-text.evit.events')}
                                 </button>
                             </div>
                         </a>
                     </div>
                 </div>
+                <div className="w-40 rounded-full aspect-square hidden sm:flex absolute z-[1] left-0 bottom-0 bg-gradient-to-bl from-[#ffffff] from-10% to-[#9106d1]"></div>
             </div>
         </div>
     );
@@ -267,6 +296,7 @@ const FourthPart = () => {
     const [startCounter, setStartCounter] = useState(false);
     const counterRef = useRef(null);
 
+    const { t } = useTranslation();
     useEffect(() => {
         const observer = new IntersectionObserver(
             (entries) => {
@@ -300,11 +330,11 @@ const FourthPart = () => {
 
             <div className="relative flex flex-col items-center justify-center h-full bg-black bg-opacity-0 px-4 md:px-8 lg:px-16 py-16 md:py-20 lg:py-24">
                 <h1 className="text-3xl md:text-4xl lg:text-5xl text-black text-center mb-6 font-bold">
-                    Registered
+                    {t('pages.home-page.part-4.text-1')}
                 </h1>
 
                 <h2 className="text-lg md:text-2xl lg:text-3xl text-black text-center mb-24 font-poppins font-light">
-                    Users and Organizations
+                    {t('pages.home-page.part-4.text-2')}
                 </h2>
 
                 <div className="flex flex-col sm:flex-row justify-center gap-8 sm:gap-12 md:gap-20 lg:gap-32 max-w-4xl mx-auto text-center overflow-x-auto">
@@ -317,13 +347,20 @@ const FourthPart = () => {
                         />
                         <h1 className="text-3xl md:text-4xl lg:text-5xl text-black text-center font-bold">
                             {startCounter ? (
-                                <CountUp end={50000} duration={2} />
+                                <CountUp
+                                    end={t(
+                                        'pages.home-page.part-4.stats.individuals.amount'
+                                    )}
+                                    duration={2}
+                                />
                             ) : (
                                 '0'
                             )}
                         </h1>
                         <p className="text-base sm:text-lg md:text-xl mt-12">
-                            Individuals
+                            {t(
+                                'pages.home-page.part-4.stats.individuals.label'
+                            )}
                         </p>
                     </div>
 
@@ -336,13 +373,20 @@ const FourthPart = () => {
                         />
                         <h1 className="text-3xl md:text-4xl lg:text-5xl text-black text-center font-bold">
                             {startCounter ? (
-                                <CountUp end={50001} duration={2} />
+                                <CountUp
+                                    end={t(
+                                        'pages.home-page.part-4.stats.organizations.amount'
+                                    )}
+                                    duration={2}
+                                />
                             ) : (
                                 '0'
                             )}
                         </h1>
                         <p className="text-base sm:text-lg md:text-xl mt-12">
-                            Organizations
+                            {t(
+                                'pages.home-page.part-4.stats.organizations.label'
+                            )}
                         </p>
                     </div>
                 </div>
@@ -350,7 +394,8 @@ const FourthPart = () => {
         </div>
     );
 };
-const FivethPart = () => {
+
+const FifthPart = () => {
     const [selectedCard, setSelectedCard] = useState('');
     const [reviews, setReviews] = useState([]);
     const [testimonialLength, setTestimonialLength] = useState(0);
@@ -401,6 +446,7 @@ const FivethPart = () => {
         },
     ];
 
+    const { t } = useTranslation();
     return (
         <div
             className={`w-full h-full ${
@@ -408,7 +454,7 @@ const FivethPart = () => {
             } flex-col justify-center items-center py-20`}
         >
             <div className="text-white text-5xl font-bold mb-20 md:mb-48">
-                Reviews
+                {t('pages.home-page.part-5.text-1')}
             </div>
 
             <div className="relative w-full flex justify-center items-center flex-col space-y-20 md:flex-row md:-space-x-60 md:space-y-0">
@@ -427,7 +473,9 @@ const FivethPart = () => {
         </div>
     );
 };
+
 const SixthPart = () => {
+    const { t } = useTranslation();
     return (
         <div className="relative w-full min-h-[500px] overflow-hidden px-4">
             <img
@@ -437,39 +485,8 @@ const SixthPart = () => {
             />
             <div className="flex items-center justify-center min-h-[500px]">
                 <div className="text-center text-2xl md:text-3xl font-light z-10">
-                    Never stop growing with YEP!
+                    {t('pages.home-page.part-6.text-1')}
                 </div>
-            </div>
-        </div>
-    );
-};
-
-const TestimonialCard = ({ card, index, selectedCard, changeSelectedCard }) => {
-    return (
-        <div
-            onClick={() => changeSelectedCard(card.review.username)}
-            className={`relative flex flex-col md:flex-row justify-center items-center rounded-xl w-3/4 md:w-2/5 h-36 p-4 shadow-lg transition-transform duration-200 ease-in-out select-none
-                        ${
-                            selectedCard === card.review.username
-                                ? 'z-40 md:-top-20 scale-110'
-                                : 'z-10 scale-100'
-                        } 
-                        ${
-                            index === 0
-                                ? 'bg-[#4FEAC6]'
-                                : index === 1
-                                ? 'bg-[#F6F49D]'
-                                : 'bg-[#B3B5FF]'
-                        }`}
-        >
-            <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full bg-white"></div>
-            <div className="flex w-full h-full flex-col justify-start p-4">
-                <h1 className="text-lg mb-4 self-start">
-                    - {card.review.username}
-                </h1>
-                <p className="text-sm md:text-base text-black text-wrap whitespace-nowrap break-words line-clamp-1">
-                    "{card.review.review}"
-                </p>
             </div>
         </div>
     );
@@ -548,17 +565,49 @@ const SeventhPart = ({ favoriteIds }) => {
         fetchCarouselData();
     }, []);
 
+    const { t } = useTranslation();
     return (
         <div className="w-full min-h-screen flex flex-col justify-center items-center bg-[#4F1ABE] bg-[url('../assets/group1.png')] bg-no-repeat bg-cover px-4 md:px-8 lg:px-0 py-20 md:py-32">
             <div>
                 <h1 className="text-2xl md:text-4xl lg:text-5xl text-white text-center font-bold mb-4 md:mb-8">
-                    Upcoming Opportunities
+                    {t('pages.home-page.part-7.text-1')}
                 </h1>
                 <h2 className="text-lg md:text-2xl lg:text-3xl text-white text-center font-light mb-10 md:mb-12">
-                    Find your next opportunity
+                    {t('pages.home-page.part-7.text-2')}
                 </h2>
             </div>
             <SwiperCarousel data={carouselData} favoriteIds={favoriteIds} />
+        </div>
+    );
+};
+
+const TestimonialCard = ({ card, index, selectedCard, changeSelectedCard }) => {
+    return (
+        <div
+            onClick={() => changeSelectedCard(card.review.username)}
+            className={`relative flex flex-col md:flex-row justify-center items-center rounded-xl w-3/4 md:w-2/5 h-36 p-4 shadow-lg transition-transform duration-200 ease-in-out select-none
+                        ${
+                            selectedCard === card.review.username
+                                ? 'z-40 md:-top-20 scale-110'
+                                : 'z-10 scale-100'
+                        } 
+                        ${
+                            index === 0
+                                ? 'bg-[#4FEAC6]'
+                                : index === 1
+                                ? 'bg-[#F6F49D]'
+                                : 'bg-[#B3B5FF]'
+                        }`}
+        >
+            <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full bg-white"></div>
+            <div className="flex w-full h-full flex-col justify-start p-4">
+                <h1 className="text-lg mb-4 self-start">
+                    - {card.review.username}
+                </h1>
+                <p className="text-sm md:text-base text-black text-wrap whitespace-nowrap break-words line-clamp-1">
+                    "{card.review.review}"
+                </p>
+            </div>
         </div>
     );
 };
@@ -601,14 +650,17 @@ const HomePage = () => {
         fetchFavoriteIds();
     }, []);
     return (
-        <div className="w-full h-full flex flex-col bg-gradient-to-b from-[#4F1ABE] via-[#A540D9] to-[#BC3ED6]">
-            <FirstPart favoriteIds={favoriteIds} />
-            <SecondPart />
-            <ThirdPart />
-            <FourthPart />
-            <FivethPart favoriteIds={favoriteIds} />
+        <div className="w-full h-full flex flex-col z-10">
+            <div className="w-full h-full flex flex-col bg-custom-gradient-1">
+                <FirstPart favoriteIds={favoriteIds} />
+                <SecondPart />
+                <ThirdPart />
+                <FourthPart />
+                <FifthPart favoriteIds={favoriteIds} />
+            </div>
             <SixthPart />
             <SeventhPart />
+            <Footer />
         </div>
     );
 };

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
+import Footer from '../../components/Footer';
 
 const UserProfile = () => {
     const { t } = useTranslation();
@@ -27,15 +28,15 @@ const UserProfile = () => {
     }, []);
 
     return (
-        <div className="min-h-screen w-full bg-gradient-to-b from-[#4F1ABE] via-[#B93DD6] to-[#BC3ED6] flex flex-col items-center py-20 relative">
+        <div className="min-h-screen w-full bg-custom-gradient-2 flex flex-col items-center py-20 relative">
             <img
-                src="/assets/Frame 1.png"
+                src="/assets/bg-design.png"
                 alt=""
-                className="absolute inset-0 w-full h-full object-cover opacity-100"
+                className="absolute bottom-0 left-0 z-10 opacity-50"
             />
 
             {/* Profile Header */}
-            <div className="flex flex-col items-center md:flex-row md:justify-between w-full max-w-2xl md:max-w-4xl lg:max-w-5xl p-4 mb-16 md:mb-32 z-10">
+            <div className="flex flex-col items-center md:flex-row md:justify-between w-full max-w-2xl md:max-w-4xl lg:max-w-5xl p-4 mb-16 md:mb-32 z-20">
                 <div className="flex flex-col md:flex-row items-center md:items-end space-y-4 md:space-y-0 md:space-x-4">
                     <img
                         src="/assets/icon2.png"
@@ -80,7 +81,7 @@ const UserProfile = () => {
                 </div>
             </div>
             {/* Group 704 Icon in the Red Circle Position */}
-            <div className="relative flex justify-center items-center mb-4">
+            <div className="relative flex justify-center items-center mb-4 z-20">
                 <img
                     src="assets/Group 704.png"
                     alt="Group Icon"
@@ -88,7 +89,7 @@ const UserProfile = () => {
                 />
             </div>
             {/* Welcome */}
-            <div className="text-center mt-20 h-auto relative w-full max-w-sm md:max-w-lg mb-96 px-4">
+            <div className="text-center mt-20 h-auto relative w-full max-w-sm md:max-w-lg mb-96 px-4 z-20">
                 <div className="space-y-8">
                     <h1 className="text-white text-2xl sm:text-3xl md:text-4xl font-semibold">
                         {t('profile.participant.welcome')},{' '}
@@ -110,6 +111,8 @@ const UserProfile = () => {
                     </h1>
                 </div>
             </div>
+
+            <Footer withBackground={false} />
         </div>
     );
 };

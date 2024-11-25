@@ -30,7 +30,12 @@ const theme = createTheme({
     },
 });
 
-const ParticipantForm = ({ participantData, handleChange, errors }) => {
+const ParticipantForm = ({
+    participantData,
+    handleChange,
+    errors,
+    changeLanguage,
+}) => {
     const { t } = useTranslation();
 
     return (
@@ -45,17 +50,19 @@ const ParticipantForm = ({ participantData, handleChange, errors }) => {
                 className="w-full"
             >
                 <FormControl variant="outlined">
-                    <InputLabel id="language" required>
+                    <InputLabel id="language">
                         {t('signup-page.language')}
                     </InputLabel>
                     <Select
                         labelId="language"
                         id="language"
                         value={participantData.language}
-                        onChange={(e) => handleChange(e)}
+                        onChange={(e) => {
+                            handleChange(e);
+                            changeLanguage(e);
+                        }}
                         label={t('signup-page.language')}
                         name="language"
-                        required
                     >
                         <MenuItem value={'en'}>English</MenuItem>
                         <MenuItem value={'al'}>Shqip</MenuItem>
@@ -194,7 +201,12 @@ const ParticipantSecondForm = ({ preferencesData, handleChange }) => {
     );
 };
 
-const OrganizationForm = ({ orgData, handleChange, errors }) => {
+const OrganizationForm = ({
+    orgData,
+    handleChange,
+    errors,
+    changeLanguage,
+}) => {
     const { t } = useTranslation();
     return (
         <ThemeProvider theme={theme}>
@@ -208,17 +220,19 @@ const OrganizationForm = ({ orgData, handleChange, errors }) => {
                 className="w-full"
             >
                 <FormControl variant="outlined">
-                    <InputLabel id="language" required>
+                    <InputLabel id="language">
                         {t('signup-page.language')}
                     </InputLabel>
                     <Select
                         labelId="language"
                         id="language"
                         value={orgData.language}
-                        onChange={(e) => handleChange(e)}
+                        onChange={(e) => {
+                            handleChange(e);
+                            changeLanguage(e);
+                        }}
                         label={t('signup-page.language')}
                         name="language"
-                        required
                     >
                         <MenuItem value={'en'}>English</MenuItem>
                         <MenuItem value={'al'}>Shqip</MenuItem>
@@ -324,7 +338,7 @@ const OrganizationForm = ({ orgData, handleChange, errors }) => {
 };
 
 const MainForm = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     const navigate = useNavigate();
     const [isOrg, setOrg] = useState(false);
@@ -338,7 +352,7 @@ const MainForm = () => {
     const [isParticipantSecondForm, setParticipantSecondForm] = useState(false);
 
     const [participantData, setParticipantData] = useState({
-        language: 'en',
+        language: i18n.language,
         username: '',
         email: '',
         phone: '',
@@ -347,7 +361,7 @@ const MainForm = () => {
 
     const [preferencesData, setPreferencesData] = useState([]);
     const [orgData, setOrgData] = useState({
-        language: 'en',
+        language: i18n.language,
         name_of_org: '',
         email_of_org: '',
         phone_number_of_org: '',
@@ -397,14 +411,14 @@ const MainForm = () => {
         setOrg(!isOrg);
         setAlertOpen(false);
         setParticipantData({
-            language: 'en',
+            language: i18n.language,
             username: '',
             email: '',
             phone: '',
             password: '',
         });
         setOrgData({
-            language: 'en',
+            language: i18n.language,
             name_of_org: '',
             email_of_org: '',
             phone_number_of_org: '',
@@ -418,14 +432,14 @@ const MainForm = () => {
         setParticipantSecondForm(false);
         setPreferencesData([]);
         setParticipantData({
-            language: 'en',
+            language: i18n.language,
             username: '',
             email: '',
             phone: '',
             password: '',
         });
         setOrgData({
-            language: 'en',
+            language: i18n.language,
             name_of_org: '',
             email_of_org: '',
             phone_number_of_org: '',
@@ -559,6 +573,17 @@ const MainForm = () => {
         resetData();
     };
 
+    const [lang, setLang] = useState(i18n.language);
+    const switchLanguage = () => {
+        if (lang === 'en') {
+            setLang('al');
+            i18n.changeLanguage('al');
+        } else {
+            setLang('en');
+            i18n.changeLanguage('en');
+        }
+    };
+
     return (
         <>
             <div className="w-11/12 sm:w-4/5 md:w-5/6 xl:w-5/6 h-[95%] flex justify-center items-center flex-col">
@@ -598,6 +623,7 @@ const MainForm = () => {
                             participantData={participantData}
                             handleChange={handleParticipantChange}
                             errors={errors}
+                            changeLanguage={switchLanguage}
                         />
                     ) : (
                         <ParticipantSecondForm
@@ -610,6 +636,7 @@ const MainForm = () => {
                         orgData={orgData}
                         handleChange={handleOrgChange}
                         errors={errors}
+                        changeLanguage={switchLanguage}
                     />
                 )}
                 <button

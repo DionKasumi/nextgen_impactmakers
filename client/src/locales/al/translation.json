@@ -78,7 +78,7 @@
         "remember-me": "Më Rikujto",
         "forgot-password": "Ke Harruar Passwordin?",
         "user-type": {
-            "participant": "Pjesëtarë",
+            "participant": "Përdorues",
             "organization": "Organizatë"
         },
         "text-1": "apo kyçu me",
@@ -107,7 +107,7 @@
         "continue": "Vazhdo",
         "finish": "Perfundo",
         "user-type": {
-            "participant": "Pjesëtarë",
+            "participant": "Përdorues",
             "organization": "Organizatë"
         },
         "alerts": {
@@ -149,13 +149,17 @@
                 "saved-for-later": "Ruajtur për Më Vonë",
                 "rate-this-website": "Vlerëso Këtë Faqe"
             },
+            "form": {
+                "name": "Emri",
+                "surname": "Mbiemri",
+                "email": "Email",
+                "phone": "Telefoni"
+            },
+            "save-changes": "Ruaj Ndryshimet",
             "welcome": "Përshendetje",
             "upcoming-opportunities": "\"Mundësi\"-të e ardhshme",
             "review-text": "Shkruaj vlerësimin tënd këtu...",
-            "name": "Emri",
-            "email": "Email",
-            "surname": "Mbiemri",
-            "phone": "Telefoni"
+            "no-applications": "Nuk ka asnjë aplikim."
         },
         "organization": {
             "post-an-opportunity": "Posto një \"Mundësi\"",
@@ -233,7 +237,117 @@
                 "description": "Përshkrimi i Aktivitetit",
                 "post": "Posto"
             },
-            "error": "Ju lutemi plotësoni të gjitha të dhënat para se të shtypni \"Posto\"."
+            "errors": {
+                "1": "Ju lutemi plotësoni të gjitha të dhënat para se të shtypni \"Posto\".",
+                "2": "Ju lutemi plotësoni të gjitha të dhënat para se të shtypni \"Posto\"."
+            }
+        }
+    },
+    "pages": {
+        "general-text": {
+            "evit": {
+                "events": "Evente",
+                "internships": "Praktikë",
+                "trainings": "Trajnime",
+                "volunteering": "Vullnetarizëm"
+            },
+            "pick-up-your-preferences": "Filtro preferencat tuaja",
+            "see-more": "Shiko Më Shumë",
+            "evit-details": {
+                "apply-here": "Apliko Këtu",
+
+                "date": "Data",
+                "location": "Vendndodhja",
+                "price": "Çmimi",
+                "duration": "Kohëzgjatja",
+                "tickets": "Tiketat",
+                "part-time": "Part Time",
+                "last-day-to-apply": "Dita e Fundit Për të Aplikuar",
+                "cause": "Shkaku",
+                "source": "Burimi",
+                "age-group": "Grup-Mosha",
+                "skill-level": "Aftësitë dhe Përvoja",
+                "instructor": "Instruktori",
+                "position": "Pozita",
+                "salary": "Paga",
+
+                "source-of-this-opportunity": "Burimi i kësaj \"Mundësie\"",
+                "testimonials": "Dëshmitë",
+                "find-your-next-opportunity": "Gjeje \"Munësinë\" tjetër",
+
+                "organization": "Organizata"
+            }
+        },
+        "home-page": {
+            "part-1": {
+                "text-1": "Opportunities in one!",
+                "input": "Zgjedh Kategorinë",
+                "search": "Kërko"
+            },
+            "part-2": {
+                "text-1": "RRETH PYE",
+                "text-2": "Një platformë që synon ofrimin e një burimi të besueshëm të të gjitha eventeve, trajnimeve, praktikave dhe mundësive të vullnetarizmit në Kosovë"
+            },
+            "part-3": {
+                "text-1": "Shërbimet Tona"
+            },
+            "part-4": {
+                "text-1": "Regjistrimet",
+                "text-2": "Përdorues dhe Organizata",
+                "stats": {
+                    "individuals": {
+                        "label": "Përdorues",
+                        "amount": "50000"
+                    },
+                    "organizations": {
+                        "label": "Organizata",
+                        "amount": "50000"
+                    }
+                }
+            },
+            "part-5": {
+                "text-1": "Vlerësime"
+            },
+            "part-6": {
+                "text-1": "Never stop growing with YEP!"
+            },
+            "part-7": {
+                "text-1": "\"Mundësitë\" e ardhshme",
+                "text-2": "Gjeje \"Munësinë\" tjetër"
+            }
+        },
+        "evit-details": {
+            "events": {
+                "text-1": "Titulli i Eventit",
+                "text-2": "Rreth Eventit",
+                "text-3": "Lloji i Eventit",
+                "explore-similar-events": "Eksploro evente të ngjajshme",
+                "go-back-to-all-events": "<- Kthehu te të gjitha eventet"
+            },
+            "internships": {
+                "text-1": "Rreth Praktikës",
+                "text-2": "Përgjegjësi Kyçe",
+                "text-3": "Aftësitë dhe Eksperienca",
+                "text-4": "Lloji i Praktikës",
+                "explore-similar-internships": "Eksploro praktika të ngjajshme",
+                "go-back-to-all-internships": "<- Kthehu te të gjitha praktikat"
+            },
+            "volunteerings": {
+                "text-1": "Titulli i Vullnetarizmit",
+                "text-2": "Rreth Vullnetarizmit",
+                "text-3": "Lloji i Vullnetarizmit",
+                "text-4": "Orari dhe Angazhimi",
+                "explore-similar-volunteerings": "Eksploro mundësi vullnetarizmi të ngjajshme",
+                "go-back-to-all-volunteerings": "<- Kthehu te të gjitha vullnetarizmet"
+            },
+            "courses": {
+                "text-1": "Titulli i Trajnimit",
+                "text-2": "Rreth Trajnimit",
+                "text-3": "Përgjegjësi Kyçe",
+                "text-4": "Aftësitë dhe Eksperienca",
+                "explore-similar-trainings": "Eksploro trajnime të ngjajshme",
+                "go-back-to-all-trainings": "<- Kthehu te të gjitha trajnimet"
+            }
         }
     }
 }
