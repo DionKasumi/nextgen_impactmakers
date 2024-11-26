@@ -189,7 +189,7 @@ const FirstPart = ({ favoriteIds }) => {
 const SecondPart = () => {
     const { t } = useTranslation();
     return (
-        <div className="bg-[#FFFFFF] text-#030007 py-12 sm:py-16 md:py-24 lg:py-32 min-h-[300px] md:min-h-[500px] w-full">
+        <div className="bg-[#FFFFFF] text-#030007 py-12 sm:py-16 md:py-24 lg:py-32 w-full">
             <div className="container mx-auto text-center px-4 sm:px-8 lg:px-0">
                 <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[48px] font-bold mb-4 sm:mb-6 lg:mb-16">
                     {t('pages.home-page.part-2.text-1')}
@@ -206,12 +206,12 @@ const ThirdPart = () => {
     const { t } = useTranslation();
     return (
         <div className="relative w-full h-auto py-10 bg-transparent flex justify-center">
-            <div className="w-full md:w-4/5 xl:max-w-[70%] 2xl:max-w-[30%] h-full relative flex flex-col items-center justify-center text-white py-16 px-4 sm:px-8 overflow-hidden">
-                <h2 className="text-center text-2xl sm:text-3xl md:text-4xl font-bold mb-8 sm:mb-12 md:mb-16">
+            <div className="w-full md:w-4/5 xl:max-w-[70%] 2xl:max-w-[45%] h-full relative flex flex-col items-center justify-center text-white py-16 px-4 sm:px-8 overflow-hidden">
+                <h2 className="text-center text-2xl sm:text-3xl md:text-4xl font-bold mb-8 sm:mb-12 md:mb-16 z-10">
                     {t('pages.home-page.part-3.text-1')}
                 </h2>
                 <div className="w-56 rounded-full aspect-square hidden sm:flex absolute z-[1] right-0 top-16 bg-gradient-to-br from-[#bc42c5] from-10% to-[#ffffff]"></div>
-                <div className="backdrop-blur-sm border-[2px] border-[rgba(255,255,255,0.3)] bg-gradient-to-b from-[rgba(224,224,231,0.6)] to-transparent rounded-3xl p-20 shadow-2xl max-w-4xl w-full z-10">
+                <div className="backdrop-blur-sm border-[2px] border-[rgba(255,255,255,0.3)] bg-gradient-to-b from-[rgba(224,224,231,0.6)] to-transparent rounded-3xl p-10 md:p-16 lg:p-20 shadow-2xl w-full z-10">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 md:gap-12 max-w-6xl mx-auto">
                         <a href="/internships" className="group">
                             <div className="relative flex flex-col items-center">
@@ -230,7 +230,6 @@ const ThirdPart = () => {
                                 </button>
                             </div>
                         </a>
-
                         <a href="/trainings" className="group">
                             <div className="relative flex flex-col items-center">
                                 <img
@@ -248,7 +247,6 @@ const ThirdPart = () => {
                                 </button>
                             </div>
                         </a>
-
                         <a href="/volunteering" className="group">
                             <div className="relative flex flex-col items-center">
                                 <img
@@ -266,7 +264,6 @@ const ThirdPart = () => {
                                 </button>
                             </div>
                         </a>
-
                         <a href="/events" className="group">
                             <div className="relative flex flex-col items-center">
                                 <img

@@ -157,18 +157,18 @@
             },
             "save-changes": "Ruaj Ndryshimet",
             "welcome": "Përshendetje",
-            "upcoming-opportunities": "\"Mundësi\"-të e ardhshme",
+            "upcoming-opportunities": "Mundesi-të e ardhshme",
             "review-text": "Shkruaj vlerësimin tënd këtu...",
             "no-applications": "Nuk ka asnjë aplikim."
         },
         "organization": {
-            "post-an-opportunity": "Posto një \"Mundësi\"",
+            "post-an-opportunity": "Posto një Mundesi",
             "personal-info": "InformataPersonale",
             "name": "Emri",
             "social-media": "SocialMedia",
             "address": "Adresa",
             "phone": "Telefoni",
-            "text-1": "Na jep disa informata rreth \"Mundësisë\" tënde!",
+            "text-1": "Na jep disa informata rreth Mundësisë tënde!",
             "forms": {
                 "form-1": {
                     "personalInfo": "Informata Personale",
@@ -179,11 +179,11 @@
                 },
                 "form-2": {
                     "1": {
-                        "title": "Posto një \"Mundësi\" përmes",
+                        "title": "Posto një Mundesi përmes",
                         "options": [
                             { "label": "URL-së së eventit", "value": "url" },
                             {
-                                "label": "Shkrimit të informatave të \"Mundësisë\"",
+                                "label": "Shkrimit të informatave të Mundësisë",
                                 "value": "info"
                             }
                         ]
@@ -253,6 +253,11 @@
             },
             "pick-up-your-preferences": "Filtro preferencat tuaja",
             "see-more": "Shiko Më Shumë",
+            "did-you-apply": "A keni aplikuar?",
+            "yes": "Po",
+            "or": "apo",
+            "no": "Jo",
+            "submit": "Dërgo",
             "evit-details": {
                 "apply-here": "Apliko Këtu",
 
@@ -271,9 +276,9 @@
                 "position": "Pozita",
                 "salary": "Paga",
 
-                "source-of-this-opportunity": "Burimi i kësaj \"Mundësie\"",
+                "source-of-this-opportunity": "Burimi i kësaj Mundësie",
                 "testimonials": "Dëshmitë",
-                "find-your-next-opportunity": "Gjeje \"Munësinë\" tjetër",
+                "find-your-next-opportunity": "Gjeje Munësinë tjetër",
 
                 "organization": "Organizata"
             }
@@ -285,7 +290,7 @@
                 "search": "Kërko"
             },
             "part-2": {
-                "text-1": "RRETH PYE",
+                "text-1": "RRETH YEP",
                 "text-2": "Një platformë që synon ofrimin e një burimi të besueshëm të të gjitha eventeve, trajnimeve, praktikave dhe mundësive të vullnetarizmit në Kosovë"
             },
             "part-3": {
@@ -312,8 +317,8 @@
                 "text-1": "Never stop growing with YEP!"
             },
             "part-7": {
-                "text-1": "\"Mundësitë\" e ardhshme",
-                "text-2": "Gjeje \"Munësinë\" tjetër"
+                "text-1": "Mundësitë e ardhshme",
+                "text-2": "Gjeje Munësinë tjetër"
             }
         },
         "evit-details": {
