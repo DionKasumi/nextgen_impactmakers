@@ -253,6 +253,11 @@
             },
             "pick-up-your-preferences": "Pick up your preferences",
             "see-more": "See More",
+            "did-you-apply": "Did you apply?",
+            "yes": "Yes",
+            "or": "or",
+            "no": "No",
+            "submit": "Submit",
             "evit-details": {
                 "apply-here": "Apply Here",
 
@@ -285,7 +290,7 @@
                 "search": "Search"
             },
             "part-2": {
-                "text-1": "ABOUT PYE",
+                "text-1": "ABOUT YEP",
                 "text-2": "A platform aimed at providing a trustful source of all events, trainings, interships, and Volunteering opportunities in Kosova"
             },
             "part-3": {
