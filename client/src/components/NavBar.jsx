@@ -12,6 +12,7 @@ import {
     FormControl,
     InputLabel,
     Select,
+    ListItemIcon,
 } from '@mui/material';
 import { MdExpandLess, MdExpandMore } from 'react-icons/md';
 import { FaUserCircle, FaCircle } from 'react-icons/fa';
@@ -133,58 +134,6 @@ const NavBar = ({ theme }) => {
                     </ListItemButton>
                 ))}
 
-                {/* Dynamic Links based on login state */}
-                {isLoggedIn ? (
-                    <>
-                        <ListItemButton
-                            sx={{
-                                height: '3.5rem',
-                                '&:hover': { bgcolor: '#A3A9FE80' },
-                            }}
-                        >
-                            <button
-                                onClick={handleLogout}
-                                className="w-full h-full flex flex-row items-center"
-                            >
-                                <ImExit
-                                    size={20}
-                                    style={{ marginRight: '0.75rem' }}
-                                />
-                                {t('navbar.logout')}
-                            </button>
-                        </ListItemButton>
-                    </>
-                ) : (
-                    <>
-                        <ListItemButton
-                            sx={{
-                                height: '3.5rem',
-                                '&:hover': { bgcolor: '#A3A9FE80' },
-                            }}
-                        >
-                            <Link
-                                to={'/login'}
-                                className="w-full h-full flex flex-row items-center"
-                            >
-                                {t('navbar.login')}
-                            </Link>
-                        </ListItemButton>
-                        <ListItemButton
-                            sx={{
-                                height: '3.5rem',
-                                '&:hover': { bgcolor: '#A3A9FE80' },
-                            }}
-                        >
-                            <Link
-                                to={'/signup'}
-                                className="w-full h-full flex flex-row items-center"
-                            >
-                                {t('navbar.signup')}
-                            </Link>
-                        </ListItemButton>
-                    </>
-                )}
-
                 <ListItemButton
                     onClick={handleCategoriesClick}
                     sx={{
@@ -279,6 +228,106 @@ const NavBar = ({ theme }) => {
                         </ListItemButton>
                     </List>
                 </Collapse>
+
+                <ListItemButton
+                    onClick={handleLangClick}
+                    sx={{
+                        height: '3.5rem',
+                        '&:hover': { bgcolor: '#A3A9FE80' },
+                    }}
+                    className="flex flex-row justify-between"
+                >
+                    <img
+                        src={`/assets/flags/${
+                            lang == 'en'
+                                ? 'united-kingdom-flag.svg'
+                                : 'albanian-flag.svg'
+                        }`}
+                        alt=""
+                        className="w-8"
+                    />
+                    {langOpen ? (
+                        <MdExpandLess className="absolute scale-150 right-4" />
+                    ) : (
+                        <MdExpandMore className="absolute scale-150 right-4" />
+                    )}
+                </ListItemButton>
+                <Collapse in={langOpen} timeout="auto" unmountOnExit>
+                    <List component="div" disablePadding>
+                        <ListItemButton
+                            onClick={() => {
+                                handleLangClick();
+                                switchLanguage();
+                            }}
+                            sx={{
+                                height: '3.5rem',
+                                '&:hover': { bgcolor: '#A3A9FE80' },
+                            }}
+                        >
+                            <img
+                                src={`/assets/flags/${
+                                    lang == 'en'
+                                        ? 'albanian-flag.svg'
+                                        : 'united-kingdom-flag.svg'
+                                }`}
+                                alt=""
+                                className="w-8"
+                            />
+                        </ListItemButton>
+                    </List>
+                </Collapse>
+
+                {/* Dynamic Links based on login state */}
+                {isLoggedIn ? (
+                    <>
+                        <ListItemButton
+                            sx={{
+                                height: '3.5rem',
+                                '&:hover': { bgcolor: '#A3A9FE80' },
+                            }}
+                        >
+                            <button
+                                onClick={handleLogout}
+                                className="w-full h-full flex flex-row items-center"
+                            >
+                                <ImExit
+                                    size={20}
+                                    style={{ marginRight: '0.75rem' }}
+                                />
+                                {t('navbar.logout')}
+                            </button>
+                        </ListItemButton>
+                    </>
+                ) : (
+                    <>
+                        <ListItemButton
+                            sx={{
+                                height: '3.5rem',
+                                '&:hover': { bgcolor: '#A3A9FE80' },
+                            }}
+                        >
+                            <Link
+                                to={'/login'}
+                                className="w-full h-full flex flex-row items-center"
+                            >
+                                {t('navbar.login')}
+                            </Link>
+                        </ListItemButton>
+                        <ListItemButton
+                            sx={{
+                                height: '3.5rem',
+                                '&:hover': { bgcolor: '#A3A9FE80' },
+                            }}
+                        >
+                            <Link
+                                to={'/signup'}
+                                className="w-full h-full flex flex-row items-center"
+                            >
+                                {t('navbar.signup')}
+                            </Link>
+                        </ListItemButton>
+                    </>
+                )}
 
                 <ListItemButton
                     onClick={handleProfileClick}
