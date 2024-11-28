@@ -68,12 +68,6 @@ const TrainingDetailsPage = () => {
     };
 
     const handleSubmit = async () => {
-        if (alreadyApplied) {
-            alert('You have already applied to this training.');
-            handleApplyModalToggle();
-            return;
-        }
-
         if (applied === null) {
             setErrorMessage('Let us know if you have applied!');
             return;
@@ -82,6 +76,12 @@ const TrainingDetailsPage = () => {
         if (applied === false) {
             handleApplyModalToggle();
             setErrorMessage('');
+            return;
+        }
+
+        if (alreadyApplied) {
+            alert('You have already applied to this training.');
+            handleApplyModalToggle();
             return;
         }
 
@@ -448,7 +448,7 @@ const TrainingDetailsPage = () => {
                                             }
                                             className={`relative uppercase px-6 py-2 rounded-md transition-all border-transparent border-[3px] duration-300 bg-[#85d855] text-white hover:scale-105 ${
                                                 applied
-                                                    ? 'border-green-700'
+                                                    ? 'border-green-600'
                                                     : ''
                                             }`}
                                         >
@@ -460,7 +460,7 @@ const TrainingDetailsPage = () => {
                                                 handleButtonChange(false)
                                             }
                                             className={`relative uppercase px-6 py-2 rounded-md transition-all border-transparent border-[3px] duration-300 bg-[#FF7777] text-white hover:scale-105 ${
-                                                !applied ? 'border-red-700' : ''
+                                                !applied ? 'border-red-600' : ''
                                             }`}
                                         >
                                             {t('pages.general-text.no')}

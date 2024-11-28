@@ -642,7 +642,7 @@ const MainForm = () => {
                 <button
                     type="button"
                     onClick={onSubmit}
-                    className="py-2 px-16 lg:px-24 bg-[#4F1ABE] text-white flex justify-center items-center rounded-md m-auto my-4 text-sm md:text-base"
+                    className="py-2 w-2/3 bg-[#4F1ABE] text-white flex justify-center items-center rounded-md m-auto my-4 text-sm md:text-base"
                 >
                     {isOrg
                         ? t('signup-page.finish')
