@@ -429,7 +429,7 @@ const VolunteeringDetailsPage = () => {
                                             }
                                             className={`relative uppercase px-6 py-2 rounded-md transition-all border-transparent border-[3px] duration-300 bg-[#85d855] text-white hover:scale-105 ${
                                                 applied
-                                                    ? 'border-green-700'
+                                                    ? 'border-green-600'
                                                     : ''
                                             }`}
                                         >
@@ -441,7 +441,7 @@ const VolunteeringDetailsPage = () => {
                                                 handleButtonChange(false)
                                             }
                                             className={`relative uppercase px-6 py-2 rounded-md transition-all border-transparent border-[3px] duration-300 bg-[#FF7777] text-white hover:scale-105 ${
-                                                !applied ? 'border-red-700' : ''
+                                                !applied ? 'border-red-600' : ''
                                             }`}
                                         >
                                             {t('pages.general-text.no')}
