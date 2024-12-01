@@ -55,12 +55,15 @@ const CarouselCard = ({
 
             if (response.ok) {
                 setHeart(!heart);
-                onToggleFavorite(id);
+                onToggleFavorite(id, card_type);
                 const result = await response.json();
                 console.log('API response:', result);
             } else {
                 const errorText = await response.text();
-                console.error('Error response:', errorText);
+                console.error(
+                    `Error response (${response.status}):`,
+                    errorText
+                );
             }
         } catch (error) {
             console.error('Network error:', error);

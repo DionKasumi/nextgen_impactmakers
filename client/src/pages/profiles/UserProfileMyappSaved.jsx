@@ -19,7 +19,7 @@ const UserProfileMyappSaved = () => {
                 const response = await axios.get(
                     'http://localhost:8080/api/user/profile',
                     {
-                        withCredentials: true, // Include session credentials
+                        withCredentials: true,
                     }
                 );
                 setUsername(response.data.username);
@@ -50,7 +50,7 @@ const UserProfileMyappSaved = () => {
         fetchUserData();
         fetchFavorites();
     }, []);
-    const handleRemoveFavorite = async (cardId) => {
+    const handleRemoveFavorite = async (cardId, cardType) => {
         setRemovingId(cardId);
         setTimeout(async () => {
             try {
@@ -58,11 +58,20 @@ const UserProfileMyappSaved = () => {
                     method: 'DELETE',
                     credentials: 'include',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ card_id: cardId }),
+                    body: JSON.stringify({
+                        card_id: cardId,
+                        card_type: cardType,
+                    }),
                 });
 
                 setFavorites((prevFavorites) =>
-                    prevFavorites.filter((fav) => fav.card_id !== cardId)
+                    prevFavorites.filter(
+                        (fav) =>
+                            !(
+                                fav.card_id === cardId &&
+                                fav.card_type === cardType
+                            )
+                    )
                 );
                 setNotification('Favorite removed successfully!');
                 setTimeout(() => setNotification(''), 2000);
@@ -71,6 +80,7 @@ const UserProfileMyappSaved = () => {
             }
         }, 500);
     };
+
     return (
         <div className="min-h-screen w-full bg-custom-gradient-2 flex flex-col items-center py-20 relative">
             <img
@@ -149,7 +159,12 @@ const UserProfileMyappSaved = () => {
                                 card_source={fav.card_source}
                                 card_type={fav.card_type}
                                 isFavorite={true}
-                                onToggleFavorite={handleRemoveFavorite}
+                                onToggleFavorite={() =>
+                                    handleRemoveFavorite(
+                                        fav.card_id,
+                                        fav.card_type
+                                    )
+                                }
                             />
                         </div>
                     ))}

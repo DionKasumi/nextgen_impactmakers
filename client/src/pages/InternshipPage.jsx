@@ -7,7 +7,6 @@ import SkeletonCard from '../components/SkeletonCard';
 import Footer from '../components/Footer';
 import { useTranslation } from 'react-i18next';
 
-// Function to fetch internships data from the API
 const fetchInternships = async () => {
     try {
         const response = await axios.get(
@@ -23,9 +22,14 @@ const fetchFavorites = async () => {
     try {
         const response = await axios.get(
             'http://localhost:8080/api/favorites',
-            { withCredentials: true }
+            {
+                withCredentials: true,
+            }
         );
-        return (response.data || []).map((fav) => fav.card_id);
+
+        return (response.data || []).map(
+            (fav) => `${fav.card_id}-${fav.card_type}`
+        );
     } catch (error) {
         console.error('Error fetching favorites:', error);
         return [];
@@ -63,9 +67,11 @@ const CardsContainer = ({
                               card_price={internship.price}
                               card_source={internship.source}
                               card_type="internships"
-                              isFavorite={favoriteIds.includes(internship.id)}
+                              isFavorite={favoriteIds.includes(
+                                  `${internship.id}-internships`
+                              )}
                               onToggleFavorite={() =>
-                                  toggleFavorite(internship.id)
+                                  toggleFavorite(internship.id, 'internships')
                               }
                           />
                       ))
@@ -134,23 +140,25 @@ const InternshipsPage = () => {
     const handleFilterToggle = (val) => {
         setIsFilterOpen(!val);
     };
-    const toggleFavorite = async (id) => {
+    const toggleFavorite = async (id, type) => {
         try {
-            const isFavorite = favoriteIds.includes(id);
+            const isFavorite = favoriteIds.includes(`${id}-${type}`);
             const method = isFavorite ? 'DELETE' : 'POST';
+
             await axios({
                 method,
                 url: `http://localhost:8080/api/favorites/${
                     method === 'POST' ? 'add' : 'remove'
                 }`,
-                data: { card_id: id, card_type: 'internships' },
+                data: { card_id: id, card_type: type },
                 withCredentials: true,
                 headers: { 'Content-Type': 'application/json' },
             });
 
-            // Update UI immediately
             setFavoriteIds((prev) =>
-                isFavorite ? prev.filter((fid) => fid !== id) : [...prev, id]
+                isFavorite
+                    ? prev.filter((fav) => fav !== `${id}-${type}`)
+                    : [...prev, `${id}-${type}`]
             );
         } catch (error) {
             console.error('Failed to update favorite status:', error);
