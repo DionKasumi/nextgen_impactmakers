@@ -7,7 +7,6 @@ import axios from 'axios';
 import Footer from '../components/Footer';
 import { useTranslation } from 'react-i18next';
 
-// Function to fetch course data from the API
 const fetchVolunteerings = async () => {
     try {
         const response = await axios.get(
@@ -28,7 +27,10 @@ const fetchFavorites = async () => {
                 withCredentials: true,
             }
         );
-        return (response.data || []).map((fav) => fav.card_id);
+
+        return (response.data || []).map(
+            (fav) => `${fav.card_id}-${fav.card_type}`
+        );
     } catch (error) {
         console.error('Error fetching favorites:', error);
         return [];
@@ -66,9 +68,11 @@ const CardsContainer = ({
                               card_price={volunteer.price}
                               card_source={volunteer.source}
                               card_type="volunteering"
-                              isFavorite={favoriteIds.includes(volunteer.id)}
+                              isFavorite={favoriteIds.includes(
+                                  `${volunteer.id}-volunteering`
+                              )}
                               onToggleFavorite={() =>
-                                  toggleFavorite(volunteer.id)
+                                  toggleFavorite(volunteer.id, 'volunteering')
                               }
                           />
                       ))
@@ -137,22 +141,25 @@ const VolunteeringPage = () => {
     const handleFilterToggle = (val) => {
         setIsFilterOpen(!val);
     };
-    const toggleFavorite = async (id) => {
+    const toggleFavorite = async (id, type) => {
         try {
-            const isFavorite = favoriteIds.includes(id);
+            const isFavorite = favoriteIds.includes(`${id}-${type}`);
             const method = isFavorite ? 'DELETE' : 'POST';
+
             await axios({
                 method,
                 url: `http://localhost:8080/api/favorites/${
                     method === 'POST' ? 'add' : 'remove'
                 }`,
-                data: { card_id: id, card_type: 'volunteering' },
+                data: { card_id: id, card_type: type },
                 withCredentials: true,
                 headers: { 'Content-Type': 'application/json' },
             });
 
             setFavoriteIds((prev) =>
-                isFavorite ? prev.filter((fid) => fid !== id) : [...prev, id]
+                isFavorite
+                    ? prev.filter((fav) => fav !== `${id}-${type}`)
+                    : [...prev, `${id}-${type}`]
             );
         } catch (error) {
             console.error('Failed to update favorite status:', error);
