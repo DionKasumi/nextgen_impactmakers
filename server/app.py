@@ -1593,5 +1593,87 @@ def remove_application():
         cursor.close()
         db.close()
 
+
+## API Submit Testimonials
+
+@app.route('/api/submit_testimonial', methods=['POST'])
+def submit_testimonial():
+    if 'user_email' not in session:
+        return jsonify({"error": "Unauthorized. Please log in."}), 401
+
+    data = request.get_json()
+    testimonial = data.get("testimonial", "")
+    rating = data.get("rating")
+
+    if not testimonial or rating is None:
+        return jsonify({"error": "Testimonial and Rating are required."}), 400
+
+    user_email = session['user_email']
+
+    try:
+        # Connect to the database
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+
+        # Get the card_id and card_type for the user from the applications table
+        query = """
+        SELECT card_id, card_type FROM applications
+        WHERE user_email = %s
+        """
+        cursor.execute(query, (user_email,))
+        application = cursor.fetchone()
+
+        if application:
+            card_id, card_type = application
+
+            # Update the testimonial and rating in the applications table
+            update_query = """
+            UPDATE applications
+            SET testimonial = %s, rating = %s
+            WHERE user_email = %s AND card_id = %s AND card_type = %s
+            """
+            cursor.execute(update_query, (testimonial, rating, user_email, card_id, card_type))
+            db.commit()
+            cursor.close()
+
+            return jsonify({"message": "Testimonial submitted successfully."}), 201
+        else:
+            return jsonify({"error": "Application not found for the user."}), 404
+
+    except MySQLdb.Error as e:
+        print(f"MySQL error during testimonial submission: {e}")
+        return jsonify({"error": f"MySQL error: {e}"}), 500
+    finally:
+        db.close()
+
+
+## API Fetch Testimonials
+
+@app.route('/api/courses/<int:id>/testimonials', methods=['GET'])
+def get_testimonials(id):
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+        
+        query = """
+        SELECT p.username, a.testimonial, a.rating
+        FROM applications a
+        INNER JOIN participants p ON a.user_email = p.email
+        WHERE a.card_id = %s AND a.testimonial IS NOT NULL AND a.testimonial != ''
+        """
+        cursor.execute(query, (id,))
+        testimonials = cursor.fetchall()
+        
+        testimonials_list = [
+            {"username": row[0], "testimonial": row[1], "rating": row[2]} for row in testimonials
+        ]
+        return jsonify(testimonials_list), 200
+    except MySQLdb.Error as e:
+        print(f"MySQL error during fetching testimonials: {e}")
+        return jsonify({"error": f"MySQL error: {e}"}), 500
+    finally:
+        db.close()
+
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8080)

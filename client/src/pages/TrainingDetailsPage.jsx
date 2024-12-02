@@ -20,32 +20,38 @@ const fetchCourse = async (id) => {
         console.error(`Error fetching course with id-${id}:`, error);
         return [];
     }
-};
+}; 
 
-const TestimonialCard = () => {
+
+
+const TestimonialCard = ({ username, testimonial, rating }) => {
     return (
         <div className="bg-[#44FFD1] w-full sm:w-3/4 md:w-2/4 h-auto p-6 flex flex-row justify-center items-center gap-10">
-            {/* Testimonial Card */}
             <div className="font-bold">
-                <h2>Username</h2>
+                <h2>{username || "N/A"}</h2>
             </div>
             <div>
                 <p className="text-sm mb-2 text-wrap text-ellipsis overflow-hidden whitespace-nowrap line-clamp-4">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Nemo ratione eligendi dignissimos tempora adipisci, ullam
-                    autem ad praesentium aspernatur.
+                    {testimonial || "Visit Source for More Info"}
                 </p>
                 <div className="flex flex-row">
-                    <IoMdStar className="scale-150 mr-1" />
-                    <IoMdStar className="scale-150 mx-1" />
-                    <IoMdStar className="scale-150 mx-1" />
-                    <IoMdStar className="scale-150 mx-1" />
-                    <IoMdStarOutline className="scale-150 ml-1" />
+                    {[...Array(5)].map((_, index) => (
+                        <span key={index}>
+                            {index < rating ? (
+                                <IoMdStar className="scale-150 mr-1" />
+                            ) : (
+                                <IoMdStarOutline className="scale-150 mr-1" />
+                            )}
+                        </span>
+                    ))}
                 </div>
             </div>
         </div>
     );
 };
+
+
+
 
 const TrainingDetailsPage = () => {
     const { id } = useParams();
@@ -103,6 +109,30 @@ const TrainingDetailsPage = () => {
             setErrorMessage('Failed to save application. Please try again.');
         }
     };
+
+
+
+    const [testimonials, setTestimonials] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const courseData = await fetchCourse(id);
+            setCourse(courseData);
+    
+            // Fetch testimonials for this specific course
+            try {
+                const response = await axios.get(`http://localhost:8080/api/courses/${id}/testimonials`);
+                console.log('Fetched testimonials:', response.data); // Log the testimonials
+                setTestimonials(response.data); // Store the testimonials in state
+            } catch (error) {
+                console.error('Error fetching testimonials:', error);
+            }
+        };
+        fetchData();
+    }, [id]);
+    
+    
+    
 
     useEffect(() => {
         const fetchData = async () => {
@@ -391,13 +421,21 @@ const TrainingDetailsPage = () => {
                             </div>
                         </div>
                         {/* Testimonials Content Div */}
-                        <h1 className="font-bold text-2xl mb-12 mt-20">
+                        <h1 className="font-bold text-2xl mb-12 mt-32"> {/* Added mt-20 to give gap */}
                             {t('pages.general-text.evit-details.testimonials')}
                         </h1>
                         <div className="w-2/3 h-auto flex flex-col xl:flex-row justify-between items-center gap-5 mb-16">
-                            <TestimonialCard />
-                            <TestimonialCard />
-                            <TestimonialCard />
+                            {[...Array(3)].map((_, index) => {
+                                const testimonial = testimonials[index] || { username: "N/A", testimonial: "Visit Source for More Info", rating: 0 };
+                                return (
+                                    <TestimonialCard
+                                        key={index}
+                                        username={testimonial.username}
+                                        testimonial={testimonial.testimonial}
+                                        rating={testimonial.rating}
+                                    />
+                                );
+                            })}
                         </div>
                     </div>
 
