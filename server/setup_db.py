@@ -157,11 +157,6 @@ def create_database():
         );
         """)
 
-
-        #########################################################
-        # UPDATES FROM INITIAL SETUP GO HERE...
-        #########################################################
-
         # Function to check if a column exists
         def column_exists(table, column):
             cursor.execute(f"""
