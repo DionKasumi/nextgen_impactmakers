@@ -8,7 +8,7 @@ import mysql.connector
 from db_config import db_params
 
 
-## Integrate the setup_db.py to run each time the app starts 
+
 from setup_db import create_database
 
 create_database()
@@ -16,15 +16,14 @@ create_database()
 
 app = Flask(__name__)
 
-# Configure CORS to allow credentials (cookies) to be sent from cross-origin requests
+
 CORS(app, supports_credentials=True)
 
-# Set a secret key for session management
+
 app.secret_key = secrets.token_hex(16)
 
-# Configure session cookie settings for cross-origin requests
-app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Set to 'None' for strict cross-origin environments
-app.config['SESSION_COOKIE_SECURE'] = False    # Disable secure cookies for development (set to True in production if using HTTPS)
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  
+app.config['SESSION_COOKIE_SECURE'] = False    
 
 
 # Database connection parameters
@@ -1258,9 +1257,9 @@ def get_user_profile():
         return jsonify({"error": "User not logged in"}), 401
 
     user_email = session['user_email']
-    user_type = session['user_type']  # This could be 'participant' or 'organization'
+    user_type = session['user_type']  
     
-    # Initialize an empty response dictionary
+    
     user_data = {}
 
     try:
@@ -1275,7 +1274,6 @@ def get_user_profile():
         cursor.execute(query, [user_email])
         user_data = cursor.fetchone() or {}
 
-        # Add session data if required
         if 'preferences' in session:
             user_data['preferences'] = session['preferences']
         
@@ -1288,7 +1286,7 @@ def get_user_profile():
 
     return jsonify(user_data), 200
 
-# --- User Update Route ---
+
 @app.route('/api/user/update', methods=['PUT'])
 def update_user():
     if 'user_id' not in session or 'user_type' not in session:
@@ -1298,7 +1296,7 @@ def update_user():
     user_type = session['user_type']
     data = request.json
 
-    # Define allowed fields based on user type
+    
     if user_type == 'participant':
         allowed_fields = {
             'email': 'email',
@@ -1320,20 +1318,20 @@ def update_user():
     else:
         return jsonify({"error": "Invalid user type"}), 400
 
-    # Filter data to only include allowed fields
+    
     update_data = {allowed_fields[k]: v for k, v in data.items() if k in allowed_fields}
 
     if not update_data:
         return jsonify({"error": "No valid fields to update"}), 400
 
-    # Prepare update query
+    
     placeholders = ', '.join(f"{key} = %s" for key in update_data.keys())
     values = list(update_data.values())
-    values.append(user_id)  # Add user_id as the last parameter for WHERE clause
+    values.append(user_id)  
 
     query = f"UPDATE {table_name} SET {placeholders} WHERE id = %s"
 
-    # Execute query
+    
     try:
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor()
@@ -1350,7 +1348,7 @@ def update_user():
 def add_favorite():
 
     if 'user_id' not in session:
-        print("User ID not found in session.")  # Debug statement
+        print("User ID not found in session.") 
         return jsonify({"error": "User not logged in"}), 401
 
     data = request.get_json()
@@ -1358,13 +1356,13 @@ def add_favorite():
     card_type = data.get('card_type')
     user_id = session['user_id']
     
-    print(f"Attempting to add favorite - User ID: {user_id}, Card ID: {card_id}, Card Type: {card_type}")  # Debug statement
+    print(f"Attempting to add favorite - User ID: {user_id}, Card ID: {card_id}, Card Type: {card_type}")  
 
     try:
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor()
 
-        # Check if the favorite already exists
+        
         check_query = """
         SELECT COUNT(*) FROM favorites WHERE participant_id = %s AND card_id = %s AND card_type = %s
         """
@@ -1372,10 +1370,10 @@ def add_favorite():
         (count,) = cursor.fetchone()
 
         if count > 0:
-            print("Favorite already exists in the database")  # Debug statement
+            print("Favorite already exists in the database")  
             return jsonify({"message": "Already in favorites"}), 200
 
-        # Insert if it doesn't already exist
+        
         query = """
         INSERT INTO favorites (participant_id, card_id, card_type) VALUES (%s, %s, %s)
         """
@@ -1422,46 +1420,56 @@ def get_favorites():
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
 
-        # Get the favorites for the user
+        
         cursor.execute("SELECT card_id, card_type FROM favorites WHERE participant_id = %s", (user_id,))
         favorites = cursor.fetchall()
 
         detailed_favorites = []
 
+        queries = {
+            'courses': """
+                SELECT id AS card_id, title AS card_title, image_url AS card_img, duration AS card_duration,
+                       description AS card_description, price AS card_price, source AS card_source
+                FROM all_courses WHERE id = %s
+            """,
+            'internships': """
+                SELECT id AS card_id, title AS card_title, image_url AS card_img, duration AS card_duration,
+                       description AS card_description, salary AS card_price, source AS card_source
+                FROM all_internships WHERE id = %s
+            """,
+            'events': """
+                SELECT id AS card_id, title AS card_title, image_url AS card_img, duration AS card_duration,
+                       '' AS card_description, '' AS card_price, source AS card_source
+                FROM all_events WHERE id = %s
+            """,
+            'volunteering': """
+                SELECT id AS card_id, title AS card_title, image_url AS card_img, duration AS card_duration,
+                       cause AS card_description, '' AS card_price, source AS card_source
+                FROM all_volunteering WHERE id = %s
+            """
+        }
+
         for fav in favorites:
             card_id = fav['card_id']
             card_type = fav['card_type']
-            print(f"Fetching details for card_id {card_id} of type {card_type}")  # Debug print
+            print(f"Fetching details for card_id {card_id} of type {card_type}")  
 
-            query = None
-            if card_type == 'courses':
-                query = "SELECT id AS card_id, title AS card_title, image_url AS card_img, duration AS card_duration, description AS card_description, price AS card_price, source AS card_source FROM all_courses WHERE id = %s"
-            elif card_type == 'internships':
-                query = "SELECT id AS card_id, title AS card_title, image_url AS card_img, duration AS card_duration, description AS card_description, salary AS card_price, source AS card_source FROM all_internships WHERE id = %s"
-            elif card_type == 'events':
-                query = "SELECT id AS card_id, title AS card_title, image_url AS card_img, duration AS card_duration, '' AS card_description, '' AS card_price, source AS card_source FROM all_events WHERE id = %s"
-            elif card_type == 'volunteering':
-                query = "SELECT id AS card_id, title AS card_title, image_url AS card_img, duration AS card_duration, cause AS card_description, '' AS card_price, source AS card_source FROM all_volunteering WHERE id = %s"
-
-            if query:
-                cursor.execute(query, (card_id,))
+            if card_type in queries:
+                cursor.execute(queries[card_type], (card_id,))
                 result = cursor.fetchone()
-                print("Result for current favorite:", result)  # Debug print
                 if result:
+                    result['card_type'] = card_type
                     detailed_favorites.append(result)
 
         cursor.close()
         db.close()
-        print("Detailed Favorites List:", detailed_favorites)
-        response = jsonify(detailed_favorites)
-        print("JSON Response after jsonify:", response)
-        return response, 200
-
+        return jsonify(detailed_favorites), 200
 
     except MySQLdb.Error as e:
         print(f"MySQL error: {e}")
         return jsonify({"error": "Failed to fetch favorites"}), 500
-# Add application logic
+
+
 @app.route('/api/applications/add', methods=['POST'])
 def add_application():
     if 'user_email' not in session:
@@ -1479,7 +1487,7 @@ def add_application():
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor()
 
-        # Check if the application already exists for this card_id and card_type
+        
         check_query = """
         SELECT COUNT(*) FROM applications WHERE user_email = %s AND card_id = %s AND card_type = %s
         """
@@ -1489,7 +1497,7 @@ def add_application():
         if count > 0:
             return jsonify({"message": "Application already exists for this card"}), 200
 
-        # Insert new application
+        
         query = """
         INSERT INTO applications (user_email, card_id, card_type, testimonial, rating)
         VALUES (%s, %s, %s, '', 0)
@@ -1514,7 +1522,7 @@ def get_applications():
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
 
-        # Fetch basic applications data
+        
         cursor.execute("""
             SELECT card_id, card_type FROM applications WHERE user_email = %s
         """, (user_email,))

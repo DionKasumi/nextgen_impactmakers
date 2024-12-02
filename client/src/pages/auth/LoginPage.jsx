@@ -145,6 +145,33 @@ const LoginPage = () => {
                         <h2 className="text-xl text-black font-bold mt-12 mb-4">
                             {t('login-page.login')}
                         </h2>
+
+                        {/* Toggle between Participant and Organization */}
+                        <div className="w-full flex justify-between mb-4 space-x-8">
+                            <button
+                                type="button"
+                                className={`py-2 w-1/2 rounded-md focus:outline-none transition-all duration-300 ${
+                                    !isOrg
+                                        ? 'bg-[#4F1ABE] text-white'
+                                        : 'bg-[#E0E0E0] text-[#4F1ABE] hover:bg-[#C5C5C5]'
+                                }`}
+                                onClick={(e) => setIsOrg(false)}
+                            >
+                                {t('login-page.user-type.participant')}
+                            </button>
+                            <button
+                                type="button"
+                                className={`py-2 w-1/2 rounded-md focus:outline-none transition-all duration-300 ${
+                                    isOrg
+                                        ? 'bg-[#4F1ABE] text-white'
+                                        : 'bg-[#E0E0E0] text-[#4F1ABE] hover:bg-[#C5C5C5]'
+                                }`}
+                                onClick={(e) => setIsOrg(true)}
+                            >
+                                {t('login-page.user-type.organization')}
+                            </button>
+                        </div>
+
                         <Box
                             component="div"
                             sx={{
@@ -196,45 +223,22 @@ const LoginPage = () => {
                                     onChange={(e) => setRememberMe(!rememberMe)}
                                     className="mr-2 w-4"
                                 />
-                                <h1 className="font-medium">
+                                <h1 className="font-medium text-sm md:text-base">
                                     {t('login-page.remember-me')}
                                 </h1>
                             </div>
 
-                            <Link to={'/login'} className="font-medium">
+                            <Link
+                                to={'/login'}
+                                className="font-medium text-sm md:text-base"
+                            >
                                 {t('login-page.forgot-password')}
                             </Link>
                         </div>
 
-                        {/* Toggle between Participant and Organization */}
-                        <div className="w-full flex justify-between mb-4">
-                            <button
-                                type="button"
-                                className={`py-2 px-3 sm:px-6 md:px-8 rounded-md focus:outline-none transition-all duration-300 ${
-                                    !isOrg
-                                        ? 'bg-[#4F1ABE] text-white'
-                                        : 'bg-[#E0E0E0] text-[#4F1ABE] hover:bg-[#C5C5C5]'
-                                }`}
-                                onClick={(e) => setIsOrg(false)}
-                            >
-                                {t('login-page.user-type.participant')}
-                            </button>
-                            <button
-                                type="button"
-                                className={`py-2 px-3 sm:px-6 md:px-8 rounded-md focus:outline-none transition-all duration-300 ${
-                                    isOrg
-                                        ? 'bg-[#4F1ABE] text-white'
-                                        : 'bg-[#E0E0E0] text-[#4F1ABE] hover:bg-[#C5C5C5]'
-                                }`}
-                                onClick={(e) => setIsOrg(true)}
-                            >
-                                {t('login-page.user-type.organization')}
-                            </button>
-                        </div>
-
                         <button
                             type="button"
-                            className="py-2 px-24 bg-[#4F1ABE] text-white flex justify-center items-center rounded-md m-auto mb-4 text-sm md:text-base hover:bg-[#3E1399] transition-all duration-300"
+                            className="py-2 w-2/3 bg-[#4F1ABE] text-white flex justify-center items-center rounded-md m-auto mb-4 text-sm md:text-base hover:bg-[#3E1399] transition-all duration-300"
                             onClick={onSubmit}
                         >
                             {t('login-page.login')}

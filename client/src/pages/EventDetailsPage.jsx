@@ -69,12 +69,6 @@ const EventDetailsPage = () => {
     };
 
     const handleSubmit = async () => {
-        if (alreadyApplied) {
-            alert('You have already applied to this event.');
-            handleApplyModalToggle();
-            return;
-        }
-
         if (applied === null) {
             setErrorMessage('Let us know if you have applied!');
             return;
@@ -83,6 +77,12 @@ const EventDetailsPage = () => {
         if (applied === false) {
             handleApplyModalToggle(); // Close modal without saving
             setErrorMessage('');
+            return;
+        }
+
+        if (alreadyApplied) {
+            alert('You have already applied to this event.');
+            handleApplyModalToggle();
             return;
         }
 
@@ -436,7 +436,7 @@ const EventDetailsPage = () => {
                         <div className="fixed inset-0 flex items-center justify-center p-4 bg-black bg-opacity-50">
                             <div className="relative w-full max-w-lg bg-white shadow-lg rounded-3xl flex flex-col justify-center p-8">
                                 <h1 className="text-black text-2xl mb-6 text-center">
-                                    Did you apply?
+                                    {t('pages.general-text.did-you-apply')}
                                 </h1>
                                 <div className="flex flex-col items-center space-y-4 mb-6">
                                     <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
@@ -446,22 +446,22 @@ const EventDetailsPage = () => {
                                             }
                                             className={`relative uppercase px-6 py-2 rounded-md transition-all border-transparent border-[3px] duration-300 bg-[#85d855] text-white hover:scale-105 ${
                                                 applied
-                                                    ? 'border-green-500'
+                                                    ? 'border-green-600'
                                                     : ''
                                             }`}
                                         >
-                                            yes
+                                            {t('pages.general-text.yes')}
                                         </button>
-                                        <p>or</p>
+                                        <p>{t('pages.general-text.or')}</p>
                                         <button
                                             onClick={() =>
                                                 handleButtonChange(false)
                                             }
                                             className={`relative uppercase px-6 py-2 rounded-md transition-all border-transparent border-[3px] duration-300 bg-[#FF7777] text-white hover:scale-105 ${
-                                                !applied ? 'border-red-500' : ''
+                                                !applied ? 'border-red-600' : ''
                                             }`}
                                         >
-                                            no
+                                            {t('pages.general-text.no')}
                                         </button>
                                     </div>
                                 </div>
@@ -475,7 +475,9 @@ const EventDetailsPage = () => {
                                         onClick={handleSubmit}
                                         className="bg-[#4F1ABE] text-white text-lg py-2 w-1/2 rounded-lg hover:scale-105 transition-transform"
                                     >
-                                        <span>Submit</span>
+                                        <span>
+                                            {t('pages.general-text.submit')}
+                                        </span>
                                     </button>
                                 </div>
                             </div>
