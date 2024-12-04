@@ -1511,6 +1511,8 @@ def add_application():
         cursor.close()
         db.close()
 
+
+## API to fetch Applications
 @app.route('/api/applications', methods=['GET'])
 def get_applications():
     if 'user_email' not in session:
@@ -1522,9 +1524,11 @@ def get_applications():
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
 
-        
+        # Fetch all applications for the user
         cursor.execute("""
-            SELECT card_id, card_type FROM applications WHERE user_email = %s
+            SELECT card_id, card_type 
+            FROM applications 
+            WHERE user_email = %s
         """, (user_email,))
         applications = cursor.fetchall()
 
@@ -1564,6 +1568,8 @@ def get_applications():
                 cursor.execute(query, (card_id,))
                 result = cursor.fetchone()
                 if result:
+                    # Add card_type explicitly to the result (it was missing)
+                    result['card_type'] = card_type
                     detailed_applications.append(result)
 
         return jsonify(detailed_applications), 200
@@ -1572,6 +1578,9 @@ def get_applications():
     finally:
         cursor.close()
         db.close()
+
+
+## API to delete Applications
 @app.route('/api/applications/remove', methods=['DELETE'])
 def remove_application():
     if 'user_email' not in session:
@@ -1603,38 +1612,36 @@ def remove_application():
 
 
 ## API Submit Testimonials
-
 @app.route('/api/submit_testimonial', methods=['POST'])
 def submit_testimonial():
     if 'user_email' not in session:
         return jsonify({"error": "Unauthorized. Please log in."}), 401
 
     data = request.get_json()
-    testimonial = data.get("testimonial", "")
+    testimonial = data.get("testimonial")
     rating = data.get("rating")
+    card_id = data.get("card_id")
+    card_type = data.get("card_type")
 
-    if not testimonial or rating is None:
-        return jsonify({"error": "Testimonial and Rating are required."}), 400
+    if not testimonial or rating is None or not card_id or not card_type:
+        return jsonify({"error": "Testimonial, Rating, Card ID, and Card Type are required."}), 400
 
     user_email = session['user_email']
 
     try:
-        # Connect to the database
         db = MySQLdb.connect(**db_params)
         cursor = db.cursor()
 
-        # Get the card_id and card_type for the user from the applications table
+        # Verify application existence
         query = """
-        SELECT card_id, card_type FROM applications
-        WHERE user_email = %s
+        SELECT id FROM applications
+        WHERE user_email = %s AND card_id = %s AND card_type = %s
         """
-        cursor.execute(query, (user_email,))
+        cursor.execute(query, (user_email, card_id, card_type))
         application = cursor.fetchone()
 
         if application:
-            card_id, card_type = application
-
-            # Update the testimonial and rating in the applications table
+            # Update testimonial and rating
             update_query = """
             UPDATE applications
             SET testimonial = %s, rating = %s
@@ -1643,10 +1650,9 @@ def submit_testimonial():
             cursor.execute(update_query, (testimonial, rating, user_email, card_id, card_type))
             db.commit()
             cursor.close()
-
             return jsonify({"message": "Testimonial submitted successfully."}), 201
         else:
-            return jsonify({"error": "Application not found for the user."}), 404
+            return jsonify({"error": "Application not found for the user with the given Card ID and Card Type."}), 404
 
     except MySQLdb.Error as e:
         print(f"MySQL error during testimonial submission: {e}")
@@ -1656,7 +1662,6 @@ def submit_testimonial():
 
 
 ## API Fetch Testimonials
-
 @app.route('/api/courses/<int:id>/testimonials', methods=['GET'])
 def get_testimonials(id):
     try:
@@ -1681,6 +1686,90 @@ def get_testimonials(id):
         return jsonify({"error": f"MySQL error: {e}"}), 500
     finally:
         db.close()
+
+
+## API for the Manage Testimonials in Admin Panel
+@app.route('/api/admin/testimonials', methods=['GET'])
+def get_all_testimonials():
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+
+        # Updated query to include user_email
+        query = """
+        SELECT p.username, a.testimonial, a.rating, a.card_id, a.card_type, a.user_email
+        FROM applications a
+        INNER JOIN participants p ON a.user_email = p.email
+        WHERE a.testimonial IS NOT NULL AND a.testimonial != ''
+        """
+        cursor.execute(query)
+        testimonials = cursor.fetchall()
+
+        testimonials_list = [
+            {
+                "username": row[0],
+                "testimonial": row[1],
+                "rating": row[2],
+                "card_id": row[3],
+                "card_type": row[4],
+                "user_email": row[5]
+            }
+            for row in testimonials
+        ]
+        return jsonify(testimonials_list), 200
+    except MySQLdb.Error as e:
+        print(f"MySQL error during fetching testimonials: {e}")
+        return jsonify({"error": f"MySQL error: {e}"}), 500
+    finally:
+        db.close()
+
+
+
+## API to Delete Testimonials 
+@app.route('/api/admin/update_testimonial', methods=['POST'])
+def update_testimonial():
+    db = None  
+
+    try:
+        # Parse the incoming data
+        data = request.get_json()
+
+        # Log the received data for debugging
+        print(f"Received payload: {data}")
+
+        card_id = data.get('card_id')
+        user_email = data.get('user_email')
+
+        # Validate data
+        if not card_id or not user_email:
+            return jsonify({"error": "Card ID and User Email are required."}), 400
+
+        # Connect to the database
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor()
+
+        # Update the testimonial and rating columns to delete the testimonial
+        update_query = """
+        UPDATE applications
+        SET testimonial = NULL, rating = 0
+        WHERE card_id = %s AND user_email = %s
+        """
+        cursor.execute(update_query, (card_id, user_email))
+        db.commit()
+
+        # Check if any rows were affected
+        if cursor.rowcount == 0:
+            return jsonify({"error": "No testimonial found to update."}), 404
+
+        cursor.close()
+
+        return jsonify({"message": "Testimonial updated successfully."}), 200
+    except MySQLdb.Error as e:
+        print(f"MySQL error during updating testimonial: {e}")
+        return jsonify({"error": f"MySQL error: {e}"}), 500
+    finally:
+        if db:  # Ensure db connection is closed
+            db.close()
 
 
 if __name__ == '__main__':

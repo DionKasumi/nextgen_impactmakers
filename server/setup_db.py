@@ -1,12 +1,12 @@
 import MySQLdb
+import mysql.connector
+from db_config import db_params
 
-# Database connection parameters
-db_params = {
-    'user': 'root', 
-    'passwd': '1234',  
-    'host': 'localhost',
-    'port': 3306
-}
+
+# Database connection parameters from db_config.py
+def get_db_connection():
+    # Pass db_params directly
+    return mysql.connector.connect(**db_params)
 
 def create_database():
     try:
@@ -151,7 +151,7 @@ def create_database():
             user_email VARCHAR(255) NOT NULL,
             card_id INT NOT NULL,
             card_type ENUM('all_courses', 'all_events', 'all_internships', 'all_volunteering') NOT NULL,
-            testimonial TEXT,
+            testimonial TEXT NULL,
             rating INT NOT NULL,
             FOREIGN KEY (user_email) REFERENCES participants(email) ON DELETE CASCADE
         );
