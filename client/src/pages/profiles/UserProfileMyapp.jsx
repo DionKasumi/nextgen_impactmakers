@@ -108,19 +108,22 @@ const UserProfileMyapp = () => {
             <div className="w-full h-full flex justify-center items-center z-20">
                 <div className="w-3/4 h-full grid grid-cols-1 md:grid-cols-2 gap-8 justify-items-center">
                     {applications.length > 0 ? (
-                        applications.map((app) => (
-                            <RateCard
-                                key={app.card_id}
-                                id={app.card_id}
-                                card_title={app.card_title}
-                                card_img={app.card_img}
-                                card_duration={app.card_duration}
-                                card_description={app.card_description}
-                                card_price={app.card_price}
-                                card_source={app.card_source}
-                                card_type={app.card_type}
-                            />
-                        ))
+                        applications.map((app) => {
+                            console.log("Application Data for RateCard:", app); // Debug application data
+                            return (
+                                <RateCard
+                                    key={app.card_id}
+                                    id={app.card_id}
+                                    card_title={app.card_title}
+                                    card_img={app.card_img}
+                                    card_duration={app.card_duration}
+                                    card_description={app.card_description}
+                                    card_price={app.card_price}
+                                    card_source={app.card_source}
+                                    card_type={app.card_type}
+                                />
+                            );
+                        })
                     ) : (
                         <p className="text-white text-center">
                             {t('profile.participant.no-applications')}
@@ -128,7 +131,6 @@ const UserProfileMyapp = () => {
                     )}
                 </div>
             </div>
-
             <Footer withBackground={false} />
         </div>
     );

@@ -289,7 +289,10 @@
                 <thead>
                     <tr>
                         <th class="py-2 px-4 border-b">Username</th>
+                        <th class="py-2 px-4 border-b">Card ID</th>
+                        <th class="py-2 px-4 border-b">Card Type</th>
                         <th class="py-2 px-4 border-b">Testimonial</th>
+                        <th class="py-2 px-4 border-b">Rating</th>
                         <th class="py-2 px-4 border-b">Actions</th>
                     </tr>
                 </thead>
@@ -297,6 +300,7 @@
                 </tbody>
             </table>
         </div>
+
 
 
     <script>
@@ -1028,6 +1032,118 @@
 
 
 
+            // Function to delete (update) the testimonial
+            function deleteTestimonial(cardId, userEmail, rowElement) {
+                console.log("Function deleteTestimonial called with:", { cardId, userEmail }); // Debug log
+                if (!cardId || !userEmail) {
+                    console.error("Card ID or User Email is missing:", { cardId, userEmail });
+                    alert("Missing Card ID or User Email.");
+                    return;
+                }
+
+                fetch('http://localhost:8080/api/admin/update_testimonial', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        card_id: cardId,
+                        user_email: userEmail,
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        alert('Testimonial deleted successfully.');
+                        loadTestimonialsTable();
+                        const testimonialCell = rowElement.querySelector('td:nth-child(4)');
+                        if (testimonialCell) {
+                            testimonialCell.textContent = 'No testimonial provided';
+                        }
+                    } else {
+                        alert(data.error || 'Failed to delete testimonial.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting the testimonial.');
+                });
+            }
+
+
+
+
+            // Function to populate the Manage Testimonials table
+            function loadTestimonialsTable() {
+                fetch('http://localhost:8080/api/admin/testimonials') // Fetch all testimonials
+                    .then(response => response.json())
+                    .then(data => {
+                        const testimonialsTableBody = document.getElementById('testimonialsTableBody');
+                        testimonialsTableBody.innerHTML = ''; // Clear the table before adding new rows
+
+                        data.forEach(testimonial => {
+                            const row = document.createElement('tr');
+
+                            // Create Username Cell
+                            const usernameCell = document.createElement('td');
+                            usernameCell.textContent = testimonial.username || 'N/A';
+                            usernameCell.className = "py-2 px-4 border-b";
+                            row.appendChild(usernameCell);
+
+                            // Create Card ID Cell
+                            const cardIdCell = document.createElement('td');
+                            cardIdCell.textContent = testimonial.card_id || 'N/A';
+                            cardIdCell.className = "py-2 px-4 border-b";
+                            row.appendChild(cardIdCell);
+
+                            // Create Card Type Cell
+                            const cardTypeCell = document.createElement('td');
+                            cardTypeCell.textContent = testimonial.card_type || 'N/A';
+                            cardTypeCell.className = "py-2 px-4 border-b";
+                            row.appendChild(cardTypeCell);
+
+                            // Create Testimonial Cell
+                            const testimonialCell = document.createElement('td');
+                            testimonialCell.textContent = testimonial.testimonial || 'No testimonial provided';
+                            testimonialCell.className = "py-2 px-4 border-b";
+                            row.appendChild(testimonialCell);
+
+                            // Create Rating Cell
+                            const ratingCell = document.createElement('td');
+                            ratingCell.textContent = testimonial.rating ? `${testimonial.rating}/5` : 'No rating';
+                            ratingCell.className = "py-2 px-4 border-b";
+                            row.appendChild(ratingCell);
+
+                            // Create Actions Cell (Delete button)
+                            const actionsCell = document.createElement('td');
+                            actionsCell.className = "py-2 px-4 border-b";
+
+                            const deleteButton = document.createElement('button');
+                            deleteButton.className = "bg-red-500 text-white px-3 py-1 rounded hover:bg-red-700";
+                            deleteButton.textContent = "Delete";
+
+                            // Pass card_id and user_email to the delete function
+                            deleteButton.addEventListener('click', function() {
+                                if (confirm(`Are you sure you want to delete the testimonial from ${testimonial.username}?`)) {
+                                    deleteTestimonial(testimonial.card_id, testimonial.user_email, row);
+                                }
+                            });
+
+                            actionsCell.appendChild(deleteButton);
+                            row.appendChild(actionsCell);
+
+                            // Append the row to the table body
+                            testimonialsTableBody.appendChild(row);
+                        });
+                    })
+                    .catch(error => console.error('Error loading testimonials:', error));
+            }
+
+
+
+
+
+
             function resetSections() {
                 const sections = [
                     'banDeleteUsersTableContainer', 
@@ -1088,6 +1204,7 @@
 
             document.getElementById('manageTestimonialsLink').addEventListener('click', function() {
                 highlightActiveLink('manageTestimonialsLink');
+                loadTestimonialsTable();
                 resetSections(); 
                 document.getElementById('manageTestimonialsTableContainer').style.display = 'block';
             });

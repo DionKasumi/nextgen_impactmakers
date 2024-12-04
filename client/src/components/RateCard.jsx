@@ -16,13 +16,14 @@ import axios from 'axios';
 const RateCard = ({
     id,
     card_title,
-    card_source,
+    card_img,
     card_duration,
     card_description,
     card_price,
-    card_img,
-    card_type,
+    card_source,
+    card_type
 }) => {
+    console.log("RateCard Props:", { id, card_type }); // Log props received by RateCard
     const { t } = useTranslation();
 
     const [heart, setHeart] = useState(false);
@@ -32,12 +33,19 @@ const RateCard = ({
 
     const navigate = useNavigate();
 
+    // Navigate to each card from My Applications
     const handleClick = () => {
         if (card_type === undefined) {
             return;
         }
-        navigate(`/${card_type}/${id}`);
+        
+        // Remove "all_" from card_type
+        const formattedCardType = card_type.replace('all_', '');
+        
+        // Navigate to the formatted URL
+        navigate(`/${formattedCardType}/${id}`);
     };
+    
 
     const handleRateClick = (event) => {
         event.stopPropagation();
@@ -50,6 +58,7 @@ const RateCard = ({
         setRating(index + 1); // Set the rating based on the star's index (1 to 5)
     };
 
+
     const handleSaveChanges = async () => {
         if (!rating || !testimonial) {
             alert("Please provide both a rating and a testimonial.");
@@ -59,17 +68,22 @@ const RateCard = ({
         try {
             const response = await axios.post('http://localhost:8080/api/submit_testimonial', {
                 testimonial: testimonial,
-                rating: rating
+                rating: rating,
+                card_id: id,
+                card_type: card_type
             });
     
             if (response.status === 201) {
                 alert('Testimonial submitted successfully!');
+                setRateModalOpen(false); // Close the modal after successful submission
+            } else {
+                alert(response.data.error || 'An error occurred while submitting the testimonial.');
             }
         } catch (error) {
-            console.error('Error submitting testimonial:', error.response.data);
+            console.error('Error submitting testimonial:', error.response?.data || error.message);
+            alert('An error occurred while submitting the testimonial.');
         }
     };
-    
     
 
     const theme = createTheme({
