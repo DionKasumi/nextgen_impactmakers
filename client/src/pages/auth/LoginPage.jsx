@@ -271,6 +271,12 @@ const LoginPage = () => {
                         </div>
                     </div>
                 </form>
+                <Link
+                    to={'/'}
+                    className="text-white my-4 transition-transform hover:scale-105"
+                >
+                    {t('login-page.go-back-to-home-page')}
+                </Link>
             </div>
             {alertOpen ? (
                 <div>

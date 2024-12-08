@@ -77,6 +77,7 @@
         "password": "Password",
         "remember-me": "Më Rikujto",
         "forgot-password": "Ke Harruar Passwordin?",
+        "go-back-to-home-page": "<- Kthehu te Ballina",
         "user-type": {
             "participant": "Përdorues",
             "organization": "Organizatë"
@@ -106,6 +107,7 @@
         "description": "Pershkrimi",
         "continue": "Vazhdo",
         "finish": "Perfundo",
+        "go-back-to-home-page": "<- Kthehu te Ballina",
         "user-type": {
             "participant": "Përdorues",
             "organization": "Organizatë"

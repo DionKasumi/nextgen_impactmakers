@@ -21,6 +21,7 @@ import {
 import { IoMdClose } from 'react-icons/io';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
 const theme = createTheme({
     palette: {
@@ -675,11 +676,18 @@ const MainForm = () => {
 };
 
 const SignupPage = () => {
+    const { t } = useTranslation();
     return (
         <div className="w-screen min-h-screen h-auto flex flex-col justify-center items-center bg-[#4F1ABE]">
             <form className="w-11/12 sm:w-3/5 md:w-3/5 lg:w-2/4 h-auto max-w-md flex bg-white rounded-lg flex-col justify-center items-center px-4 md:px-8 my-4">
                 <MainForm />
             </form>
+            <Link
+                to={'/'}
+                className="text-white my-4 transition-transform hover:scale-105"
+            >
+                {t('signup-page.go-back-to-home-page')}
+            </Link>
         </div>
     );
 };
