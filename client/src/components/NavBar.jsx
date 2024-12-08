@@ -364,6 +364,25 @@ const NavBar = ({ theme }) => {
                             }}
                         >
                             <Link
+                                to={'/profile'}
+                                className="w-full h-full flex flex-row items-center"
+                                onClick={() => {
+                                    handleProfileClick();
+                                    toggleMenu(false);
+                                }}
+                            >
+                                <FaCircle className="scale-50 ml-8 mr-2" />
+                                {t('navbar.profile.items.view-profile')}
+                            </Link>
+                        </ListItemButton>
+                        <ListItemButton
+                            sx={{
+                                height: '3.5rem',
+                                padding: '0px',
+                                '&:hover': { bgcolor: '#A3A9FE80' },
+                            }}
+                        >
+                            <Link
                                 to={'/profile/edit'}
                                 className="w-full h-full flex flex-row items-center"
                                 onClick={() => {

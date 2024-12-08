@@ -36,7 +36,7 @@ const UserProfile = () => {
             />
 
             {/* Profile Header */}
-            <div className="flex flex-col items-center md:flex-row md:justify-between w-full max-w-2xl md:max-w-4xl lg:max-w-5xl p-4 mb-16 md:mb-32 z-20">
+            <div className="flex flex-col items-center md:flex-row md:justify-between w-full max-w-2xl md:max-w-4xl lg:max-w-5xl p-4 mb-8 md:mb-10 z-20">
                 <div className="flex flex-col md:flex-row items-center md:items-end space-y-4 md:space-y-0 md:space-x-4">
                     <img
                         src="/assets/icon2.png"
@@ -80,33 +80,34 @@ const UserProfile = () => {
                     </button>
                 </div>
             </div>
-            {/* Group 704 Icon in the Red Circle Position */}
-            <div className="relative flex justify-center items-center mb-4 z-20">
+
+            <div className="mb-24 sm:mb-16">
                 <img
                     src="assets/Group 704.png"
                     alt="Group Icon"
-                    className="w-10 h-10 -mb-60 ml-64 md:-mb-20 md:ml-96 sm:w-12 sm:h-12 sm:-mb-60 sm:ml-96 md:w-14 md:h-14 lg:w-16 lg:h-16"
+                    // className="w-10 h-10 -mb-60 ml-64 md:-mb-20 md:ml-96 sm:w-12 sm:h-12 sm:-mb-60 sm:ml-96 md:w-14 md:h-14 lg:w-16 lg:h-16"
+                    className="w-24 absolute left-[80%] md:left-2/3 -translate-x-1/2"
                 />
             </div>
+
             {/* Welcome */}
-            <div className="text-center mt-20 h-auto relative w-full max-w-sm md:max-w-lg mb-96 px-4 z-20">
+            <div className="text-center h-auto relative w-full max-w-sm md:max-w-lg mb-32 px-4 z-20 overflow-x-hidden">
                 <div className="space-y-8">
                     <h1 className="text-white text-2xl sm:text-3xl md:text-4xl font-semibold">
                         {t('profile.participant.welcome')},{' '}
                         {username || 'Username'}
-                        <hr className="absolute left-0 right-0 mx-auto top-12 h-1 bg-white" />
+                        <hr className="absolute left-0 right-0 mx-auto top-12 h-[2px] bg-white w-4/5" />
                     </h1>
                     <h1 className="text-white text-xl sm:text-3xl md:text-4xl font-semibold">
                         {t('profile.participant.upcoming-opportunities')}
-                        <hr className="absolute left-0 right-0 mx-auto top-full h-0.5 bg-white opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                     </h1>
-                    <h1 className="relative group text-white text-lg sm:text-xl md:text-2xl font-semibold hover:text-3xl">
+                    <h1 className="relative group text-white text-lg sm:text-xl md:text-2xl font-semibold hover:scale-105 transition-transform">
                         Opportunity 1: Deadline
                     </h1>
-                    <h1 className="relative group text-white text-lg sm:text-xl md:text-xl font-semibold hover:text-2xl">
+                    <h1 className="relative group text-white text-sm sm:text-lg md:text-xl font-semibold hover:scale-105 transition-transform">
                         Opportunity 2: Deadline
                     </h1>
-                    <h1 className="relative group text-white text-sm sm:text-lg md:text-lg font-semibold hover:text-xl">
+                    <h1 className="relative group text-white text-xs sm:text-sm md:text-lg font-semibold hover:scale-105 transition-transform">
                         Opportunity 3: Deadline
                     </h1>
                 </div>

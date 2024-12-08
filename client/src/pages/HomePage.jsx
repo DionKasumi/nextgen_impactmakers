@@ -118,19 +118,17 @@ const FirstPart = ({ favoriteIds }) => {
     const { t } = useTranslation();
 
     return (
-        <div className="w-full h-full pt-20 sm:pt-32 md:pt-40 flex flex-col justify-center items-center bg-transparent">
+        <div className="w-full h-full pt-40 sm:pt-32 md:pt-48 flex flex-col justify-center items-center bg-transparent">
             <div className="w-full min-h-svh items-center flex flex-col relative top-[15%] md:top-[20%] px-4 sm:px-8 lg:px-12">
-                <div className="flex flex-col md:flex-row items-center md:justify-center space-x-4 md:space-x-8">
+                <div className="flex flex-col md:flex-row items-center md:justify-center mb-12">
                     {/* Image Container */}
-                    <div className="flex-shrink-0">
-                        <img
-                            src="../assets/Group 703.png"
-                            alt="Decorative Image"
-                            className="w-25 h-20 mb-4 mr-24 md:mb-10 md:w-25 md:h-20 object-cover opacity-100"
-                        />
-                    </div>
+                    <img
+                        src="../assets/Group 703.svg"
+                        alt="Decorative Image"
+                        className="w-32 md:w-40 mb-8 md:absolute md:left-[15%] lg:left-1/4 md:translate-x-[-50%]"
+                    />
                     {/* Title */}
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl text-white mb-6 pr-10 md:mb-8 font-bold text-center md:text-left whitespace-nowrap">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl text-white font-bold text-center">
                         {t('pages.home-page.part-1.text-1')}
                     </h1>
                 </div>
@@ -140,7 +138,7 @@ const FirstPart = ({ favoriteIds }) => {
                         <FormControl
                             variant="filled"
                             size="small"
-                            sx={{ minWidth: 200 }}
+                            sx={{ minWidth: 250 }}
                         >
                             <InputLabel id="select-category-label">
                                 {t('pages.home-page.part-1.input')}
