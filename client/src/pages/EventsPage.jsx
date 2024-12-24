@@ -17,6 +17,22 @@ const fetchEvents = async () => {
     }
 };
 
+const fetchEventLabels = async () => {
+    try {
+        const response = await axios.get('http://localhost:8080/api/events/labels');
+        let labels = response.data;
+
+        // Filter out "Other" from the labels array
+        labels = labels.filter(label => label !== "Other");
+
+        console.log("Event labels fetched without 'Other':", labels);
+        return labels;
+    } catch (error) {
+        console.error('Error fetching event labels:', error);
+        return [];
+    }
+};
+
 const fetchFavorites = async () => {
     try {
         const response = await axios.get(
@@ -97,16 +113,21 @@ const CardsContainer = ({
 
 const EventsPage = () => {
     const [events, setEvents] = useState([]);
+    const [filteredEvents, setFilteredEvents] = useState([]);
+    const [labels, setLabels] = useState([]);
     const [visibleEvents, setVisibleEvents] = useState(6);
-    const [selectedValues, setSelectedValues] = useState({
-        minPrice: '',
-        maxPrice: '',
-    });
+    const [selectedFilters, setSelectedFilters] = useState([]);
+    const [isFilterOpen, setIsFilterOpen] = useState(true);
     const [favoriteIds, setFavoriteIds] = useState([]);
+
     useEffect(() => {
         const fetchData = async () => {
             const eventsData = await fetchEvents();
             setEvents(eventsData.data);
+            setFilteredEvents(eventsData.data);
+
+            const labelsData = await fetchEventLabels();
+            setLabels(labelsData);
 
             const favoritesData = await fetchFavorites();
             setFavoriteIds(favoritesData);
@@ -115,27 +136,43 @@ const EventsPage = () => {
     }, []);
 
     const handleChange = (event) => {
-        const { name, value } = event.target;
-        setSelectedValues((prevValues) => ({
-            ...prevValues,
-            [name]: value,
-        }));
+        const { name, value, checked } = event.target;
+        if (name === 'Events_checkbox') {
+            setSelectedFilters((prevFilters) => {
+                if (checked) return [...prevFilters, value];
+                return prevFilters.filter((filter) => filter !== value);
+            });
+        }
     };
 
-    const handleSearch = () => {
-        console.log('Search clicked', selectedValues);
+    const handleSearch = async () => {
+        try {
+            if (selectedFilters.length === 0) {
+                setFilteredEvents(events);
+            } else {
+                const response = await axios.get('http://localhost:8080/api/events/filtered', {
+                    params: { labels: selectedFilters.join(',') },
+                });
+                setFilteredEvents(Array.isArray(response.data) ? response.data : []);
+            }
+            setVisibleEvents(6);
+        } catch (error) {
+            console.error('Error fetching filtered events:', error);
+        }
+    };
+
+    const handleResetFilters = () => {
+        setSelectedFilters([]);
+        setFilteredEvents(events);
+        setVisibleEvents(6);
     };
 
     const loadMoreEvents = () => {
-        setVisibleEvents((prevVisibleEvents) => prevVisibleEvents + 6);
+        setVisibleEvents((prev) => prev + 6);
     };
 
-    const allEventsLoaded = visibleEvents >= events.length;
+    const allEventsLoaded = visibleEvents >= filteredEvents.length;
 
-    const [isFilterOpen, setIsFilterOpen] = useState(true);
-    const handleFilterToggle = (val) => {
-        setIsFilterOpen(!val);
-    };
     const toggleFavorite = async (id, type) => {
         try {
             const isFavorite = favoriteIds.includes(`${id}-${type}`);
@@ -174,157 +211,29 @@ const EventsPage = () => {
                         {t('pages.general-text.pick-up-your-preferences')}
                     </p>
                 </div>
-                {/* <div className="flex flex-row justify-between w-5/6 h-auto"> */}
                 <div className="grid grid-cols-4 w-5/6 h-auto">
                     <Filter
                         filterList={[
                             {
                                 isPrice: false,
-                                title: 'Event type',
-                                items: [
-                                    {
-                                        display: 'Arts and Culture',
-                                        name: 'type_radio',
-                                        id: 'Arts_and_Culture',
-                                        value: 'Arts and Culture',
-                                    },
-                                    {
-                                        display: 'Business',
-                                        name: 'type_radio',
-                                        id: 'Business',
-                                        value: 'Business',
-                                    },
-                                    {
-                                        display: 'Education',
-                                        name: 'type_radio',
-                                        id: 'Education',
-                                        value: 'Education',
-                                    },
-                                ],
-                            },
-                            {
-                                isPrice: false,
-                                title: 'Location',
-                                items: [
-                                    {
-                                        display: 'Prishtina',
-                                        name: 'location_radio',
-                                        id: 'prishtina',
-                                        value: 'Prishtina',
-                                    },
-                                    {
-                                        display: 'Gjilan',
-                                        name: 'location_radio',
-                                        id: 'gjilan',
-                                        value: 'Gjilan',
-                                    },
-                                    {
-                                        display: 'Prizren',
-                                        name: 'location_radio',
-                                        id: 'prizren',
-                                        value: 'Prizren',
-                                    },
-                                ],
-                            },
-
-                            {
-                                isPrice: true,
-                                title: 'Price',
-                                items: [
-                                    {
-                                        display: (
-                                            <div className="flex justify-between">
-                                                <input
-                                                    type="number"
-                                                    name="minPrice"
-                                                    placeholder="Min"
-                                                    value={
-                                                        selectedValues.minPrice
-                                                    }
-                                                    onChange={handleChange}
-                                                    className="border border-gray-400 rounded-md p-1 w-20 text-black"
-                                                />
-                                                <input
-                                                    type="number"
-                                                    name="maxPrice"
-                                                    placeholder="Max"
-                                                    value={
-                                                        selectedValues.maxPrice
-                                                    }
-                                                    onChange={handleChange}
-                                                    className="border border-gray-400 rounded-md p-1 w-20 text-black"
-                                                />
-                                            </div>
-                                        ),
-                                    },
-                                ],
-                            },
-                            {
-                                isPrice: false,
-                                title: 'Special Features',
-                                items: [
-                                    {
-                                        display: 'Virtual Events',
-                                        name: 'Special_radio',
-                                        id: 'Virtual_events',
-                                        value: 'Virtual Events',
-                                    },
-                                    {
-                                        display: 'Outdoor Events',
-                                        name: 'Special_radio',
-                                        id: 'Outdoor_Events',
-                                        value: 'Outdoor Events',
-                                    },
-                                    {
-                                        display: 'Indoor Events',
-                                        name: 'Special_radio',
-                                        id: 'indoor_Events',
-                                        value: 'Indoor Events',
-                                    },
-                                ],
-                            },
-                            {
-                                isPrice: false,
-                                title: 'Duration',
-                                items: [
-                                    {
-                                        display: 'Short(1-2)hours',
-                                        name: 'duration_radio',
-                                        id: 'Short',
-                                        value: 'Short(1-2)hours',
-                                    },
-                                    {
-                                        display: 'Half Day',
-                                        name: 'duration_radio',
-                                        id: 'half_day',
-                                        value: 'Half Day',
-                                    },
-                                    {
-                                        display: 'Full Day',
-                                        name: 'duration_radio',
-                                        id: 'Full_day',
-                                        value: 'Full Day',
-                                    },
-                                    {
-                                        display: 'Multi Days',
-                                        name: 'duration_radio',
-                                        id: 'multi_days',
-                                        value: 'Multi Days',
-                                    },
-                                ],
+                                name: 'Event Types',
+                                inputType: 'checkbox',
+                                items: labels.map((label) => ({
+                                    display: label,
+                                    name: 'Events_checkbox',
+                                    id: label.replace(/\s+/g, '_').toLowerCase(),
+                                    value: label,
+                                })),
                             },
                         ]}
-                        selectedValues={selectedValues}
+                        selectedValues={{ Events_checkbox: selectedFilters }}
                         handleChange={handleChange}
                         handleSearch={handleSearch}
-                        handleFilterToggle={handleFilterToggle}
+                        handleResetFilters={handleResetFilters}
+                        handleFilterToggle={() => setIsFilterOpen(!isFilterOpen)}
                     />
                     <CardsContainer
-                        events={
-                            Array.isArray(events)
-                                ? events.slice(0, visibleEvents)
-                                : []
-                        }
+                        events={filteredEvents.slice(0, visibleEvents)}
                         loadMoreEvents={loadMoreEvents}
                         allEventsLoaded={allEventsLoaded}
                         isFilterOpen={isFilterOpen}

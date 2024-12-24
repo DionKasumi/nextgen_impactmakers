@@ -2,34 +2,44 @@ import { useState, useEffect } from 'react';
 import SectionWrapper from '../hoc/SectionWrapper';
 import Card from '../components/Card';
 import Filter from '../components/Filter';
-import axios from 'axios';
 import SkeletonCard from '../components/SkeletonCard';
+import axios from 'axios';
 import Footer from '../components/Footer';
 import { useTranslation } from 'react-i18next';
 
 const fetchInternships = async () => {
     try {
-        const response = await axios.get(
-            'http://localhost:8080/api/internships'
-        );
+        const response = await axios.get('http://localhost:8080/api/internships');
         return response.data || [];
     } catch (error) {
         console.error('Error fetching internships:', error);
         return [];
     }
 };
+
+const fetchInternshipLabels = async () => {
+    try {
+        const response = await axios.get('http://localhost:8080/api/internships/labels');
+        let labels = response.data;
+
+        // Ensure "Other" is at the end of the labels array
+        labels = labels.filter((label) => label !== "Other");
+        labels.push("Other");
+
+        return labels;
+    } catch (error) {
+        console.error('Error fetching internship labels:', error);
+        return [];
+    }
+};
+
 const fetchFavorites = async () => {
     try {
-        const response = await axios.get(
-            'http://localhost:8080/api/favorites',
-            {
-                withCredentials: true,
-            }
-        );
+        const response = await axios.get('http://localhost:8080/api/favorites', {
+            withCredentials: true,
+        });
 
-        return (response.data || []).map(
-            (fav) => `${fav.card_id}-${fav.card_type}`
-        );
+        return (response.data || []).map((fav) => `${fav.card_id}-${fav.card_type}`);
     } catch (error) {
         console.error('Error fetching favorites:', error);
         return [];
@@ -98,17 +108,21 @@ const CardsContainer = ({
 
 const InternshipsPage = () => {
     const [internships, setInternships] = useState([]);
+    const [filteredInternships, setFilteredInternships] = useState([]);
+    const [labels, setLabels] = useState([]);
     const [visibleInternships, setVisibleInternships] = useState(6);
-    const [selectedValues, setSelectedValues] = useState({
-        minPrice: '',
-        maxPrice: '',
-    });
+    const [selectedFilters, setSelectedFilters] = useState([]);
+    const [isFilterOpen, setIsFilterOpen] = useState(true);
     const [favoriteIds, setFavoriteIds] = useState([]);
 
     useEffect(() => {
         const fetchData = async () => {
             const internshipsData = await fetchInternships();
             setInternships(internshipsData.data);
+            setFilteredInternships(internshipsData.data);
+
+            const labelsData = await fetchInternshipLabels();
+            setLabels(labelsData);
 
             const favoritesData = await fetchFavorites();
             setFavoriteIds(favoritesData);
@@ -117,29 +131,43 @@ const InternshipsPage = () => {
     }, []);
 
     const handleChange = (event) => {
-        const { name, value } = event.target;
-        setSelectedValues((prevValues) => ({
-            ...prevValues,
-            [name]: value,
-        }));
+        const { name, value, checked } = event.target;
+        if (name === 'Internship_checkbox') {
+            setSelectedFilters((prevFilters) => {
+                if (checked) return [...prevFilters, value];
+                return prevFilters.filter((filter) => filter !== value);
+            });
+        }
     };
 
-    const handleSearch = () => {
-        console.log('Search clicked', selectedValues);
+    const handleSearch = async () => {
+        try {
+            if (selectedFilters.length === 0) {
+                setFilteredInternships(internships);
+            } else {
+                const response = await axios.get('http://localhost:8080/api/internships/filtered', {
+                    params: { labels: selectedFilters.join(',') },
+                });
+                setFilteredInternships(Array.isArray(response.data) ? response.data : []);
+            }
+            setVisibleInternships(6);
+        } catch (error) {
+            console.error('Error fetching filtered internships:', error);
+        }
+    };
+
+    const handleResetFilters = () => {
+        setSelectedFilters([]);
+        setFilteredInternships(internships);
+        setVisibleInternships(6);
     };
 
     const loadMoreInternships = () => {
-        setVisibleInternships(
-            (prevVisibleInternships) => prevVisibleInternships + 6
-        );
+        setVisibleInternships((prev) => prev + 6);
     };
 
-    const allInternshipsLoaded = visibleInternships >= internships.length;
+    const allInternshipsLoaded = visibleInternships >= filteredInternships.length;
 
-    const [isFilterOpen, setIsFilterOpen] = useState(true);
-    const handleFilterToggle = (val) => {
-        setIsFilterOpen(!val);
-    };
     const toggleFavorite = async (id, type) => {
         try {
             const isFavorite = favoriteIds.includes(`${id}-${type}`);
@@ -178,172 +206,29 @@ const InternshipsPage = () => {
                         {t('pages.general-text.pick-up-your-preferences')}
                     </p>
                 </div>
-                {/* <div className="flex flex-row justify-between w-5/6 h-auto"> */}
                 <div className="grid grid-cols-4 w-5/6 h-auto">
                     <Filter
                         filterList={[
                             {
                                 isPrice: false,
-                                title: 'Internship type',
-                                items: [
-                                    {
-                                        display: 'Graphic Design',
-                                        name: 'Internship_radio',
-                                        id: 'graphic_design',
-                                        value: 'Graphic Design',
-                                    },
-                                    {
-                                        display: 'Programming',
-                                        name: 'Internship_radio',
-                                        id: 'Programing',
-                                        value: 'Programming',
-                                    },
-                                    {
-                                        display: 'Social Media Manager',
-                                        name: 'Internship_radio',
-                                        id: 'social_media',
-                                        value: 'Social Media Manager',
-                                    },
-                                    {
-                                        display: 'Medicine',
-                                        name: 'Medicine_radio',
-                                        id: 'Medicine',
-                                        value: 'Medicine',
-                                    },
-                                ],
-                            },
-                            {
-                                isPrice: false,
-                                title: 'Location',
-                                items: [
-                                    {
-                                        display: 'Prishtina',
-                                        name: 'location_radio',
-                                        id: 'prishtina',
-                                        value: 'Prishtina',
-                                    },
-                                    {
-                                        display: 'Gjilan',
-                                        name: 'location_radio',
-                                        id: 'gjilan',
-                                        value: 'Gjilan',
-                                    },
-                                    {
-                                        display: 'Prizren',
-                                        name: 'location_radio',
-                                        id: 'prizren',
-                                        value: 'Prizren',
-                                    },
-                                ],
-                            },
-                            {
-                                isPrice: false,
-                                title: 'Special Features',
-                                items: [
-                                    {
-                                        display: 'Remote',
-                                        name: 'Special_radio',
-                                        id: 'remote',
-                                        value: 'Remote',
-                                    },
-                                    {
-                                        display: 'In office',
-                                        name: 'Special_radio',
-                                        id: 'in_office',
-                                        value: 'In office',
-                                    },
-                                    {
-                                        display: 'Hybrid',
-                                        name: 'Special_radio',
-                                        id: 'hybrid',
-                                        value: 'Hybrid',
-                                    },
-                                ],
-                            },
-                            {
-                                isPrice: false,
-                                title: 'Type',
-                                items: [
-                                    {
-                                        display: 'Part-time',
-                                        name: 'type_radio',
-                                        id: 'part_time',
-                                        value: 'Part Time',
-                                    },
-                                    {
-                                        display: 'Full time',
-                                        name: 'type_radio',
-                                        id: 'Full_time',
-                                        value: 'Full Time',
-                                    },
-                                ],
-                            },
-                            {
-                                isPrice: false,
-                                title: 'Level of Studies',
-                                items: [
-                                    {
-                                        display: 'High School',
-                                        name: 'duration_radio',
-                                        id: 'High_School',
-                                        value: 'High School',
-                                    },
-                                    {
-                                        display: 'Undergraduate',
-                                        name: 'duration_radio',
-                                        id: 'Undergraduate',
-                                        value: 'Undergraduate',
-                                    },
-                                    {
-                                        display: 'Bachelor Degree',
-                                        name: 'duration_radio',
-                                        id: 'Bachelor_Degree',
-                                        value: 'Bachelor Degree',
-                                    },
-                                    {
-                                        display: 'Master Degree',
-                                        name: 'duration_radio',
-                                        id: 'Master_Degree',
-                                        value: 'Master Degree',
-                                    },
-                                ],
-                            },
-                            {
-                                isPrice: false,
-                                title: 'level',
-                                items: [
-                                    {
-                                        display: '3 Months',
-                                        name: 'level_radio',
-                                        id: 'three_months',
-                                        value: '3 Months',
-                                    },
-                                    {
-                                        display: '4 Months',
-                                        name: 'level_radio',
-                                        id: 'four_months',
-                                        value: '4 Months',
-                                    },
-                                    {
-                                        display: '6 Months',
-                                        name: 'level_radio',
-                                        id: 'six_months',
-                                        value: '6 Months',
-                                    },
-                                ],
+                                title: 'Internship Types',
+                                inputType: 'checkbox',
+                                items: labels.map((label) => ({
+                                    display: label,
+                                    name: 'Internship_checkbox',
+                                    id: label.replace(/\s+/g, '_').toLowerCase(),
+                                    value: label,
+                                })),
                             },
                         ]}
-                        selectedValues={selectedValues}
+                        selectedValues={{ Internship_checkbox: selectedFilters }}
                         handleChange={handleChange}
                         handleSearch={handleSearch}
-                        handleFilterToggle={handleFilterToggle}
+                        handleResetFilters={handleResetFilters}
+                        handleFilterToggle={() => setIsFilterOpen(!isFilterOpen)}
                     />
                     <CardsContainer
-                        internships={
-                            Array.isArray(internships)
-                                ? internships.slice(0, visibleInternships)
-                                : []
-                        }
+                        internships={filteredInternships.slice(0, visibleInternships)}
                         loadMoreInternships={loadMoreInternships}
                         allInternshipsLoaded={allInternshipsLoaded}
                         isFilterOpen={isFilterOpen}

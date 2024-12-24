@@ -17,6 +17,24 @@ const fetchCourses = async () => {
     }
 };
 
+// Function to fetch course labels
+const fetchCourseLabels = async () => {
+    try {
+        const response = await axios.get('http://localhost:8080/api/courses/labels');
+        let labels = response.data;
+
+        // Ensure "Other" is at the end of the labels array
+        labels = labels.filter((label) => label !== "Other");
+        labels.push("Other");
+
+        console.log("Course labels fetched:", labels);
+        return labels;
+    } catch (error) {
+        console.error('Error fetching course labels:', error);
+        return [];
+    }
+};
+
 const fetchFavorites = async () => {
     try {
         const response = await axios.get(
@@ -97,17 +115,21 @@ const CardsContainer = ({
 
 const TrainingsPage = () => {
     const [courses, setCourses] = useState([]);
+    const [filteredCourses, setFilteredCourses] = useState([]);
+    const [labels, setLabels] = useState([]);
     const [visibleCourses, setVisibleCourses] = useState(6);
-    const [selectedValues, setSelectedValues] = useState({
-        minPrice: '',
-        maxPrice: '',
-    });
+    const [selectedFilters, setSelectedFilters] = useState([]);
+    const [isFilterOpen, setIsFilterOpen] = useState(true);
     const [favoriteIds, setFavoriteIds] = useState([]);
 
     useEffect(() => {
         const fetchData = async () => {
             const coursesData = await fetchCourses();
             setCourses(coursesData.data);
+            setFilteredCourses(coursesData.data);
+
+            const labelsData = await fetchCourseLabels();
+            setLabels(labelsData);
 
             const favoritesData = await fetchFavorites();
             setFavoriteIds(favoritesData);
@@ -116,27 +138,43 @@ const TrainingsPage = () => {
     }, []);
 
     const handleChange = (event) => {
-        const { name, value } = event.target;
-        setSelectedValues((prevValues) => ({
-            ...prevValues,
-            [name]: value,
-        }));
+        const { name, value, checked } = event.target;
+        if (name === 'Course_checkbox') {
+            setSelectedFilters((prevFilters) => {
+                if (checked) return [...prevFilters, value];
+                return prevFilters.filter((filter) => filter !== value);
+            });
+        }
     };
 
-    const handleSearch = () => {
-        console.log('Search clicked', selectedValues);
+    const handleSearch = async () => {
+        try {
+            if (selectedFilters.length === 0) {
+                setFilteredCourses(courses);
+            } else {
+                const response = await axios.get('http://localhost:8080/api/courses/filtered', {
+                    params: { labels: selectedFilters.join(',') },
+                });
+                setFilteredCourses(Array.isArray(response.data) ? response.data : []);
+            }
+            setVisibleCourses(6);
+        } catch (error) {
+            console.error('Error fetching filtered courses:', error);
+        }
+    };
+
+    const handleResetFilters = () => {
+        setSelectedFilters([]);
+        setFilteredCourses(courses);
+        setVisibleCourses(6);
     };
 
     const loadMoreCourses = () => {
-        setVisibleCourses((prevVisibleCourses) => prevVisibleCourses + 6);
+        setVisibleCourses((prev) => prev + 6);
     };
 
-    const allCoursesLoaded = visibleCourses >= courses.length;
+    const allCoursesLoaded = visibleCourses >= filteredCourses.length;
 
-    const [isFilterOpen, setIsFilterOpen] = useState(true);
-    const handleFilterToggle = (val) => {
-        setIsFilterOpen(!val);
-    };
     const toggleFavorite = async (id, type) => {
         try {
             const isFavorite = favoriteIds.includes(`${id}-${type}`);
@@ -180,160 +218,24 @@ const TrainingsPage = () => {
                         filterList={[
                             {
                                 isPrice: false,
-                                title: 'Location',
-                                items: [
-                                    {
-                                        display: 'Prishtina',
-                                        name: 'location_radio',
-                                        id: 'prishtina',
-                                        value: 'Prishtina',
-                                    },
-                                    {
-                                        display: 'Gjilan',
-                                        name: 'location_radio',
-                                        id: 'gjilan',
-                                        value: 'Gjilan',
-                                    },
-                                    {
-                                        display: 'Prizren',
-                                        name: 'location_radio',
-                                        id: 'prizren',
-                                        value: 'Prizren',
-                                    },
-                                ],
-                            },
-                            {
-                                isPrice: false,
-                                title: 'Fields',
-                                items: [
-                                    {
-                                        display: 'Python',
-                                        name: 'fields_radio',
-                                        id: 'python',
-                                        value: 'Python',
-                                    },
-                                    {
-                                        display: 'Social Media',
-                                        name: 'fields_radio',
-                                        id: 'social_media',
-                                        value: 'Social Media',
-                                    },
-                                    {
-                                        display: 'Digital Marketing',
-                                        name: 'fields_radio',
-                                        id: 'digital_marketing',
-                                        value: 'Digital Marketing',
-                                    },
-                                    {
-                                        display: 'Graphic Design',
-                                        name: 'fields_radio',
-                                        id: 'graphic_design',
-                                        value: 'Graphic Design',
-                                    },
-                                    {
-                                        display: 'UI/UX',
-                                        name: 'fields_radio',
-                                        id: 'ui_ux',
-                                        value: 'UI/UX',
-                                    },
-                                    {
-                                        display: 'Cyber Security',
-                                        name: 'fields_radio',
-                                        id: 'cyber_security',
-                                        value: 'Cyber Security',
-                                    },
-                                ],
-                            },
-                            {
-                                isPrice: false,
-                                title: 'Skill Level',
-                                items: [
-                                    {
-                                        display: 'Beginner',
-                                        name: 'skill_radio',
-                                        id: 'Beginner',
-                                        value: 'Beginner',
-                                    },
-                                    {
-                                        display: 'Intermediete',
-                                        name: 'skill_radio',
-                                        id: 'intermediete',
-                                        value: 'intermediete',
-                                    },
-                                    {
-                                        display: 'Advanced',
-                                        name: 'skill_radio',
-                                        id: 'Advanced',
-                                        value: 'Advanced',
-                                    },
-                                ],
-                            },
-                            {
-                                isPrice: false,
-                                title: 'Availability',
-                                items: [
-                                    {
-                                        display: 'Event Classes',
-                                        name: 'availability_radio',
-                                        id: 'event_classes',
-                                        value: 'Event Classes',
-                                    },
-                                    {
-                                        display: 'Weekend Classes',
-                                        name: 'availability_radio',
-                                        id: 'weekend_classes',
-                                        value: 'Weekend Classes',
-                                    },
-                                    {
-                                        display: 'Flexibile',
-                                        name: 'availability_radio',
-                                        id: 'flexibile',
-                                        value: 'Flexibile',
-                                    },
-                                ],
-                            },
-                            {
-                                isPrice: false,
-                                title: 'Duration',
-                                items: [
-                                    {
-                                        display: 'Workshops',
-                                        name: 'duration_radio',
-                                        id: 'workshops',
-                                        value: 'Workshops',
-                                    },
-                                    {
-                                        display: '3 Months',
-                                        name: 'duration_radio',
-                                        id: 'three_months',
-                                        value: '3 Months',
-                                    },
-                                    {
-                                        display: '6 Months',
-                                        name: 'duration_radio',
-                                        id: 'six_months',
-                                        value: '6 Months',
-                                    },
-                                    {
-                                        display: '1 Year',
-                                        name: 'duration_radio',
-                                        id: 'one_year',
-                                        value: '1 Year',
-                                    },
-                                ],
+                                title: 'Course Types',
+                                inputType: 'checkbox',
+                                items: labels.map((label) => ({
+                                    display: label,
+                                    name: 'Course_checkbox',
+                                    id: label.replace(/\s+/g, '_').toLowerCase(),
+                                    value: label,
+                                })),
                             },
                         ]}
-                        selectedValues={selectedValues}
+                        selectedValues={{ Course_checkbox: selectedFilters }}
                         handleChange={handleChange}
                         handleSearch={handleSearch}
-                        handleFilterToggle={handleFilterToggle}
+                        handleResetFilters={handleResetFilters}
+                        handleFilterToggle={() => setIsFilterOpen(!isFilterOpen)}
                     />
                     <CardsContainer
-                        courses={
-                            Array.isArray(courses)
-                                ? courses.slice(0, visibleCourses)
-                                : []
-                        }
+                        courses={filteredCourses.slice(0, visibleCourses)}
                         loadMoreCourses={loadMoreCourses}
                         allCoursesLoaded={allCoursesLoaded}
                         isFilterOpen={isFilterOpen}

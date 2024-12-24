@@ -6,20 +6,26 @@ import {
 } from 'react-icons/io';
 
 const generateFilter = ({ filterList = [], selectedValues, handleChange }) => {
-    return filterList.map((type, index) =>
-        !type.isPrice ? (
+    return filterList.map((type, index) => {
+        const inputType = type.inputType || 'radio'; // Default to radio if not specified
+
+        return !type.isPrice ? (
             <div key={index} className="first:mb-8 mb-8 last:mt-8 last:mb-0">
                 <h1 className="ml-8 text-xl text-white font-bold">
                     {type.title}
                 </h1>
                 <ul className="text-white text-xl mt-4">
                     {type.items.map((item, index2) => {
-                        const isChecked =
-                            item.value === selectedValues[item.name];
+                        let isChecked = false;
+                        if (inputType === 'checkbox') {
+                            isChecked = (selectedValues[item.name] || []).includes(item.value);
+                        } else {
+                            isChecked = item.value === selectedValues[item.name];
+                        }
                         return (
                             <li key={index2} className="py-2 flex items-center">
                                 <input
-                                    type="radio"
+                                    type={inputType}
                                     name={item.name}
                                     id={item.id}
                                     value={item.value}
@@ -29,13 +35,19 @@ const generateFilter = ({ filterList = [], selectedValues, handleChange }) => {
                                 />
                                 <div className="relative flex items-center">
                                     <div className="flex items-center justify-center w-5 h-5 mr-3 rounded-full border-2 border-white">
-                                        <div
-                                            className={`w-5 h-5 rounded-full bg-white transition-opacity duration-200 ease-in-out ${
-                                                isChecked
-                                                    ? 'opacity-100'
-                                                    : 'opacity-0'
-                                            }`}
-                                        />
+                                        {inputType === 'checkbox' ? (
+                                            <div
+                                                className={`w-3 h-3 rounded-full bg-white transition-opacity duration-200 ease-in-out ${
+                                                    isChecked ? 'opacity-100' : 'opacity-0'
+                                                }`}
+                                            />
+                                        ) : (
+                                            <div
+                                                className={`w-5 h-5 rounded-full bg-white transition-opacity duration-200 ease-in-out ${
+                                                    isChecked ? 'opacity-100' : 'opacity-0'
+                                                }`}
+                                            />
+                                        )}
                                     </div>
                                     <label
                                         htmlFor={item.id}
@@ -63,8 +75,8 @@ const generateFilter = ({ filterList = [], selectedValues, handleChange }) => {
                     </p>
                 </div>
             </div>
-        )
-    );
+        );
+    });
 };
 
 const Filter = ({
@@ -72,6 +84,7 @@ const Filter = ({
     selectedValues,
     handleChange,
     handleSearch,
+    handleResetFilters,
     handleFilterToggle,
 }) => {
     const [filterOpen, setFilterOpen] = useState(true);
@@ -112,14 +125,22 @@ const Filter = ({
             >
                 {generateFilter({ filterList, selectedValues, handleChange })}
             </div>
-            <button
-                className={`mt-10 bg-white text-black font-semibold py-3 px-4 rounded hover:bg-blue-200 mb-16 ${
-                    filterOpen ? '' : 'hidden'
-                }`}
-                onClick={handleSearch}
-            >
-                Search
-            </button>
+            {filterOpen && (
+                <div className="mt-10 mb-16 flex ">
+                    <button
+                        className="bg-white text-indigo-700 font-semibold py-3 px-4 rounded hover:bg-blue-200 w-1/2 mr-4"
+                        onClick={handleSearch}
+                    >
+                        Search
+                    </button>
+                    <button
+                        className="bg-white text-indigo-700 font-semibold py-3 px-4 rounded hover:bg-blue-200 w-1/2"
+                        onClick={handleResetFilters}
+                    >
+                        Reset Filters
+                    </button>
+                </div>
+            )}
         </div>
     );
 };
