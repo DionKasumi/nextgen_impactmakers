@@ -9,9 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 const fetchVolunteerings = async () => {
     try {
-        const response = await axios.get(
-            'http://localhost:8080/api/volunteering'
-        );
+        const response = await axios.get('http://localhost:8080/api/volunteering');
         return response.data || [];
     } catch (error) {
         console.error('Error fetching volunteerings:', error);
@@ -19,18 +17,30 @@ const fetchVolunteerings = async () => {
     }
 };
 
+const fetchVolunteeringLabels = async () => {
+    try {
+        const response = await axios.get('http://localhost:8080/api/volunteering/labels');
+        let labels = response.data;
+
+        // Ensure "Other" is at the end of the labels array
+        labels = labels.filter((label) => label !== "Activities for Youth");
+        labels.push("Activities for Youth");
+
+        console.log("Volunteering labels fetched:", labels);
+        return labels;
+    } catch (error) {
+        console.error('Error fetching volunteering labels:', error);
+        return [];
+    }
+};
+
 const fetchFavorites = async () => {
     try {
-        const response = await axios.get(
-            'http://localhost:8080/api/favorites',
-            {
-                withCredentials: true,
-            }
-        );
+        const response = await axios.get('http://localhost:8080/api/favorites', {
+            withCredentials: true,
+        });
 
-        return (response.data || []).map(
-            (fav) => `${fav.card_id}-${fav.card_type}`
-        );
+        return (response.data || []).map((fav) => `${fav.card_id}-${fav.card_type}`);
     } catch (error) {
         console.error('Error fetching favorites:', error);
         return [];
@@ -99,17 +109,21 @@ const CardsContainer = ({
 
 const VolunteeringPage = () => {
     const [volunteerings, setVolunteerings] = useState([]);
+    const [filteredVolunteerings, setFilteredVolunteerings] = useState([]);
+    const [labels, setLabels] = useState([]);
     const [visibleVolunteerings, setVisibleVolunteerings] = useState(6);
-    const [selectedValues, setSelectedValues] = useState({
-        minPrice: '',
-        maxPrice: '',
-    });
+    const [selectedFilters, setSelectedFilters] = useState([]);
+    const [isFilterOpen, setIsFilterOpen] = useState(true);
     const [favoriteIds, setFavoriteIds] = useState([]);
 
     useEffect(() => {
         const fetchData = async () => {
             const volunteeringsData = await fetchVolunteerings();
             setVolunteerings(volunteeringsData.data);
+            setFilteredVolunteerings(volunteeringsData.data);
+
+            const labelsData = await fetchVolunteeringLabels();
+            setLabels(labelsData);
 
             const favoritesData = await fetchFavorites();
             setFavoriteIds(favoritesData);
@@ -118,29 +132,46 @@ const VolunteeringPage = () => {
     }, []);
 
     const handleChange = (event) => {
-        const { name, value } = event.target;
-        setSelectedValues((prevValues) => ({
-            ...prevValues,
-            [name]: value,
-        }));
+        const { name, value, checked } = event.target;
+        if (name === 'Volunteering_checkbox') {
+            setSelectedFilters((prevFilters) => {
+                if (checked) return [...prevFilters, value];
+                return prevFilters.filter((filter) => filter !== value);
+            });
+        }
     };
 
-    const handleSearch = () => {
-        console.log('Search clicked', selectedValues);
+    const handleSearch = async () => {
+        try {
+            if (selectedFilters.length === 0) {
+                setFilteredVolunteerings(volunteerings);
+            } else {
+                const response = await axios.get(
+                    'http://localhost:8080/api/volunteering/filtered',
+                    { params: { labels: selectedFilters.join(',') } }
+                );
+                setFilteredVolunteerings(
+                    Array.isArray(response.data) ? response.data : []
+                );
+            }
+            setVisibleVolunteerings(6);
+        } catch (error) {
+            console.error('Error fetching filtered volunteerings:', error);
+        }
+    };
+
+    const handleResetFilters = () => {
+        setSelectedFilters([]);
+        setFilteredVolunteerings(volunteerings);
+        setVisibleVolunteerings(6);
     };
 
     const loadMoreVolunteerings = () => {
-        setVisibleVolunteerings(
-            (prevVisibleVolunteerings) => prevVisibleVolunteerings + 6
-        );
+        setVisibleVolunteerings((prev) => prev + 6);
     };
 
-    const allVolunteeringsLoaded = visibleVolunteerings >= volunteerings.length;
+    const allVolunteeringsLoaded = visibleVolunteerings >= filteredVolunteerings.length;
 
-    const [isFilterOpen, setIsFilterOpen] = useState(true);
-    const handleFilterToggle = (val) => {
-        setIsFilterOpen(!val);
-    };
     const toggleFavorite = async (id, type) => {
         try {
             const isFavorite = favoriteIds.includes(`${id}-${type}`);
@@ -179,160 +210,29 @@ const VolunteeringPage = () => {
                         {t('pages.general-text.pick-up-your-preferences')}
                     </p>
                 </div>
-                {/* <div className="flex flex-row justify-between w-5/6 h-auto"> */}
                 <div className="grid grid-cols-4 w-5/6 h-auto">
                     <Filter
                         filterList={[
                             {
                                 isPrice: false,
-                                title: 'Location',
-                                items: [
-                                    {
-                                        display: 'Prishtina',
-                                        name: 'location_radio',
-                                        id: 'prishtina',
-                                        value: 'Prishtina',
-                                    },
-                                    {
-                                        display: 'Gjilan',
-                                        name: 'location_radio',
-                                        id: 'gjilan',
-                                        value: 'Gjilan',
-                                    },
-                                    {
-                                        display: 'Prizren',
-                                        name: 'location_radio',
-                                        id: 'prizren',
-                                        value: 'Prizren',
-                                    },
-                                ],
-                            },
-                            {
-                                isPrice: false,
-                                title: 'Cause',
-                                items: [
-                                    {
-                                        display: 'Education and Youth',
-                                        name: 'cause_radio',
-                                        id: 'education_youth',
-                                        value: 'Education and Youth',
-                                    },
-                                    {
-                                        display: 'Health and Wellness',
-                                        name: 'cause_radio',
-                                        id: 'health_wellness',
-                                        value: 'Health and Wellness',
-                                    },
-                                    {
-                                        display: 'Social Services',
-                                        name: 'cause_radio',
-                                        id: 'social_services',
-                                        value: 'Social Services',
-                                    },
-                                    {
-                                        display: 'Arts',
-                                        name: 'cause_radio',
-                                        id: 'arts',
-                                        value: 'Arts',
-                                    },
-                                    {
-                                        display: 'Animal Welfare',
-                                        name: 'cause_radio',
-                                        id: 'animal_welfare',
-                                        value: 'Animal Welfare',
-                                    },
-                                ],
-                            },
-                            {
-                                isPrice: false,
-                                title: 'Organization',
-                                items: [
-                                    {
-                                        display: 'ORCA',
-                                        name: 'organization_radio',
-                                        id: 'orca',
-                                        value: 'ORCA',
-                                    },
-                                    {
-                                        display: 'TOKA',
-                                        name: 'organization_radio',
-                                        id: 'toka',
-                                        value: 'TOKA',
-                                    },
-                                    {
-                                        display: 'GLPS',
-                                        name: 'organization_radio',
-                                        id: 'glps',
-                                        value: 'GLPS',
-                                    },
-                                ],
-                            },
-                            {
-                                isPrice: false,
-                                title: 'Age group',
-                                items: [
-                                    {
-                                        display: 'Youth(Under 18)',
-                                        name: 'age_radio',
-                                        id: 'youth',
-                                        value: 'Youth(Under 18)',
-                                    },
-                                    {
-                                        display: 'Teens (13-17)',
-                                        name: 'age_radio',
-                                        id: 'teens',
-                                        value: 'Teens (13-17)',
-                                    },
-                                    {
-                                        display: 'Young Adults(18-24)',
-                                        name: 'age_radio',
-                                        id: 'young_adults',
-                                        value: 'Young Adults(18-24)',
-                                    },
-                                    {
-                                        display: 'Adults',
-                                        name: 'age_radio',
-                                        id: 'adults',
-                                        value: 'Adults',
-                                    },
-                                ],
-                            },
-                            {
-                                isPrice: false,
-                                title: 'Duration',
-                                items: [
-                                    {
-                                        display: '1 Day',
-                                        name: 'duration_radio',
-                                        id: 'one_day',
-                                        value: '1 Day',
-                                    },
-                                    {
-                                        display: 'Short Period',
-                                        name: 'duration_radio',
-                                        id: 'short_period',
-                                        value: 'Short Period',
-                                    },
-                                    {
-                                        display: 'Continued Engagement',
-                                        name: 'duration_radio',
-                                        id: 'continued_engagement',
-                                        value: 'Continued Engagement',
-                                    },
-                                ],
+                                title: 'Volunteering Types',
+                                inputType: 'checkbox',
+                                items: labels.map((label) => ({
+                                    display: label,
+                                    name: 'Volunteering_checkbox',
+                                    id: label.replace(/\s+/g, '_').toLowerCase(),
+                                    value: label,
+                                })),
                             },
                         ]}
-                        selectedValues={selectedValues}
+                        selectedValues={{ Volunteering_checkbox: selectedFilters }}
                         handleChange={handleChange}
                         handleSearch={handleSearch}
-                        handleFilterToggle={handleFilterToggle}
+                        handleResetFilters={handleResetFilters}
+                        handleFilterToggle={() => setIsFilterOpen(!isFilterOpen)}
                     />
                     <CardsContainer
-                        volunteerings={
-                            Array.isArray(volunteerings)
-                                ? volunteerings.slice(0, visibleVolunteerings)
-                                : []
-                        }
+                        volunteerings={filteredVolunteerings.slice(0, visibleVolunteerings)}
                         loadMoreVolunteerings={loadMoreVolunteerings}
                         allVolunteeringsLoaded={allVolunteeringsLoaded}
                         isFilterOpen={isFilterOpen}

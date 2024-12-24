@@ -1771,6 +1771,212 @@ def update_testimonial():
         if db:  # Ensure db connection is closed
             db.close()
 
+@app.route('/api/internships/labels', methods=['GET'])
+def get_internship_labels():
+    labels = []
+    try:
+        # Connect to the database
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        
+        # Query to get distinct labels from the internships table
+        query = "SELECT DISTINCT label FROM all_internships WHERE label IS NOT NULL"
+        cursor.execute(query)
+        
+        # Fetch labels as a list
+        labels = [row['label'] for row in cursor.fetchall()]
+        
+    except MySQLdb.Error as e:
+        print(f"MySQL error during fetching internship labels: {e}")
+        return jsonify({"error": "Database error"}), 500
+    finally:
+        cursor.close()
+        db.close()
+
+    return jsonify(labels), 200
+
+@app.route('/api/internships/filtered', methods=['GET'])
+def get_internships_by_labels():
+    labels = request.args.get('labels')  # Get labels as a comma-separated string
+    internships = []
+    
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+
+        if labels:
+            # Split the labels into a list
+            label_list = labels.split(',')
+            placeholders = ', '.join(['%s'] * len(label_list))  # Prepare placeholders for SQL
+            query = f"SELECT * FROM all_internships WHERE label IN ({placeholders})"
+            cursor.execute(query, label_list)
+        else:
+            query = "SELECT * FROM all_internships"
+            cursor.execute(query)
+        
+        internships = cursor.fetchall()
+    except MySQLdb.Error as e:
+        print(f"MySQL error during fetching internships by labels: {e}")
+        return jsonify({"error": "Database error"}), 500
+    finally:
+        cursor.close()
+        db.close()
+    
+    return jsonify(internships), 200
+
+@app.route('/api/events/labels', methods=['GET'])
+def get_event_labels():
+    labels = []
+    try:
+        # Connect to the database
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        
+        # Query to get distinct labels from the events table
+        query = "SELECT DISTINCT label FROM all_events WHERE label IS NOT NULL"
+        cursor.execute(query)
+        
+        # Fetch labels as a list
+        labels = [row['label'] for row in cursor.fetchall()]
+        
+    except MySQLdb.Error as e:
+        print(f"MySQL error during fetching event labels: {e}")
+        return jsonify({"error": "Database error"}), 500
+    finally:
+        cursor.close()
+        db.close()
+
+    return jsonify(labels), 200
+
+@app.route('/api/events/filtered', methods=['GET'])
+def get_events_by_labels():
+    labels = request.args.get('labels')
+    events = []
+
+    try:
+        # Connect to the database
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        
+        # Build query dynamically based on labels
+        query = "SELECT * FROM all_events WHERE label IN (%s)"
+        in_clause = ', '.join(['%s'] * len(labels.split(',')))
+        cursor.execute(query % in_clause, tuple(labels.split(',')))
+        
+        # Fetch events
+        events = cursor.fetchall()
+    except MySQLdb.Error as e:
+        print(f"MySQL error during filtering events: {e}")
+        return jsonify({"error": "Database error"}), 500
+    finally:
+        cursor.close()
+        db.close()
+
+    return jsonify(events), 200
+
+@app.route('/api/volunteering/labels', methods=['GET'])
+def get_volunteering_labels():
+    labels = []
+    try:
+        # Connect to the database
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        
+        # Query to get distinct labels from the volunteering opportunities table
+        query = "SELECT DISTINCT label FROM all_volunteering WHERE label IS NOT NULL"
+        cursor.execute(query)
+        
+        # Fetch labels as a list
+        labels = [row['label'] for row in cursor.fetchall()]
+        
+    except MySQLdb.Error as e:
+        print(f"MySQL error during fetching volunteering labels: {e}")
+        return jsonify({"error": "Database error"}), 500
+    finally:
+        cursor.close()
+        db.close()
+
+    return jsonify(labels), 200
+
+@app.route('/api/volunteering/filtered', methods=['GET'])
+def get_volunteering_by_labels():
+    selected_labels = request.args.get('labels', '').split(',')
+    if not selected_labels:
+        return jsonify({"error": "No labels provided"}), 400
+    
+    try:
+        # Connect to the database
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+
+        # Build query to fetch volunteering opportunities based on selected labels
+        query = """
+            SELECT * FROM all_volunteering
+            WHERE label IN (%s)
+        """ % ','.join(['%s'] * len(selected_labels))
+        
+        # Execute the query
+        cursor.execute(query, selected_labels)
+        
+        # Fetch the results
+        volunteering_opportunities = cursor.fetchall()
+
+    except MySQLdb.Error as e:
+        print(f"MySQL error during fetching volunteering data: {e}")
+        return jsonify({"error": "Database error"}), 500
+    finally:
+        cursor.close()
+        db.close()
+
+    return jsonify(volunteering_opportunities), 200
+
+@app.route('/api/courses/labels', methods=['GET'])
+def get_course_labels():
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        
+        # Fetch distinct course labels
+        query = "SELECT DISTINCT label FROM all_courses WHERE label IS NOT NULL"
+        cursor.execute(query)
+        labels = [row['label'] for row in cursor.fetchall()]
+    except MySQLdb.Error as e:
+        print(f"MySQL error during fetching course labels: {e}")
+        return jsonify({"error": "Database error"}), 500
+    finally:
+        cursor.close()
+        db.close()
+
+    return jsonify(labels), 200
+
+
+@app.route('/api/courses/filtered', methods=['GET'])
+def get_courses_by_labels():
+    selected_labels = request.args.get('labels', '').split(',')
+    if not selected_labels:
+        return jsonify({"error": "No labels provided"}), 400
+    
+    try:
+        db = MySQLdb.connect(**db_params)
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        
+        # Fetch courses by labels
+        query = """
+            SELECT * FROM all_courses
+            WHERE label IN (%s)
+        """ % ','.join(['%s'] * len(selected_labels))
+        cursor.execute(query, selected_labels)
+        courses = cursor.fetchall()
+    except MySQLdb.Error as e:
+        print(f"MySQL error during fetching courses: {e}")
+        return jsonify({"error": "Database error"}), 500
+    finally:
+        cursor.close()
+        db.close()
+
+    return jsonify(courses), 200
+
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8080)
