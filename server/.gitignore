@@ -2,4 +2,3 @@ venv/
 /__pycache__
 /venvScriptsactivate
 script_manager.log
-db_config.py
