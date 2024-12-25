@@ -2,15 +2,13 @@ from playwright.sync_api import sync_playwright
 import MySQLdb
 import time
 from datetime import datetime
+import sys
+import os
 
-# Database connection parameters
-db_params = {
-    'user': 'root',
-    'passwd': '12345678',
-    'host': 'localhost',
-    'port': 3306,
-    'db': 'pye_data'
-}
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from db_config import db_params
+
 
 def assign_volunteering_label(title):
     title_lower = title.lower()

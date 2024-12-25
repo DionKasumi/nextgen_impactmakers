@@ -2,15 +2,13 @@ from playwright.sync_api import sync_playwright
 import MySQLdb
 import time
 import re
+import sys
+import os
 
-# Database connection parameters
-db_params = {
-    'user': 'root',
-    'passwd': '1234',
-    'host': 'localhost',
-    'port': 3306,
-    'db': 'pye_data'
-}
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from db_config import db_params
+
 
 # Function to assign label based on title
 def assign_label(title):
