@@ -1,53 +1,81 @@
 import subprocess
 from concurrent.futures import ThreadPoolExecutor
+import logging
 import os
+import signal
 
-# List of scripts to run
+logging.basicConfig(
+    filename="script_manager.log",
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+)
+
 scripts = [
-    "app.py",  # Flask app that needs to keep running
+     "db_config.py",
+    "app.py",  
     "Events/AllEvents.py",
     "Internships/AllInternships.py",
     "Trainings/AllTrainings.py",
     "Volunteering/kosovovolunteers.py",
-    "setup_db.py",
-    "db_config.py"
 ]
 
-def run_script(script, keep_alive=False):
+def run_script(script_path, keep_alive=False):
     """
-    Runs a script. If `keep_alive` is True, the script will keep running (e.g., app.py).
+    Runs a script. If keep_alive=True, the script will run continuously.
     """
-    if keep_alive:
-        print(f"Starting {script} (continuous process)...")
-        # Start in the background without blocking the rest
-        return subprocess.Popen(["python", script], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    else:
-        print(f"Running {script}...")
-        result = subprocess.run(["python", script], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        if result.returncode != 0:
-            print(f"Error running {script}: {result.stderr}")
+    try:
+        if keep_alive:
+            logging.info(f"Starting {script_path} (continuous process)...")
+            process = subprocess.Popen(
+                ["python", script_path],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+            return process
         else:
-            print(f"{script} completed successfully.")
+            logging.info(f"Running {script_path}...")
+            result = subprocess.run(
+                ["python", script_path],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+            if result.returncode != 0:
+                logging.error(f"Error in {script_path}: {result.stderr}")
+            else:
+                logging.info(f"{script_path} completed successfully.")
+            return None
+    except Exception as e:
+        logging.error(f"Failed to run {script_path}: {str(e)}")
         return None
 
+
+def terminate_process(process):
+    try:
+        os.kill(process.pid, signal.SIGTERM)
+        process.wait()
+        logging.info(f"Terminated process {process.pid}.")
+    except Exception as e:
+        logging.error(f"Failed to terminate process {process.pid}: {str(e)}")
+
+
 if __name__ == "__main__":
-    # Start app.py as a long-running script
+    print("To access the admin panel, visit: http://127.0.0.1:8080/admin/login")
+    print("Logs are being saved to the file: script_manager.log in the server-side folder.")
+    
     processes = [run_script("app.py", keep_alive=True)]
 
-    # Run other scripts in parallel
+    
     with ThreadPoolExecutor(max_workers=5) as executor:
-        # Submit the remaining scripts (non-persistent ones) to the executor
-        executor.map(run_script, scripts[1:])
+        executor.map(lambda script: run_script(script), scripts[1:])
 
     try:
-        print("All scripts have been started.")
-        # Keep the main process alive while app.py runs
+        logging.info("All scripts have been started. Monitoring...")
         for process in processes:
             process.wait()
     except KeyboardInterrupt:
-        print("Shutting down...")
-        # Terminate long-running processes like app.py
+        logging.info("Shutting down...")
         for process in processes:
-            process.terminate()
-            process.wait()
-        print("Processes terminated.")
+            terminate_process(process)
+        logging.info("All processes terminated.")
