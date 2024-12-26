@@ -1,0 +1,7 @@
+playwright==1.37.0
+Flask==2.3.2
+flask-cors==3.0.10
+mysqlclient==2.1.1
+mysql-connector-python==8.0.33
+bcrypt==4.0.1
+# pip install -r requirements.txt
